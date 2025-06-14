@@ -29,14 +29,20 @@ const ProductCard = ({ image, title, price, originalPrice, category }: ProductCa
   const isLiked = isInWishlist(product.id);
 
   const handleWishlistToggle = () => {
+    console.log('Wishlist toggle clicked for product:', product.id);
+    console.log('Current wishlist state:', isLiked);
+    
     if (isLiked) {
+      console.log('Removing from wishlist');
       removeFromWishlist(product.id);
     } else {
+      console.log('Adding to wishlist');
       addToWishlist(product);
     }
   };
 
   const handleAddToCart = () => {
+    console.log('Adding to cart:', product);
     addToCart(product);
   };
 
@@ -57,7 +63,7 @@ const ProductCard = ({ image, title, price, originalPrice, category }: ProductCa
         <Button
           variant="ghost"
           size="icon"
-          className={`absolute top-3 right-3 rounded-full ${isLiked ? 'text-red-500 bg-white/20' : 'text-white/70 bg-black/20'} hover:bg-white/30 transition-all duration-300`}
+          className={`absolute top-3 right-3 rounded-full z-10 ${isLiked ? 'text-red-500 bg-white/20' : 'text-white/70 bg-black/20'} hover:bg-white/30 transition-all duration-300`}
           onClick={handleWishlistToggle}
         >
           <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />

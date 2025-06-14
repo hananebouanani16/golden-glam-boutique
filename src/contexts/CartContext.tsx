@@ -36,28 +36,42 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Load from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    const savedWishlist = localStorage.getItem('wishlist');
-    
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
-    }
-    if (savedWishlist) {
-      setWishlistItems(JSON.parse(savedWishlist));
+    try {
+      const savedCart = localStorage.getItem('cart');
+      const savedWishlist = localStorage.getItem('wishlist');
+      
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart));
+      }
+      if (savedWishlist) {
+        setWishlistItems(JSON.parse(savedWishlist));
+      }
+    } catch (error) {
+      console.error('Error loading from localStorage:', error);
     }
   }, []);
 
   // Save to localStorage when cart changes
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
+    try {
+      localStorage.setItem('cart', JSON.stringify(cartItems));
+    } catch (error) {
+      console.error('Error saving cart to localStorage:', error);
+    }
   }, [cartItems]);
 
   // Save to localStorage when wishlist changes
   useEffect(() => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
+    try {
+      localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
+      console.log('Wishlist saved to localStorage:', wishlistItems);
+    } catch (error) {
+      console.error('Error saving wishlist to localStorage:', error);
+    }
   }, [wishlistItems]);
 
   const addToCart = (product: Product) => {
+    console.log('Adding to cart:', product);
     setCartItems(prev => {
       const existingItem = prev.find(item => item.id === product.id);
       if (existingItem) {
@@ -72,10 +86,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const removeFromCart = (productId: string) => {
+    console.log('Removing from cart:', productId);
     setCartItems(prev => prev.filter(item => item.id !== productId));
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
+    console.log('Updating quantity:', productId, quantity);
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
@@ -88,21 +104,32 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const addToWishlist = (product: Product) => {
+    console.log('Adding to wishlist:', product);
     setWishlistItems(prev => {
       const exists = prev.find(item => item.id === product.id);
       if (!exists) {
-        return [...prev, product];
+        const newWishlist = [...prev, product];
+        console.log('New wishlist:', newWishlist);
+        return newWishlist;
       }
+      console.log('Product already in wishlist');
       return prev;
     });
   };
 
   const removeFromWishlist = (productId: string) => {
-    setWishlistItems(prev => prev.filter(item => item.id !== productId));
+    console.log('Removing from wishlist:', productId);
+    setWishlistItems(prev => {
+      const newWishlist = prev.filter(item => item.id !== productId);
+      console.log('New wishlist after removal:', newWishlist);
+      return newWishlist;
+    });
   };
 
   const isInWishlist = (productId: string) => {
-    return wishlistItems.some(item => item.id === productId);
+    const inWishlist = wishlistItems.some(item => item.id === productId);
+    console.log('Checking if in wishlist:', productId, inWishlist);
+    return inWishlist;
   };
 
   const getCartTotal = () => {
@@ -117,6 +144,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const clearCart = () => {
+    console.log('Clearing cart');
     setCartItems([]);
   };
 
