@@ -1,7 +1,10 @@
 
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import { useApp } from "@/contexts/AppContext";
 
 const Footer = () => {
+  const { t } = useApp();
+
   return (
     <footer className="bg-gradient-to-t from-black to-gray-900 border-t border-gold-500/20 pt-16 pb-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,8 +23,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-gold-200 leading-relaxed max-w-md">
-              Nesrine Golden Hands vous propose une collection unique de sacs à main et bijoux artisanaux, 
-              créés avec passion pour sublimer votre style et votre élégance au quotidien.
+              {t('footer_description')}
             </p>
             <div className="flex space-x-4 mt-6">
               <a href="#" className="text-gold-400 hover:text-gold-300 transition-colors duration-300">
@@ -38,18 +40,18 @@ const Footer = () => {
 
           {/* Liens rapides */}
           <div>
-            <h4 className="text-lg font-semibold gold-text mb-4">Liens Rapides</h4>
+            <h4 className="text-lg font-semibold gold-text mb-4">{t('quick_links')}</h4>
             <ul className="space-y-2">
-              <li><a href="#accueil" className="text-gold-300 hover:text-gold-200 transition-colors duration-300">Accueil</a></li>
-              <li><a href="#sacs" className="text-gold-300 hover:text-gold-200 transition-colors duration-300">Sacs à Main</a></li>
-              <li><a href="#bijoux" className="text-gold-300 hover:text-gold-200 transition-colors duration-300">Bijoux</a></li>
-              <li><a href="#contact" className="text-gold-300 hover:text-gold-200 transition-colors duration-300">Contact</a></li>
+              <li><a href="#accueil" className="text-gold-300 hover:text-gold-200 transition-colors duration-300">{t('home')}</a></li>
+              <li><a href="#sacs" className="text-gold-300 hover:text-gold-200 transition-colors duration-300">{t('bags')}</a></li>
+              <li><a href="#bijoux" className="text-gold-300 hover:text-gold-200 transition-colors duration-300">{t('jewelry')}</a></li>
+              <li><a href="#contact" className="text-gold-300 hover:text-gold-200 transition-colors duration-300">{t('contact')}</a></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div id="contact">
-            <h4 className="text-lg font-semibold gold-text mb-4">Contact</h4>
+            <h4 className="text-lg font-semibold gold-text mb-4">{t('contact')}</h4>
             <ul className="space-y-3">
               <li className="flex items-center text-gold-300">
                 <Mail className="h-4 w-4 mr-3" />
@@ -61,7 +63,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center text-gold-300">
                 <MapPin className="h-4 w-4 mr-3" />
-                <span>Paris, France</span>
+                <span>{t('location')}</span>
               </li>
             </ul>
           </div>
@@ -71,14 +73,14 @@ const Footer = () => {
         <div className="border-t border-gold-500/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gold-400 text-sm">
-              © 2024 Nesrine Golden Hands. Tous droits réservés.
+              {t('copyright')}
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-gold-400 hover:text-gold-300 text-sm transition-colors duration-300">
-                Politique de Confidentialité
+                {t('privacy_policy')}
               </a>
               <a href="#" className="text-gold-400 hover:text-gold-300 text-sm transition-colors duration-300">
-                Conditions d'Utilisation
+                {t('terms_of_use')}
               </a>
             </div>
           </div>
