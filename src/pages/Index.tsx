@@ -226,6 +226,77 @@ const Index = () => {
       title: "Collection Bagues Pierres Colorées",
       price: "32€",
       category: "Bagues"
+    },
+    {
+      id: "jewelry21",
+      image: "/lovable-uploads/f058ee6a-57bc-4f73-b224-ab586914aaeb.png",
+      title: "Peigne à Cheveux Fleurs Rose et Cristaux",
+      price: "125€",
+      category: "Accessoires Cheveux"
+    },
+    {
+      id: "jewelry22",
+      image: "/lovable-uploads/6a302d85-7343-4e1a-bd3d-564fd8ee12b5.png",
+      title: "Parure Bracelet et Boucles d'Oreilles Rose",
+      price: "78€",
+      category: "Parures"
+    },
+    {
+      id: "jewelry23",
+      image: "/lovable-uploads/94046d6e-2901-4ff8-9829-29c9e405a616.png",
+      title: "Ensemble Collier et Boucles d'Oreilles Perles Blanches",
+      price: "95€",
+      category: "Ensembles"
+    },
+    {
+      id: "jewelry24",
+      image: "/lovable-uploads/71f6616d-79eb-435a-9d20-30973ed5c2f1.png",
+      title: "Boucles d'Oreilles Perles et Cristaux Rose",
+      price: "65€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry25",
+      image: "/lovable-uploads/924a9a11-83fa-494f-92c5-77a6062ff51e.png",
+      title: "Parure Bracelet et Boucles d'Oreilles Rouge",
+      price: "88€",
+      category: "Parures"
+    },
+    {
+      id: "jewelry26",
+      image: "/lovable-uploads/5db391e7-267f-4d95-8020-b0f3e856fcee.png",
+      title: "Ensemble Colliers et Boucles d'Oreilles Fleurs",
+      price: "105€",
+      category: "Ensembles"
+    },
+    {
+      id: "jewelry27",
+      image: "/lovable-uploads/254f2f25-d71d-4d38-bf05-9f74a545a040.png",
+      title: "Parure Bracelet Perles Multicolores",
+      price: "72€",
+      category: "Bracelets"
+    },
+    {
+      id: "jewelry28",
+      image: "/lovable-uploads/f456b0db-9f47-412f-8879-fe3e5c9f088f.png",
+      title: "Collier Double Perles et Boucles d'Oreilles Turquoise",
+      price: "115€",
+      category: "Parures"
+    },
+    {
+      id: "jewelry29",
+      image: "/lovable-uploads/289d3d00-31f2-4b35-950f-c8841da36276.png",
+      title: "Boucles d'Oreilles Pendantes Feuilles",
+      price: "58€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry30",
+      image: "/lovable-uploads/6634adf0-e50b-4362-b911-747422e4b8f6.png",
+      title: "Parure Complète Perles Argentées",
+      price: "145€",
+      originalPrice: "180€",
+      category: "Parures"
     }
   ];
 
