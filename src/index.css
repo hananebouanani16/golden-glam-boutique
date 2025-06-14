@@ -46,6 +46,36 @@
     --sidebar-border: 45 20% 20%;
     --sidebar-ring: 45 100% 51%;
   }
+
+  [data-theme="light"] {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 5%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 5%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 5%;
+
+    --primary: 45 100% 51%;
+    --primary-foreground: 0 0% 5%;
+
+    --secondary: 45 15% 95%;
+    --secondary-foreground: 0 0% 5%;
+
+    --muted: 45 15% 95%;
+    --muted-foreground: 45 20% 35%;
+
+    --accent: 45 100% 51%;
+    --accent-foreground: 0 0% 5%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 45 20% 85%;
+    --input: 45 20% 85%;
+    --ring: 45 100% 51%;
+  }
 }
 
 @layer base {
@@ -57,6 +87,11 @@
     @apply bg-background text-foreground;
     background: radial-gradient(ellipse at bottom, #0d0d0d 0%, #000000 100%);
     min-height: 100vh;
+    transition: all 0.3s ease;
+  }
+
+  [data-theme="light"] body {
+    background: radial-gradient(ellipse at top, #f8f9fa 0%, #ffffff 100%);
   }
 }
 
@@ -87,5 +122,34 @@
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
     animation: shimmer 3s infinite;
+  }
+
+  /* RTL Support */
+  [dir="rtl"] {
+    text-align: right;
+  }
+
+  [dir="rtl"] .space-x-2 > * + * {
+    margin-left: 0;
+    margin-right: 0.5rem;
+  }
+
+  [dir="rtl"] .space-x-4 > * + * {
+    margin-left: 0;
+    margin-right: 1rem;
+  }
+
+  [dir="rtl"] .space-x-8 > * + * {
+    margin-left: 0;
+    margin-right: 2rem;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }

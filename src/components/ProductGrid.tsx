@@ -1,5 +1,6 @@
 
 import ProductCard from "./ProductCard";
+import { useApp } from "@/contexts/AppContext";
 
 interface ProductGridProps {
   title: string;
@@ -16,6 +17,8 @@ interface ProductGridProps {
 }
 
 const ProductGrid = ({ title, subtitle, products, id }: ProductGridProps) => {
+  const { t } = useApp();
+
   return (
     <section id={id} className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto">

@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingBag } from "lucide-react";
 import { useState } from "react";
+import { useApp } from "@/contexts/AppContext";
 
 interface ProductCardProps {
   image: string;
@@ -13,9 +14,10 @@ interface ProductCardProps {
 
 const ProductCard = ({ image, title, price, originalPrice, category }: ProductCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
+  const { t } = useApp();
 
   return (
-    <div className="group relative bg-gradient-to-br from-gray-900 to-black rounded-xl overflow-hidden gold-border hover:shadow-2xl hover:shadow-gold-500/20 transition-all duration-500 transform hover:-translate-y-2">
+    <div className="group relative bg-gradient-to-br from-gray-900 to-black [data-theme='light']_&:from-white [data-theme='light']_&:to-gray-50 rounded-xl overflow-hidden gold-border hover:shadow-2xl hover:shadow-gold-500/20 transition-all duration-500 transform hover:-translate-y-2">
       {/* Image container */}
       <div className="relative aspect-square overflow-hidden">
         <img 
@@ -67,7 +69,7 @@ const ProductCard = ({ image, title, price, originalPrice, category }: ProductCa
           onClick={() => console.log(`Ajouté au panier: ${title}`)}
         >
           <ShoppingBag className="w-4 h-4 mr-2" />
-          Ajouter au Panier
+          {t('add_to_cart')}
         </Button>
       </div>
     </div>
