@@ -2,13 +2,21 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Tags, Calendar, ArrowLeft } from "lucide-react";
+import { Package, Tags, Calendar, ArrowLeft, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import AdminLogin from "@/components/AdminLogin";
 import ProductManagement from "@/components/admin/ProductManagement";
 import CategoryManagement from "@/components/admin/CategoryManagement";
 import PromoPlanner from "@/components/admin/PromoPlanner";
 
 const Admin = () => {
+  const { isAuthenticated, logout } = useAuth();
+
+  if (!isAuthenticated) {
+    return <AdminLogin />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white">
       <div className="container mx-auto px-4 py-8">
@@ -22,6 +30,14 @@ const Admin = () => {
             </Link>
             <h1 className="text-3xl font-bold gold-text">Administration</h1>
           </div>
+          <Button 
+            onClick={logout}
+            variant="ghost" 
+            className="text-gold-300 hover:text-gold-200"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Déconnexion
+          </Button>
         </div>
 
         {/* Admin Tabs */}

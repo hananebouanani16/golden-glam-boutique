@@ -44,10 +44,6 @@ const Header = () => {
               {t('contact')}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gold-400 group-hover:w-full transition-all duration-300"></span>
             </a>
-            <a href="/admin" className="text-gold-300 hover:text-gold-200 transition-colors duration-300 relative group">
-              Admin
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gold-400 group-hover:w-full transition-all duration-300"></span>
-            </a>
           </nav>
 
           {/* Actions */}
