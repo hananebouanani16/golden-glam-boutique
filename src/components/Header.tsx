@@ -16,7 +16,7 @@ const Header = () => {
             <img 
               src="/lovable-uploads/285022db-a31d-4333-8f9d-08c7ce0263fb.png" 
               alt="Nesrine Golden Hands" 
-              className="h-12 w-12 animate-glow"
+              className="h-12 w-12 animate-glow rounded-full object-cover border-2 border-gold-400"
             />
             <div className="ml-3 hidden sm:block">
               <h1 className="text-xl font-bold gold-text">Nesrine</h1>

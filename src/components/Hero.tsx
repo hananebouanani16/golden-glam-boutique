@@ -8,8 +8,8 @@ const Hero = () => {
 
   return (
     <section id="accueil" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
+      {/* Background gradient - adapté au thème */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800 [data-theme='light']_&:from-blue-50 [data-theme='light']_&:via-indigo-100 [data-theme='light']_&:to-purple-50"></div>
       
       {/* Animated background particles */}
       <div className="absolute inset-0">
@@ -28,12 +28,12 @@ const Hero = () => {
       </div>
 
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8">
-        {/* Logo principal */}
+        {/* Logo principal - maintenant rond */}
         <div className="mb-8 animate-float">
           <img 
             src="/lovable-uploads/285022db-a31d-4333-8f9d-08c7ce0263fb.png" 
             alt="Nesrine Golden Hands" 
-            className="mx-auto h-32 w-32 sm:h-40 sm:w-40 animate-glow"
+            className="mx-auto h-32 w-32 sm:h-40 sm:w-40 animate-glow rounded-full object-cover border-4 border-gold-400 shadow-lg shadow-gold-500/50"
           />
         </div>
 

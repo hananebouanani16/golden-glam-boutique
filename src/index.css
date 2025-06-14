@@ -85,13 +85,13 @@
 
   body {
     @apply bg-background text-foreground;
-    background: radial-gradient(ellipse at bottom, #0d0d0d 0%, #000000 100%);
+    background: radial-gradient(ellipse at center, #1e1b4b 0%, #0f0f23 50%, #000000 100%);
     min-height: 100vh;
     transition: all 0.3s ease;
   }
 
   [data-theme="light"] body {
-    background: radial-gradient(ellipse at top, #f8f9fa 0%, #ffffff 100%);
+    background: radial-gradient(ellipse at center, #ddd6fe 0%, #e0e7ff 50%, #f8fafc 100%);
   }
 }
 
