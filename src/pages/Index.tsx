@@ -1,4 +1,3 @@
-
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
@@ -84,7 +83,7 @@ const Index = () => {
     }
   ];
 
-  // Données des bijoux avec vos vraies photos
+  // Données des bijoux avec vos vraies photos - collection étendue
   const jewelryData = [
     {
       id: "jewelry1",
@@ -156,6 +155,77 @@ const Index = () => {
       title: "Collier Fleurs Délicates Dorées",
       price: "58€",
       category: "Colliers"
+    },
+    {
+      id: "jewelry11",
+      image: "/lovable-uploads/1b4637af-7270-45ff-800e-4b2a0e483818.png",
+      title: "Ensemble Collier Perles Carrées et Boucles d'Oreilles",
+      price: "92€",
+      category: "Ensembles"
+    },
+    {
+      id: "jewelry12",
+      image: "/lovable-uploads/26220fa2-db62-4a55-a039-b2b2ab87f44b.png",
+      title: "Boucles d'Oreilles Perlées Multicolores",
+      price: "48€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry13",
+      image: "/lovable-uploads/a57e5bcc-0bd2-4eda-becb-5d9d9a426705.png",
+      title: "Parure Florale Dorée et Pierres Précieuses",
+      price: "135€",
+      originalPrice: "165€",
+      category: "Parures"
+    },
+    {
+      id: "jewelry14",
+      image: "/lovable-uploads/b4609112-128a-4c0a-b83b-a637248f4523.png",
+      title: "Collier Délicat à Fleurs",
+      price: "52€",
+      category: "Colliers"
+    },
+    {
+      id: "jewelry15",
+      image: "/lovable-uploads/85607faa-c640-4678-88e0-da4efc2a3822.png",
+      title: "Ensemble Chaîne Cubaine Dorée Premium",
+      price: "115€",
+      category: "Ensembles"
+    },
+    {
+      id: "jewelry16",
+      image: "/lovable-uploads/36516e48-bccc-4f8e-a400-a87a4880f5ed.png",
+      title: "Coffret à Bijoux Rose Luxe",
+      price: "38€",
+      category: "Accessoires"
+    },
+    {
+      id: "jewelry17",
+      image: "/lovable-uploads/7589f38b-48ba-4804-a28d-e0f554595948.png",
+      title: "Parure Perles Blanches et Cristaux",
+      price: "98€",
+      category: "Parures"
+    },
+    {
+      id: "jewelry18",
+      image: "/lovable-uploads/649727cb-c426-4765-ba00-34a7547eee35.png",
+      title: "Collier Fleur Délicate Dorée",
+      price: "44€",
+      category: "Colliers"
+    },
+    {
+      id: "jewelry19",
+      image: "/lovable-uploads/7f642d8d-1ef5-49b1-aad2-21eeb7b51e69.png",
+      title: "Accessoire Cheveux Perles et Cristaux",
+      price: "68€",
+      category: "Accessoires Cheveux"
+    },
+    {
+      id: "jewelry20",
+      image: "/lovable-uploads/11563c7d-17dc-451b-ad73-5f8bb8a74162.png",
+      title: "Collection Bagues Pierres Colorées",
+      price: "32€",
+      category: "Bagues"
     }
   ];
 
