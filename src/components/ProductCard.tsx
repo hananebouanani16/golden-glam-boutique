@@ -5,6 +5,7 @@ import { useApp } from "@/contexts/AppContext";
 import { useCart } from "@/contexts/CartContext";
 
 interface ProductCardProps {
+  id: string;
   image: string;
   title: string;
   price: string;
@@ -12,13 +13,13 @@ interface ProductCardProps {
   category: string;
 }
 
-const ProductCard = ({ image, title, price, originalPrice, category }: ProductCardProps) => {
+const ProductCard = ({ id, image, title, price, originalPrice, category }: ProductCardProps) => {
   const { t } = useApp();
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
 
   // Créer un objet product pour les fonctions du panier
   const product = {
-    id: `${title}-${price}`, // Simple ID basé sur le titre et prix
+    id,
     image,
     title,
     price,
