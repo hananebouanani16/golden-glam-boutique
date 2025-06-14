@@ -297,6 +297,77 @@ const Index = () => {
       price: "145€",
       originalPrice: "180€",
       category: "Parures"
+    },
+    {
+      id: "jewelry31",
+      image: "/lovable-uploads/fbfeabe1-a76d-42b5-8064-16302a9473c3.png",
+      title: "Parure Complète Perles Blanches Luxe",
+      price: "165€",
+      originalPrice: "200€",
+      category: "Parures"
+    },
+    {
+      id: "jewelry32",
+      image: "/lovable-uploads/671889df-b538-4046-80df-1e2a7eeb9652.png",
+      title: "Boucles d'Oreilles Perles et Cristaux Colorés",
+      price: "62€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry33",
+      image: "/lovable-uploads/61dc3cd0-4d8f-4367-87ce-eb95f8b175eb.png",
+      title: "Bracelet Perles Fleurs Dorées et Bague Assortie",
+      price: "85€",
+      category: "Ensembles"
+    },
+    {
+      id: "jewelry34",
+      image: "/lovable-uploads/b710b450-1b0e-4c74-8c28-6b917157fda2.png",
+      title: "Boucles d'Oreilles Perles Blanches en Grappes",
+      price: "75€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry35",
+      image: "/lovable-uploads/dd334006-6a3c-4573-a09d-4e3cc1c1b239.png",
+      title: "Parure Perles et Cristaux Multicolores Fantaisie",
+      price: "135€",
+      category: "Parures"
+    },
+    {
+      id: "jewelry36",
+      image: "/lovable-uploads/80464386-c2b2-486a-86da-680115e67745.png",
+      title: "Boucles d'Oreilles Perles Cercles Élégantes",
+      price: "95€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry37",
+      image: "/lovable-uploads/bb035c99-5043-4b8e-bd1e-d537944406e3.png",
+      title: "Boucles d'Oreilles Perles Cascade Argentées",
+      price: "88€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry38",
+      image: "/lovable-uploads/64060d7c-bda7-47a3-abd5-a6515a01ae28.png",
+      title: "Boucles d'Oreilles Dorées Perles et Cristaux",
+      price: "105€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry39",
+      image: "/lovable-uploads/64d5df36-b43b-44bc-955c-16d66bfffc89.png",
+      title: "Boucles d'Oreilles Cristaux Champagne Pendantes",
+      price: "78€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry40",
+      image: "/lovable-uploads/0008ae53-f175-4b62-b33e-3dac706c04aa.png",
+      title: "Boucles d'Oreilles Perles Dorées Raffinées",
+      price: "68€",
+      category: "Boucles d'Oreilles"
     }
   ];
 
