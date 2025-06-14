@@ -1,7 +1,9 @@
 
-import { ShoppingBag, Heart, User, Menu } from "lucide-react";
+import { User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LanguageThemeSelector from "./LanguageThemeSelector";
+import CartDrawer from "./CartDrawer";
+import WishlistDrawer from "./WishlistDrawer";
 import { useApp } from "@/contexts/AppContext";
 
 const Header = () => {
@@ -47,18 +49,11 @@ const Header = () => {
           {/* Actions */}
           <div className="flex items-center space-x-4">
             <LanguageThemeSelector />
-            <Button variant="ghost" size="icon" className="text-gold-300 hover:text-gold-200 hover:bg-gold-500/10">
-              <Heart className="h-5 w-5" />
-            </Button>
+            <WishlistDrawer />
             <Button variant="ghost" size="icon" className="text-gold-300 hover:text-gold-200 hover:bg-gold-500/10">
               <User className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-gold-300 hover:text-gold-200 hover:bg-gold-500/10 relative">
-              <ShoppingBag className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-gold-500 text-black text-xs flex items-center justify-center font-bold">
-                0
-              </span>
-            </Button>
+            <CartDrawer />
             <Button variant="ghost" size="icon" className="md:hidden text-gold-300 hover:text-gold-200">
               <Menu className="h-5 w-5" />
             </Button>

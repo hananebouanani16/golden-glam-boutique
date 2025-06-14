@@ -1,8 +1,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingBag } from "lucide-react";
-import { useState } from "react";
 import { useApp } from "@/contexts/AppContext";
+import { useCart } from "@/contexts/CartContext";
 
 interface ProductCardProps {
   image: string;
@@ -13,8 +13,32 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ image, title, price, originalPrice, category }: ProductCardProps) => {
-  const [isLiked, setIsLiked] = useState(false);
   const { t } = useApp();
+  const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
+
+  // Créer un objet product pour les fonctions du panier
+  const product = {
+    id: `${title}-${price}`, // Simple ID basé sur le titre et prix
+    image,
+    title,
+    price,
+    originalPrice,
+    category
+  };
+
+  const isLiked = isInWishlist(product.id);
+
+  const handleWishlistToggle = () => {
+    if (isLiked) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+
+  const handleAddToCart = () => {
+    addToCart(product);
+  };
 
   return (
     <div className="group relative bg-gradient-to-br from-gray-900 to-black [data-theme='light']_&:from-white [data-theme='light']_&:to-gray-50 rounded-xl overflow-hidden gold-border hover:shadow-2xl hover:shadow-gold-500/20 transition-all duration-500 transform hover:-translate-y-2">
@@ -34,7 +58,7 @@ const ProductCard = ({ image, title, price, originalPrice, category }: ProductCa
           variant="ghost"
           size="icon"
           className={`absolute top-3 right-3 rounded-full ${isLiked ? 'text-red-500 bg-white/20' : 'text-white/70 bg-black/20'} hover:bg-white/30 transition-all duration-300`}
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={handleWishlistToggle}
         >
           <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
         </Button>
@@ -66,7 +90,7 @@ const ProductCard = ({ image, title, price, originalPrice, category }: ProductCa
         {/* Action button */}
         <Button 
           className="w-full gold-button group-hover:animate-glow"
-          onClick={() => console.log(`Ajouté au panier: ${title}`)}
+          onClick={handleAddToCart}
         >
           <ShoppingBag className="w-4 h-4 mr-2" />
           {t('add_to_cart')}
