@@ -131,7 +131,7 @@ const Index = () => {
     {
       id: "jewelry7",
       image: "/lovable-uploads/d2907c05-2fee-4108-a0ea-bc9a786ba09b.png",
-      title: "Peigne à Cheveux Fleurs et Cristaux",
+      title: "Peigne à Cheveux Fleurs Dorées et Cristaux",
       price: "95€",
       category: "Accessoires Cheveux"
     },
@@ -367,6 +367,78 @@ const Index = () => {
       image: "/lovable-uploads/0008ae53-f175-4b62-b33e-3dac706c04aa.png",
       title: "Boucles d'Oreilles Perles Dorées Raffinées",
       price: "68€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry41",
+      image: "/lovable-uploads/7b9a9545-ec20-4ab8-8afc-d3260a66c2c7.png",
+      title: "Boucles d'Oreilles Perles et Cristaux Pendantes",
+      price: "95€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry42",
+      image: "/lovable-uploads/9fe8ff2f-8e44-4493-be73-5a21f44f1f2f.png",
+      title: "Boucles d'Oreilles Perles Cercles Luxe",
+      price: "125€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry43",
+      image: "/lovable-uploads/ac98d43f-a241-4084-8d36-9b996e8b6ede.png",
+      title: "Boucles d'Oreilles Perles Dorées Grappe",
+      price: "88€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry44",
+      image: "/lovable-uploads/5479bb37-b953-48d8-b56c-c85a7d1caa30.png",
+      title: "Boucles d'Oreilles Perles Cascade Dorées",
+      price: "95€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry45",
+      image: "/lovable-uploads/9d301cda-3ab1-4ba5-9634-a410c27e75d3.png",
+      title: "Boucles d'Oreilles Perles Franges Dorées et Blanches",
+      price: "115€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry46",
+      image: "/lovable-uploads/486af123-20c0-4c4e-8879-c559858f66b7.png",
+      title: "Boucles d'Oreilles Cristaux Dorés Coeur",
+      price: "105€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry47",
+      image: "/lovable-uploads/33f806df-adb8-4f39-ab82-c0c274db39f9.png",
+      title: "Boucles d'Oreilles Fleurs Perles Noires et Blanches",
+      price: "78€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry48",
+      image: "/lovable-uploads/1d5018db-21cf-4455-b53e-cd3a021f844a.png",
+      title: "Boucles d'Oreilles Perles Franges Noires et Dorées",
+      price: "135€",
+      category: "Boucles d'Oreilles"
+    },
+    {
+      id: "jewelry49",
+      image: "/lovable-uploads/d3259ce0-4aa5-45c4-aa31-6c5a9776914d.png",
+      title: "Ensemble Boucles d'Oreilles Perles Cercles",
+      price: "145€",
+      originalPrice: "175€",
+      category: "Ensembles"
+    },
+    {
+      id: "jewelry50",
+      image: "/lovable-uploads/d81f9c06-8c13-44a6-8d8c-e5fa7eb0ea94.png",
+      title: "Boucles d'Oreilles Fleurs et Cristaux Cascade",
+      price: "155€",
+      originalPrice: "190€",
       category: "Boucles d'Oreilles"
     }
   ];
