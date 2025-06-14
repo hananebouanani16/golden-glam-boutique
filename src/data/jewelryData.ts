@@ -1,4 +1,3 @@
-
 export const jewelryData = [
   {
     id: "jewelry1",
@@ -355,5 +354,63 @@ export const jewelryData = [
     price: "155€",
     originalPrice: "190€",
     category: "Boucles d'Oreilles"
+  },
+  {
+    id: "jewelry51",
+    image: "/lovable-uploads/cfcc84df-aeea-46a6-9591-3d62c60a13d7.png",
+    title: "Boucles d'Oreilles Perles Cascade Élégantes",
+    price: "125€",
+    category: "Boucles d'Oreilles"
+  },
+  {
+    id: "jewelry52",
+    image: "/lovable-uploads/c6fcc77a-3595-4632-83f1-3ca1721308e5.png",
+    title: "Boucles d'Oreilles Perles Luxe avec Écrin",
+    price: "135€",
+    category: "Boucles d'Oreilles"
+  },
+  {
+    id: "jewelry53",
+    image: "/lovable-uploads/e5bdf7bb-8a94-4f6a-93b6-45ef37d81d71.png",
+    title: "Parure Couronne Fleurs et Boucles d'Oreilles",
+    price: "185€",
+    originalPrice: "220€",
+    category: "Parures"
+  },
+  {
+    id: "jewelry54",
+    image: "/lovable-uploads/8d52dc04-d420-4c48-9ac4-8ef06e26f68e.png",
+    title: "Boucles d'Oreilles Créoles Turquoise Dorées",
+    price: "85€",
+    category: "Boucles d'Oreilles"
+  },
+  {
+    id: "jewelry55",
+    image: "/lovable-uploads/6856da56-907e-42b1-b6ad-61e5dc4fe51e.png",
+    title: "Boucles d'Oreilles Diamant Perles Élégantes",
+    price: "95€",
+    category: "Boucles d'Oreilles"
+  },
+  {
+    id: "jewelry56",
+    image: "/lovable-uploads/c73334b2-9b06-4aaf-a72e-aff2edc1aa65.png",
+    title: "Boucles d'Oreilles Chaînes Perles Dorées",
+    price: "115€",
+    category: "Boucles d'Oreilles"
+  },
+  {
+    id: "jewelry57",
+    image: "/lovable-uploads/6ae496bc-e64a-4dba-a20b-e2e180f1496a.png",
+    title: "Boucles d'Oreilles Cercles Perles Rose et Blanc",
+    price: "105€",
+    category: "Boucles d'Oreilles"
+  },
+  {
+    id: "jewelry58",
+    image: "/lovable-uploads/c4417f88-cc0a-4b73-a85a-3659a4132024.png",
+    title: "Parure Collier et Boucles d'Oreilles Émeraude",
+    price: "165€",
+    originalPrice: "195€",
+    category: "Parures"
   }
 ];
