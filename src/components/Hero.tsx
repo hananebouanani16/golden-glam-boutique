@@ -1,8 +1,11 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
+import { useApp } from "@/contexts/AppContext";
 
 const Hero = () => {
+  const { t } = useApp();
+
   return (
     <section id="accueil" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
@@ -36,16 +39,15 @@ const Hero = () => {
 
         {/* Titre principal */}
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 gold-text animate-fade-in">
-          Nesrine
+          {t('hero_title')}
         </h1>
         <h2 className="text-2xl sm:text-4xl lg:text-5xl font-light mb-8 text-gold-300 animate-fade-in">
-          Golden Hands
+          {t('hero_subtitle')}
         </h2>
 
         {/* Sous-titre */}
         <p className="text-lg sm:text-xl lg:text-2xl text-gold-200 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in">
-          Découvrez notre collection exclusive de sacs à main et bijoux artisanaux, 
-          créés avec passion et raffinement pour sublimer votre élégance.
+          {t('hero_description')}
         </p>
 
         {/* Boutons d'action */}
@@ -55,7 +57,7 @@ const Hero = () => {
             className="gold-button px-8 py-3 text-lg shimmer-effect"
             onClick={() => document.getElementById('sacs')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Découvrir les Sacs
+            {t('discover_bags')}
           </Button>
           <Button 
             size="lg" 
@@ -63,7 +65,7 @@ const Hero = () => {
             className="gold-border text-gold-300 hover:bg-gold-500/10 px-8 py-3 text-lg"
             onClick={() => document.getElementById('bijoux')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Explorer les Bijoux
+            {t('explore_jewelry')}
           </Button>
         </div>
 

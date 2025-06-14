@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Language = 'fr' | 'en' | 'ar';
@@ -22,7 +21,9 @@ const translations = {
     contact: 'Contact',
     hero_title: 'Nesrine Golden Hands',
     hero_subtitle: 'Créations Artisanales d\'Exception',
-    hero_description: 'Découvrez notre collection unique de sacs à main et bijoux, créés avec passion et savoir-faire traditionnel.',
+    hero_description: 'Découvrez notre collection exclusive de sacs à main et bijoux artisanaux, créés avec passion et raffinement pour sublimer votre élégance.',
+    discover_bags: 'Découvrir les Sacs',
+    explore_jewelry: 'Explorer les Bijoux',
     bags_title: 'Collection Sacs à Main',
     bags_subtitle: 'Découvrez nos sacs à main uniques, alliant style et fonctionnalité pour toutes les occasions.',
     jewelry_title: 'Collection Bijoux',
@@ -50,7 +51,9 @@ const translations = {
     contact: 'Contact',
     hero_title: 'Nesrine Golden Hands',
     hero_subtitle: 'Exceptional Handcrafted Creations',
-    hero_description: 'Discover our unique collection of handbags and jewelry, created with passion and traditional craftsmanship.',
+    hero_description: 'Discover our exclusive collection of handcrafted handbags and jewelry, created with passion and refinement to enhance your elegance.',
+    discover_bags: 'Discover Bags',
+    explore_jewelry: 'Explore Jewelry',
     bags_title: 'Handbags Collection',
     bags_subtitle: 'Discover our unique handbags, combining style and functionality for all occasions.',
     jewelry_title: 'Jewelry Collection',
@@ -78,7 +81,9 @@ const translations = {
     contact: 'اتصل بنا',
     hero_title: 'نسرين الأيادي الذهبية',
     hero_subtitle: 'إبداعات يدوية استثنائية',
-    hero_description: 'اكتشف مجموعتنا الفريدة من الحقائب والمجوهرات، المصنوعة بشغف وحرفية تقليدية.',
+    hero_description: 'اكتشف مجموعتنا الحصرية من الحقائب والمجوهرات المصنوعة يدوياً، والمصممة بشغف وتطور لتعزيز أناقتك.',
+    discover_bags: 'اكتشف الحقائب',
+    explore_jewelry: 'استكشف المجوهرات',
     bags_title: 'مجموعة الحقائب',
     bags_subtitle: 'اكتشف حقائبنا الفريدة، التي تجمع بين الأناقة والوظائف العملية لجميع المناسبات.',
     jewelry_title: 'مجموعة المجوهرات',
