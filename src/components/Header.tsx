@@ -1,5 +1,5 @@
 
-import { User, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LanguageThemeSelector from "./LanguageThemeSelector";
 import CartDrawer from "./CartDrawer";
@@ -50,9 +50,6 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             <LanguageThemeSelector />
             <WishlistDrawer />
-            <Button variant="ghost" size="icon" className="text-gold-300 hover:text-gold-200 hover:bg-gold-500/10">
-              <User className="h-5 w-5" />
-            </Button>
             <CartDrawer />
             <Button variant="ghost" size="icon" className="md:hidden text-gold-300 hover:text-gold-200">
               <Menu className="h-5 w-5" />
