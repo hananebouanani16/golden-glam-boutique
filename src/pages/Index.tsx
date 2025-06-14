@@ -84,36 +84,78 @@ const Index = () => {
     }
   ];
 
-  // Données d'exemple pour les bijoux (gardées comme avant)
+  // Données des bijoux avec vos vraies photos
   const jewelryData = [
     {
       id: "jewelry1",
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop",
-      title: "Collier Doré Royal",
-      price: "45€",
+      image: "/lovable-uploads/b35dea3e-6731-4270-bcef-3038d8adf66f.png",
+      title: "Collier et Bracelet Fleurs Dorées",
+      price: "65€",
       category: "Colliers"
     },
     {
       id: "jewelry2",
-      image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&h=400&fit=crop",
-      title: "Boucles d'Oreilles Élégantes",
-      price: "35€",
-      originalPrice: "50€",
-      category: "Boucles d'Oreilles"
+      image: "/lovable-uploads/2ecfc2e9-afd1-4b42-9b9d-4ff0f1b24911.png",
+      title: "Chaîne de Taille Fleurs Cristal",
+      price: "55€",
+      category: "Bijoux de Corps"
     },
     {
       id: "jewelry3",
-      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=400&h=400&fit=crop",
-      title: "Bracelet Artisanal",
-      price: "28€",
-      category: "Bracelets"
+      image: "/lovable-uploads/b980ceff-e6ed-4dec-b265-4d9c6cdd52a1.png",
+      title: "Ensemble Collier Boucles d'Oreilles Perles",
+      price: "75€",
+      category: "Ensembles"
     },
     {
       id: "jewelry4",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=400&h=400&fit=crop",
-      title: "Bague Précieuse",
-      price: "55€",
-      category: "Bagues"
+      image: "/lovable-uploads/1c983e48-9a0d-426a-a9fc-6b0b53cc30cd.png",
+      title: "Bracelet de Cheville Fleurs Dorées",
+      price: "35€",
+      category: "Bracelets"
+    },
+    {
+      id: "jewelry5",
+      image: "/lovable-uploads/d8774639-274a-4667-832a-57da084a19da.png",
+      title: "Épingles à Cheveux Perles et Fleurs",
+      price: "45€",
+      category: "Accessoires Cheveux"
+    },
+    {
+      id: "jewelry6",
+      image: "/lovable-uploads/828dd4a2-3c8a-4bfa-99ac-2f3430e1e17c.png",
+      title: "Parure Collier Boucles d'Oreilles Bronze",
+      price: "85€",
+      originalPrice: "110€",
+      category: "Parures"
+    },
+    {
+      id: "jewelry7",
+      image: "/lovable-uploads/d2907c05-2fee-4108-a0ea-bc9a786ba09b.png",
+      title: "Peigne à Cheveux Fleurs et Cristaux",
+      price: "95€",
+      category: "Accessoires Cheveux"
+    },
+    {
+      id: "jewelry8",
+      image: "/lovable-uploads/492f53a7-ba64-472a-ab8d-01ecba50a803.png",
+      title: "Collier Délicat Fleur Dorée",
+      price: "42€",
+      category: "Colliers"
+    },
+    {
+      id: "jewelry9",
+      image: "/lovable-uploads/0b99f4ce-9d47-49e9-b1e7-424e7abd0e24.png",
+      title: "Ensemble Pendentif et Boucles d'Oreilles",
+      price: "88€",
+      category: "Ensembles"
+    },
+    {
+      id: "jewelry10",
+      image: "/lovable-uploads/fcbc9f4e-2059-4dcb-95f6-c80751233790.png",
+      title: "Collier Fleurs Délicates Dorées",
+      price: "58€",
+      category: "Colliers"
     }
   ];
 
