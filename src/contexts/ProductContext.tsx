@@ -23,8 +23,8 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     setLoading(true);
     const { data, error } = await supabase
       .from('products')
-      .select('*')
-      .order('created_at', { ascending: false }); // Si created_at non présent, supprimer
+      .select('*');
+      // No order by 'created_at' since the column doesn't exist on this table
     if (error) {
       console.error("[ProductContext] Error fetching products from Supabase:", error);
       setProducts([]);
