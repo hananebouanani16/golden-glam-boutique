@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '@/types/product';
 import { bagsData } from "@/data/bagsData";
@@ -8,30 +9,38 @@ interface ProductContextType {
   addProduct: (product: Omit<Product, 'id'>) => void;
   updateProduct: (product: Product) => void;
   deleteProduct: (productId: string) => void;
-  resetProducts: () => void; // nouvelle méthode pour réinitialiser
+  resetProducts: () => void;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
+  // On injecte ici les catégories principales (sacs / bijoux)
   const baseProducts: Product[] = [
     ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
     ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" })),
   ];
   const [products, setProducts] = useState<Product[]>([]);
 
-  // Charger les produits au démarrage uniquement
+  // Correction : Forcer l'initialisation si rien en localStorage ou si le contenu est incorrect
   useEffect(() => {
-    const savedProductsRaw = localStorage.getItem('products');
-    if (savedProductsRaw) {
-      try {
-        const savedProducts: Product[] = JSON.parse(savedProductsRaw);
-        setProducts(savedProducts);
-      } catch (e) {
-        setProducts(baseProducts);
+    let loaded = false;
+    try {
+      const savedProductsRaw = localStorage.getItem('products');
+      if (savedProductsRaw) {
+        const savedProducts = JSON.parse(savedProductsRaw);
+        if (Array.isArray(savedProducts) && savedProducts.length > 0) {
+          setProducts(savedProducts);
+          loaded = true;
+        }
       }
-    } else {
+    } catch (e) {
+      // Erreur de parsing, on n'utilise pas le localStorage !
+      loaded = false;
+    }
+    if (!loaded) {
       setProducts(baseProducts);
+      localStorage.setItem('products', JSON.stringify(baseProducts));
     }
   }, []);
 
@@ -40,7 +49,6 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     localStorage.setItem('products', JSON.stringify(products));
   }, [products]);
 
-  // Ajout de la fonction pour réinitialiser les produits
   const resetProducts = () => {
     setProducts(baseProducts);
     localStorage.setItem('products', JSON.stringify(baseProducts));
@@ -76,3 +84,4 @@ export const useProducts = () => {
   }
   return context;
 };
+
