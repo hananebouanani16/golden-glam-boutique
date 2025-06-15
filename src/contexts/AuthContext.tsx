@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface AuthContextType {
@@ -8,8 +9,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mot de passe par défaut - À changer en production
-const ADMIN_PASSWORD = "25051985n*N";
+// Récupération du mot de passe depuis les variables d'environnement
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || "25051985n*N";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,15 +18,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // Vérifier si l'utilisateur est déjà connecté
     const authStatus = localStorage.getItem('adminAuth');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
+    const authTimestamp = localStorage.getItem('adminAuthTime');
+    
+    // Expirer la session après 24 heures
+    if (authStatus === 'true' && authTimestamp) {
+      const timeElapsed = Date.now() - parseInt(authTimestamp);
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      
+      if (timeElapsed < twentyFourHours) {
+        setIsAuthenticated(true);
+      } else {
+        // Session expirée
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminAuthTime');
+      }
     }
   }, []);
 
   const login = (password: string): boolean => {
-    if (password === ADMIN_PASSWORD) {
+    // Validation plus stricte du mot de passe
+    if (password && password.trim() === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
       localStorage.setItem('adminAuth', 'true');
+      localStorage.setItem('adminAuthTime', Date.now().toString());
       return true;
     }
     return false;
@@ -34,6 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('adminAuth');
+    localStorage.removeItem('adminAuthTime');
   };
 
   return (
