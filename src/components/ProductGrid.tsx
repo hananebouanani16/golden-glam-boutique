@@ -35,7 +35,8 @@ const ProductGrid = ({ id, title, subtitle, products }: ProductGridProps) => {
 
     // Price range filter
     if (filters.priceRange !== "all") {
-      const priceInDA = convertToDinars(product.price);
+      // Utilisation directe du prix, plus besoin de conversion
+      const priceInDA = Number(product.price);
       switch (filters.priceRange) {
         case "0-5000":
           if (priceInDA > 5000) return false;

@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useOrders } from "@/contexts/OrderContext";
-import { convertToDinars, formatPrice } from "@/utils/priceUtils";
+import { formatPrice } from "@/utils/priceUtils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CheckoutFormContent from "./CheckoutFormContent";
 import RatingComponent from "./RatingComponent";
@@ -49,6 +48,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
     console.error('ProductCard received invalid product:', product);
     return null;
   }
+
+  // Conversion: plus besoin de convertToDinars !
+  // Utilisation directe - forcer en nombre en cas de string
+  const priceInDA = Number(product.price);
+  const originalPriceInDA = product.originalPrice ? Number(product.originalPrice) : null;
 
   // Effet pour mettre à jour le statut d'achat quand les commandes changent
   useEffect(() => {
@@ -132,9 +136,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
     addToCart(product);
     setShowCheckout(true);
   };
-
-  const priceInDA = convertToDinars(product.price);
-  const originalPriceInDA = product.originalPrice ? convertToDinars(product.originalPrice) : null;
 
   return (
     <>
