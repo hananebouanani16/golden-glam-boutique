@@ -23,33 +23,38 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   const [products, setProducts] = useState<Product[]>([]);
 
-  // Chargement initial
+  // Chargement initial : priorité 100% au localStorage (même si tableau vide)
   useEffect(() => {
-    let useBase = false;
     try {
       const savedProductsRaw = localStorage.getItem('products');
       console.log('[ProductContext] Chargement depuis localStorage:', savedProductsRaw);
-      if (savedProductsRaw) {
+
+      if (savedProductsRaw !== null) {
+        // On se fie totalement à la source locale, même pour [] vide (cas suppression totale).
         const parsed = JSON.parse(savedProductsRaw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           setProducts(parsed);
-          console.log("[ProductContext] Produits chargés depuis localStorage", parsed.length);
+          console.log("[ProductContext] Produits chargés depuis localStorage (y compris tableau vide !)", parsed.length);
+          return;
         } else {
-          useBase = true;
-          console.log("[ProductContext] Le tableau dans le localStorage est vide, on remet les produits de base.");
+          // Cas inattendu : localStorage présent mais format mauvais -> on réinitialise pour ne pas bloquer l’UI.
+          setProducts(baseProducts);
+          localStorage.setItem('products', JSON.stringify(baseProducts));
+          console.log("[ProductContext] Format localStorage mauvais, baseProducts insérés.");
+          return;
         }
       } else {
-        useBase = true;
-        console.log("[ProductContext] Rien dans le localStorage, on insère la base.");
+        // Pas de clé enregistrée : première visite, on injecte la base.
+        setProducts(baseProducts);
+        localStorage.setItem('products', JSON.stringify(baseProducts));
+        console.log("[ProductContext] Rien dans le localStorage, baseProducts insérés :", baseProducts.length);
+        return;
       }
     } catch (e) {
-      useBase = true;
-      console.log("[ProductContext] Erreur en lisant le localStorage, reset avec base.", e);
-    }
-    if (useBase) {
+      // Cas d’erreur parsing : on reset à la base.
       setProducts(baseProducts);
       localStorage.setItem('products', JSON.stringify(baseProducts));
-      console.log("[ProductContext] baseProducts insérés dans localStorage:", baseProducts.length);
+      console.log("[ProductContext] Erreur parsing localStorage, reset avec base :", e);
     }
   }, []);
 
@@ -111,3 +116,4 @@ export const useProducts = () => {
   }
   return context;
 };
+
