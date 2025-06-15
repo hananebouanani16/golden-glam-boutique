@@ -109,7 +109,7 @@ const CheckoutForm = ({ onClose, initialProduct }: CheckoutFormProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <Card className="w-full bg-gray-900 border-gold-500/20 shadow-2xl">
           <CardHeader className="bg-gray-800/80 border-b border-gold-500/20">
             <CardTitle className="text-2xl gold-text flex items-center justify-between">
