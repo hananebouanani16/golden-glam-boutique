@@ -10,7 +10,7 @@ const Index = () => {
   const { t } = useApp();
   const { products } = useProducts();
 
-  // Filtrer dynamiquement selon la catégorie
+  // On filtre dynamiquement par catégorie en utilisant les produits du contexte
   const bagsData = products.filter((p) => p.category === "sacs");
   const jewelryData = products.filter((p) => p.category === "bijoux");
 
