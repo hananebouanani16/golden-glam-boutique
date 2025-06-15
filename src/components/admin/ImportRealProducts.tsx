@@ -51,17 +51,22 @@ export default function ImportRealProducts() {
   ].filter((p) => !alreadyInDbTitles.includes(p.title));
 
   const handleImport = async () => {
+    console.log(`[ImportRealProducts] Starting import for ${dataToImport.length} products.`);
     setLoading(true);
     setError(null);
     try {
       // Import boucle pour chaque produit, pause de 100ms pour éviter rate-limit
       for (const product of dataToImport) {
+        console.log(`[ImportRealProducts] Importing: ${product.title}`);
         await addProduct(product);
+        console.log(`[ImportRealProducts] Successfully added: ${product.title}`);
         await new Promise((r) => setTimeout(r, 100)); // Petite pause
       }
       setImported(true);
       resetProducts();
+      console.log("[ImportRealProducts] Import finished successfully.");
     } catch (err: any) {
+      console.error("[ImportRealProducts] Error during import:", err);
       setError("Erreur import : " + err.message);
     }
     setLoading(false);

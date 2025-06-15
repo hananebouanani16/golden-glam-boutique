@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -32,7 +31,9 @@ const ProductManagement = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("[ProductManagement] Submitting form with data:", formData);
     if (!/^\d+$/.test(formData.price) || (formData.originalPrice && !/^\d+$/.test(formData.originalPrice))) {
+      console.log("[ProductManagement] Price validation failed.");
       toast({
         title: "Format de prix invalide",
         description: "Veuillez entrer un prix en dinar algérien sans caractères spéciaux.",
@@ -40,23 +41,27 @@ const ProductManagement = () => {
       });
       return;
     }
+    console.log("[ProductManagement] Price validation passed.");
     try {
       if (editingProduct) {
+        console.log("[ProductManagement] Updating product...");
         await updateProduct({ ...formData, id: editingProduct.id });
         toast({
           title: "Produit modifié",
           description: "Le produit a été modifié avec succès."
         });
       } else {
+        console.log("[ProductManagement] Adding new product...");
         await addProduct(formData);
         toast({
           title: "Produit ajouté",
           description: "Le nouveau produit a été ajouté avec succès."
         });
       }
+      console.log("[ProductManagement] Form submission successful, resetting form.");
       resetForm();
     } catch (error: any) {
-      console.error("Product form submission error:", error);
+      console.error("[ProductManagement] Product form submission error:", error);
       toast({
         title: "Échec de la soumission",
         description: `Une erreur est survenue: ${error.message}`,
@@ -154,7 +159,10 @@ const ProductManagement = () => {
             Rafraîchir les produits
           </Button>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+              if (!open) resetForm();
+              setIsDialogOpen(open);
+            }}>
             <DialogTrigger asChild>
               <Button
                 type="button"
@@ -196,24 +204,6 @@ const ProductManagement = () => {
         onRestore={handleRestore}
         loading={loading}
       />
-      <Dialog open={isDialogOpen && !!editingProduct} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-gray-900 border border-gold-500/30">
-          <DialogHeader>
-            <DialogTitle>Modifier le produit</DialogTitle>
-          </DialogHeader>
-          <ProductForm
-            formData={formData}
-            setFormData={setFormData}
-            editingProduct={editingProduct}
-            imagePreview={imagePreview}
-            setImagePreview={setImagePreview}
-            setImageFile={setImageFile}
-            fileInputRef={fileInputRef}
-            onSubmit={handleSubmit}
-            onCancel={resetForm}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
