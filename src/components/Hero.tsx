@@ -11,7 +11,7 @@ const Hero = () => {
       {/* Image de fond avec overlay */}
       <div className="absolute inset-0">
         <img 
-          src="/lovable-uploads/fcbc9f4e-2059-4dcb-95f6-c80751233790.png" 
+          src="/lovable-uploads/aac767de-fe55-4182-b493-b85c6a749c49.png" 
           alt="Artisans créant des sacs à main"
           className="w-full h-full object-cover"
         />
@@ -62,7 +62,7 @@ const Hero = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
           <Button 
             size="lg" 
-            className="group relative overflow-hidden bg-gradient-to-r from-gold-600 to-gold-400 hover:from-purple-600 hover:via-gold-500 hover:to-pink-500 text-black font-semibold px-8 py-3 text-lg transition-all duration-500 transform hover:scale-105 hover:shadow-xl hover:shadow-gold-500/50"
+            className="group relative overflow-hidden bg-gradient-to-r from-gold-600 to-gold-400 hover:from-purple-600 hover:via-gold-500 hover:to-pink-500 text-black font-semibold px-8 py-3 text-lg transition-all duration-500 transform hover:scale-105 hover:shadow-xl hover:shadow-gold-500/50 gradient-animate"
             onClick={() => document.getElementById('sacs')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <span className="relative z-10">{t('discover_bags')}</span>
@@ -71,7 +71,7 @@ const Hero = () => {
           <Button 
             size="lg" 
             variant="outline" 
-            className="group relative overflow-hidden border-2 border-gold-500/50 text-gold-300 bg-black/30 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 hover:text-white hover:border-transparent px-8 py-3 text-lg transition-all duration-500 transform hover:scale-105 hover:shadow-xl hover:shadow-purple-500/50"
+            className="group relative overflow-hidden border-2 border-gold-500/50 text-gold-300 bg-black/30 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 hover:text-white hover:border-transparent px-8 py-3 text-lg transition-all duration-500 transform hover:scale-105 hover:shadow-xl hover:shadow-purple-500/50 gradient-animate"
             onClick={() => document.getElementById('bijoux')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <span className="relative z-10">{t('explore_jewelry')}</span>
