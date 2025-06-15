@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter, X } from "lucide-react";
+import { useApp } from '@/contexts/AppContext';
 
 interface FilterSectionProps {
   onFilterChange: (category: string, priceRange: string) => void;
@@ -12,14 +13,15 @@ interface FilterSectionProps {
 }
 
 const FilterSection = ({ onFilterChange, categories, activeFilters }: FilterSectionProps) => {
+  const { t } = useApp();
   const [showFilters, setShowFilters] = useState(false);
 
   const priceRanges = [
-    { value: "all", label: "Tous les prix" },
-    { value: "0-5000", label: "0 - 5,000 DA" },
-    { value: "5000-10000", label: "5,000 - 10,000 DA" },
-    { value: "10000-20000", label: "10,000 - 20,000 DA" },
-    { value: "20000+", label: "20,000+ DA" },
+    { value: "all", label: t('all_prices') },
+    { value: "0-5000", label: t('price_range_1') },
+    { value: "5000-10000", label: t('price_range_2') },
+    { value: "10000-20000", label: t('price_range_3') },
+    { value: "20000+", label: t('price_range_4') },
   ];
 
   const clearFilters = () => {
@@ -37,7 +39,7 @@ const FilterSection = ({ onFilterChange, categories, activeFilters }: FilterSect
           className="gold-border flex items-center gap-2"
         >
           <Filter className="h-4 w-4" />
-          Filtres
+          {t('filters')}
         </Button>
 
         {hasActiveFilters && (
@@ -47,19 +49,19 @@ const FilterSection = ({ onFilterChange, categories, activeFilters }: FilterSect
             className="text-gold-300 hover:text-gold-200 flex items-center gap-2"
           >
             <X className="h-4 w-4" />
-            Effacer les filtres
+            {t('clear_filters')}
           </Button>
         )}
 
         {activeFilters.category !== "all" && (
           <Badge variant="outline" className="border-gold-500/30 text-gold-300">
-            Catégorie: {activeFilters.category}
+            {t('category')}: {activeFilters.category}
           </Badge>
         )}
 
         {activeFilters.priceRange !== "all" && (
           <Badge variant="outline" className="border-gold-500/30 text-gold-300">
-            Prix: {priceRanges.find(p => p.value === activeFilters.priceRange)?.label}
+            {t('price')}: {priceRanges.find(p => p.value === activeFilters.priceRange)?.label}
           </Badge>
         )}
       </div>
@@ -69,7 +71,7 @@ const FilterSection = ({ onFilterChange, categories, activeFilters }: FilterSect
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gold-300 mb-2">
-                Catégorie
+                {t('category')}
               </label>
               <Select
                 value={activeFilters.category}
@@ -79,7 +81,7 @@ const FilterSection = ({ onFilterChange, categories, activeFilters }: FilterSect
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-800 border-gold-500/30 text-white">
-                  <SelectItem value="all">Toutes les catégories</SelectItem>
+                  <SelectItem value="all">{t('all_categories')}</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category} value={category}>
                       {category}
@@ -91,7 +93,7 @@ const FilterSection = ({ onFilterChange, categories, activeFilters }: FilterSect
 
             <div>
               <label className="block text-sm font-medium text-gold-300 mb-2">
-                Gamme de prix
+                {t('price_range')}
               </label>
               <Select
                 value={activeFilters.priceRange}

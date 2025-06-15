@@ -5,16 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { bagsData } from "@/data/bagsData";
-import { jewelryData } from "@/data/jewelryData";
 import ProductCard from "./ProductCard";
+import { useProducts } from '@/contexts/ProductContext';
+import { useApp } from '@/contexts/AppContext';
 
 const SearchBar = () => {
+  const { t } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const { products } = useProducts();
 
-  const allProducts = [...bagsData, ...jewelryData];
+  const allProducts = products;
 
   useEffect(() => {
     if (searchTerm.trim()) {
@@ -26,7 +28,7 @@ const SearchBar = () => {
     } else {
       setFilteredProducts([]);
     }
-  }, [searchTerm]);
+  }, [searchTerm, allProducts]);
 
   return (
     <>
@@ -43,7 +45,7 @@ const SearchBar = () => {
         <DialogContent className="max-w-2xl max-h-[80vh] bg-gray-900/95 backdrop-blur-sm border-gold-500/20">
           <DialogHeader>
             <DialogTitle className="gold-text flex items-center justify-between">
-              <span>Rechercher des produits</span>
+              <span>{t('search_products')}</span>
               <Button
                 variant="ghost"
                 size="sm"
@@ -59,7 +61,7 @@ const SearchBar = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gold-400 h-4 w-4" />
               <Input
-                placeholder="Rechercher par nom ou catégorie..."
+                placeholder={t('search_placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500"
@@ -71,7 +73,7 @@ const SearchBar = () => {
               {searchTerm.trim() && (
                 <div className="mb-4">
                   <Badge variant="outline" className="border-gold-500/30 text-gold-300">
-                    {filteredProducts.length} résultat(s) trouvé(s)
+                    {filteredProducts.length} {t('search_results_found')}
                   </Badge>
                 </div>
               )}
@@ -87,8 +89,8 @@ const SearchBar = () => {
               {searchTerm.trim() && filteredProducts.length === 0 && (
                 <div className="text-center py-8">
                   <Search className="h-12 w-12 text-gold-400 mx-auto mb-4" />
-                  <p className="text-gold-300">Aucun produit trouvé</p>
-                  <p className="text-gold-500 text-sm">Essayez avec d'autres mots-clés</p>
+                  <p className="text-gold-300">{t('search_no_products')}</p>
+                  <p className="text-gold-500 text-sm">{t('search_try_other_keywords')}</p>
                 </div>
               )}
             </div>

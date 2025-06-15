@@ -2,7 +2,7 @@
 import { useState } from "react";
 import ProductCard from "./ProductCard";
 import FilterSection from "./FilterSection";
-import { convertToDinars } from "@/utils/priceUtils";
+import { useApp } from "@/contexts/AppContext";
 
 interface Product {
   id: string;
@@ -21,6 +21,7 @@ interface ProductGridProps {
 }
 
 const ProductGrid = ({ id, title, subtitle, products }: ProductGridProps) => {
+  const { t } = useApp();
   const [filters, setFilters] = useState({ category: "all", priceRange: "all" });
 
   const categories = [...new Set(products.map(p => p.category))];
@@ -85,8 +86,8 @@ const ProductGrid = ({ id, title, subtitle, products }: ProductGridProps) => {
 
         {filteredProducts.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gold-300 text-lg">Aucun produit ne correspond à vos critères</p>
-            <p className="text-gold-500">Essayez de modifier vos filtres</p>
+            <p className="text-gold-300 text-lg">{t('no_products_found')}</p>
+            <p className="text-gold-500">{t('try_other_filters')}</p>
           </div>
         )}
       </div>

@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Star, MessageSquare } from "lucide-react";
 import { saveRating, getRatings, getAverageRating, getRatingCount } from "@/utils/ratingsUtils";
 import { toast } from "sonner";
+import { useApp } from "@/contexts/AppContext";
 
 interface RatingComponentProps {
   productId: string;
@@ -13,6 +14,7 @@ interface RatingComponentProps {
 }
 
 const RatingComponent = ({ productId, productTitle }: RatingComponentProps) => {
+  const { t } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -24,12 +26,12 @@ const RatingComponent = ({ productId, productTitle }: RatingComponentProps) => {
 
   const handleSubmitRating = () => {
     if (selectedRating === 0) {
-      toast.error("Veuillez sélectionner une note");
+      toast.error(t('rating_error_select'));
       return;
     }
 
     saveRating(productId, selectedRating, comment);
-    toast.success("Votre évaluation a été enregistrée !");
+    toast.success(t('rating_success'));
     
     setSelectedRating(0);
     setComment("");
@@ -53,7 +55,7 @@ const RatingComponent = ({ productId, productTitle }: RatingComponentProps) => {
           ))}
         </div>
         <span className="text-sm text-gold-400">
-          {averageRating.toFixed(1)} ({ratingCount} avis)
+          {averageRating.toFixed(1)} ({ratingCount} {t('reviews')})
         </span>
       </div>
 
@@ -62,18 +64,18 @@ const RatingComponent = ({ productId, productTitle }: RatingComponentProps) => {
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="gold-border text-gold-300 hover:bg-gold-500/10">
             <Star className="h-4 w-4 mr-1" />
-            Noter ce produit
+            {t('rate_product')}
           </Button>
         </DialogTrigger>
         <DialogContent className="bg-gray-900 border-gold-500/20 text-white max-w-md">
           <DialogHeader>
-            <DialogTitle className="gold-text">Évaluer "{productTitle}"</DialogTitle>
+            <DialogTitle className="gold-text">{t('evaluate_product')} "{productTitle}"</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
             {/* Sélection de la note */}
             <div>
-              <p className="text-sm text-gray-300 mb-2">Votre note :</p>
+              <p className="text-sm text-gray-300 mb-2">{t('your_rating')}</p>
               <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -98,11 +100,11 @@ const RatingComponent = ({ productId, productTitle }: RatingComponentProps) => {
 
             {/* Commentaire optionnel */}
             <div>
-              <p className="text-sm text-gray-300 mb-2">Commentaire (optionnel) :</p>
+              <p className="text-sm text-gray-300 mb-2">{t('comment_optional')}</p>
               <Textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Partagez votre expérience avec ce produit..."
+                placeholder={t('comment_placeholder')}
                 className="bg-gray-800 border-gold-500/20 text-white"
                 rows={3}
               />
@@ -111,14 +113,14 @@ const RatingComponent = ({ productId, productTitle }: RatingComponentProps) => {
             {/* Boutons */}
             <div className="flex gap-2">
               <Button onClick={handleSubmitRating} className="gold-button flex-1">
-                Envoyer l'évaluation
+                {t('submit_rating')}
               </Button>
               <Button 
                 variant="outline" 
                 onClick={() => setIsOpen(false)}
                 className="border-gold-500/20 text-gold-300"
               >
-                Annuler
+                {t('cancel')}
               </Button>
             </div>
           </div>
@@ -131,12 +133,12 @@ const RatingComponent = ({ productId, productTitle }: RatingComponentProps) => {
           <DialogTrigger asChild>
             <Button variant="ghost" size="sm" className="text-gold-300 hover:text-gold-200 p-0 h-auto">
               <MessageSquare className="h-3 w-3 mr-1" />
-              Voir les avis ({ratings.length})
+              {t('view_reviews')} ({ratings.length})
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-gray-900 border-gold-500/20 text-white max-w-2xl max-h-96 overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="gold-text">Avis clients - {productTitle}</DialogTitle>
+              <DialogTitle className="gold-text">{t('customer_reviews')} - {productTitle}</DialogTitle>
             </DialogHeader>
             
             <div className="space-y-4">

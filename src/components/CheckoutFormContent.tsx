@@ -12,6 +12,7 @@ import DeliveryInfoSection from "./checkout/DeliveryInfoSection";
 import OrderSummarySection from "./checkout/OrderSummarySection";
 import PaymentInfoSection from "./checkout/PaymentInfoSection";
 import OrderConfirmationPage from "./OrderConfirmationPage";
+import { useApp } from '@/contexts/AppContext';
 
 interface CheckoutFormContentProps {
   onClose: () => void;
@@ -26,6 +27,7 @@ interface CheckoutFormContentProps {
 }
 
 const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentProps) => {
+  const { t } = useApp();
   const [personalInfo, setPersonalInfo] = useState({
     firstName: "",
     lastName: "",
@@ -60,12 +62,12 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
     e.preventDefault();
     
     if (!personalInfo.firstName || !personalInfo.lastName || !personalInfo.phone || !wilaya || !deliveryType) {
-      toast.error("Veuillez remplir tous les champs obligatoires");
+      toast.error(t('error_fill_fields'));
       return;
     }
 
     if (deliveryType === 'home' && !address) {
-      toast.error("L'adresse est obligatoire pour la livraison à domicile");
+      toast.error(t('error_address_required'));
       return;
     }
 
@@ -95,8 +97,8 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
     setOrderNumber(newOrderNumber);
     clearCart();
     
-    toast.success("Commande enregistrée avec succès!", {
-      description: `Numéro de commande: ${newOrderNumber}`,
+    toast.success(t('order_success'), {
+      description: `${t('order_number')} ${newOrderNumber}`,
       duration: 5000,
     });
     
@@ -160,13 +162,13 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
             onClick={onClose}
             className="flex-1 border-gold-500/30 text-gold-300 hover:bg-gold-500/10"
           >
-            Annuler
+            {t('cancel')}
           </Button>
           <Button 
             type="submit" 
             className="flex-1 bg-gold-500 hover:bg-gold-600 text-black font-semibold"
           >
-            Confirmer la Commande
+            {t('confirm_order')}
           </Button>
         </div>
       </form>

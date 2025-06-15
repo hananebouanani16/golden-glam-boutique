@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Drawer,
   DrawerClose,
@@ -16,15 +15,12 @@ import { useCart } from "@/contexts/CartContext";
 import { useApp } from "@/contexts/AppContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CheckoutFormContent from "./CheckoutFormContent";
-import { useState } from "react";
 import { convertToDinars, formatPrice } from "@/utils/priceUtils";
 
 const CartDrawer = () => {
   const { t } = useApp();
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal, getCartItemsCount } = useCart();
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
   const [showCheckout, setShowCheckout] = useState(false);
-
-  console.log('CartDrawer: Current cart items:', cartItems);
 
   return (
     <>
@@ -39,9 +35,9 @@ const CartDrawer = () => {
         </DrawerTrigger>
         <DrawerContent className="max-h-[80vh]">
           <DrawerHeader>
-            <DrawerTitle className="gold-text">Panier ({cartItems.reduce((acc, item) => acc + item.quantity, 0)} articles)</DrawerTitle>
+            <DrawerTitle className="gold-text">{t('cart_title')} ({cartItems.reduce((acc, item) => acc + item.quantity, 0)} {t('wishlist_items')})</DrawerTitle>
             <DrawerDescription>
-              Gérez vos articles avant de finaliser votre commande
+              {t('cart_description')}
             </DrawerDescription>
           </DrawerHeader>
           
@@ -49,7 +45,7 @@ const CartDrawer = () => {
             {cartItems.length === 0 ? (
               <div className="text-center py-8">
                 <ShoppingBag className="h-12 w-12 text-gold-400 mx-auto mb-4" />
-                <p className="text-gold-300">Votre panier est vide</p>
+                <p className="text-gold-300">{t('cart_empty')}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -103,7 +99,7 @@ const CartDrawer = () => {
           {cartItems.length > 0 && (
             <DrawerFooter>
               <div className="flex justify-between items-center mb-4">
-                <span className="text-lg font-bold text-gold-200">Total:</span>
+                <span className="text-lg font-bold text-gold-200">{t('total')}:</span>
                 <span className="text-lg font-bold gold-text">
                   {formatPrice(cartItems.reduce((total, item) => {
                     const priceInDA = convertToDinars(item.price);
@@ -114,14 +110,14 @@ const CartDrawer = () => {
               <div className="flex gap-2">
                 <DrawerClose asChild>
                   <Button variant="outline" className="flex-1 gold-border">
-                    Continuer les achats
+                    {t('continue_shopping')}
                   </Button>
                 </DrawerClose>
                 <Button 
                   className="flex-1 gold-button"
                   onClick={() => setShowCheckout(true)}
                 >
-                  Acheter maintenant
+                  {t('buy_now')}
                 </Button>
               </div>
             </DrawerFooter>
@@ -135,7 +131,7 @@ const CartDrawer = () => {
             <DialogTitle className="text-2xl gold-text flex items-center justify-between">
               <div className="flex items-center">
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                Finaliser la Commande
+                {t('checkout_title')}
               </div>
               <Button 
                 variant="ghost" 

@@ -33,9 +33,9 @@ const WishlistDrawer = () => {
       </DrawerTrigger>
       <DrawerContent className="max-h-[80vh]">
         <DrawerHeader>
-          <DrawerTitle className="gold-text">Liste de souhaits ({wishlistItems.length} articles)</DrawerTitle>
+          <DrawerTitle className="gold-text">{t('wishlist_title')} ({wishlistItems.length} {t('wishlist_items')})</DrawerTitle>
           <DrawerDescription>
-            Vos articles favoris sauvegardés
+            {t('wishlist_description')}
           </DrawerDescription>
         </DrawerHeader>
         
@@ -43,7 +43,7 @@ const WishlistDrawer = () => {
           {wishlistItems.length === 0 ? (
             <div className="text-center py-8">
               <Heart className="h-12 w-12 text-gold-400 mx-auto mb-4" />
-              <p className="text-gold-300">Votre liste de souhaits est vide</p>
+              <p className="text-gold-300">{t('wishlist_empty')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -66,7 +66,7 @@ const WishlistDrawer = () => {
                       className="gold-button text-xs px-3 py-1"
                     >
                       <ShoppingBag className="h-3 w-3 mr-1" />
-                      Ajouter au panier
+                      {t('add_to_cart')}
                     </Button>
                     <Button
                       variant="ghost"
@@ -75,7 +75,7 @@ const WishlistDrawer = () => {
                       className="text-red-400 hover:text-red-300 text-xs px-3 py-1"
                     >
                       <Trash2 className="h-3 w-3 mr-1" />
-                      Supprimer
+                      {t('remove')}
                     </Button>
                   </div>
                 </div>
@@ -87,7 +87,7 @@ const WishlistDrawer = () => {
         <DrawerFooter>
           <DrawerClose asChild>
             <Button variant="outline" className="gold-border">
-              Fermer
+              {t('close')}
             </Button>
           </DrawerClose>
         </DrawerFooter>

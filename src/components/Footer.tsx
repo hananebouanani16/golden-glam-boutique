@@ -1,25 +1,6 @@
 
-import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin, Tiktok } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
-
-// J'ai importé une icône personnalisée pour TikTok car elle n'est pas dans la bibliothèque standard.
-const TiktokIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="h-6 w-6"
-  >
-    <path d="M12 12a4 4 0 1 0 4 4V8a8 8 0 1 1-8 8" />
-  </svg>
-);
-
 
 const Footer = () => {
   const { t } = useApp();
@@ -52,7 +33,7 @@ const Footer = () => {
                 <Instagram className="h-6 w-6" />
               </a>
               <a href="https://www.tiktok.com/@nesrine.golden.hands?_t=ZN-8xEcJ6bwtyo&_r=1" target="_blank" rel="noopener noreferrer" className="text-gold-400 hover:text-gold-300 transition-colors duration-300">
-                <TiktokIcon />
+                <Tiktok className="h-6 w-6" />
               </a>
             </div>
           </div>

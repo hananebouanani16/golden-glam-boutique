@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Home, Phone, MapPin } from "lucide-react";
+import { useApp } from '@/contexts/AppContext';
 
 interface OrderConfirmationPageProps {
   orderNumber: string;
@@ -18,26 +19,28 @@ interface OrderConfirmationPageProps {
 }
 
 const OrderConfirmationPage = ({ orderNumber, customerInfo, onClose }: OrderConfirmationPageProps) => {
+  const { t } = useApp();
+
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="text-center mb-8">
         <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-        <h1 className="text-3xl font-bold gold-text mb-2">Commande Confirmée !</h1>
-        <p className="text-gold-300">Merci pour votre commande</p>
+        <h1 className="text-3xl font-bold gold-text mb-2">{t('order_confirmed_title')}</h1>
+        <p className="text-gold-300">{t('order_confirmed_subtitle')}</p>
       </div>
 
       <Card className="bg-gray-800/50 border-gold-500/20 mb-6">
         <CardHeader>
-          <CardTitle className="gold-text">Détails de la commande</CardTitle>
+          <CardTitle className="gold-text">{t('order_details')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between">
-            <span className="text-gold-300">Numéro de commande:</span>
+            <span className="text-gold-300">{t('order_number')}</span>
             <span className="text-white font-mono">{orderNumber}</span>
           </div>
           
           <div className="border-t border-gold-500/20 pt-4">
-            <h3 className="text-gold-300 font-semibold mb-3">Informations de livraison</h3>
+            <h3 className="text-gold-300 font-semibold mb-3">{t('delivery_info')}</h3>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Home className="h-4 w-4 text-gold-400" />
@@ -60,7 +63,7 @@ const OrderConfirmationPage = ({ orderNumber, customerInfo, onClose }: OrderConf
               <div className="flex items-center gap-2">
                 <span className="text-gold-400">Type:</span>
                 <span className="text-white">
-                  {customerInfo.deliveryType === 'home' ? 'Livraison à domicile' : 'Point de retrait'}
+                  {customerInfo.deliveryType === 'home' ? t('home_delivery') : t('pickup_point')}
                 </span>
               </div>
             </div>
@@ -69,17 +72,17 @@ const OrderConfirmationPage = ({ orderNumber, customerInfo, onClose }: OrderConf
       </Card>
 
       <div className="bg-blue-50/10 border border-blue-500/20 rounded-lg p-4 mb-6">
-        <h3 className="text-blue-300 font-semibold mb-2">Prochaines étapes</h3>
+        <h3 className="text-blue-300 font-semibold mb-2">{t('next_steps')}</h3>
         <ul className="text-blue-200 space-y-1 text-sm">
-          <li>• Nous vous contacterons dans les 24h pour confirmer votre commande</li>
-          <li>• Préparation et expédition sous 2-3 jours ouvrables</li>
-          <li>• Paiement à la livraison</li>
+          <li>{t('next_steps_line1')}</li>
+          <li>{t('next_steps_line2')}</li>
+          <li>{t('next_steps_line3')}</li>
         </ul>
       </div>
 
       <div className="text-center">
         <Button onClick={onClose} className="gold-button">
-          Retour à l'accueil
+          {t('back_to_home')}
         </Button>
       </div>
     </div>
