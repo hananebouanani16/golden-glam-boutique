@@ -1,5 +1,5 @@
 
-import { Facebook, Instagram, Mail, Phone, MapPin, Tiktok } from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin, tiktok as Tiktok } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 
 const Footer = () => {
@@ -91,3 +91,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
