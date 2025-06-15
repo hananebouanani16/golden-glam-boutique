@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Order } from '@/types/order';
 
@@ -24,7 +23,7 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     try {
       const savedOrders = localStorage.getItem('orders');
-      console.log('Loading orders from localStorage:', savedOrders);
+      console.log('OrderContext - Loading orders from localStorage:', savedOrders);
       if (savedOrders) {
         const parsedOrders = JSON.parse(savedOrders);
         // Convert date strings back to Date objects
@@ -32,21 +31,23 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
           ...order,
           createdAt: new Date(order.createdAt)
         }));
-        console.log('Parsed orders with dates:', ordersWithDates);
+        console.log('OrderContext - Parsed orders with dates:', ordersWithDates);
         setOrders(ordersWithDates);
+      } else {
+        console.log('OrderContext - No saved orders found in localStorage');
       }
     } catch (error) {
-      console.error('Error loading orders from localStorage:', error);
+      console.error('OrderContext - Error loading orders from localStorage:', error);
     }
   }, []);
 
   // Save orders to localStorage
   useEffect(() => {
     try {
-      console.log('Saving orders to localStorage:', orders);
+      console.log('OrderContext - Saving orders to localStorage:', orders.length, 'orders');
       localStorage.setItem('orders', JSON.stringify(orders));
     } catch (error) {
-      console.error('Error saving orders to localStorage:', error);
+      console.error('OrderContext - Error saving orders to localStorage:', error);
     }
   }, [orders]);
 
@@ -55,21 +56,24 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
       ...orderData,
       id: Date.now().toString(),
       orderNumber: `CMD-${Date.now()}`,
-      status: 'confirmed', // Changer le statut par défaut à 'confirmed' au lieu de 'pending'
+      status: 'confirmed',
       createdAt: new Date()
     };
     
-    console.log('Adding new order with confirmed status:', newOrder);
-    console.log('Order items:', newOrder.items);
+    console.log('OrderContext - Adding new order with confirmed status:', newOrder);
+    console.log('OrderContext - Order items:', newOrder.items);
+    console.log('OrderContext - Customer info:', newOrder.customerInfo);
+    
     setOrders(prev => {
       const newOrders = [newOrder, ...prev];
-      console.log('Updated orders list:', newOrders);
+      console.log('OrderContext - Updated orders list length:', newOrders.length);
+      console.log('OrderContext - All orders:', newOrders);
       return newOrders;
     });
   };
 
   const updateOrderStatus = (orderId: string, status: 'confirmed' | 'cancelled') => {
-    console.log('Updating order status:', orderId, status);
+    console.log('OrderContext - Updating order status:', orderId, status);
     setOrders(prev => 
       prev.map(order => 
         order.id === orderId ? { ...order, status } : order

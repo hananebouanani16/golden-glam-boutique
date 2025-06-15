@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,10 +12,18 @@ const OrderManagement = () => {
   const { orders, updateOrderStatus } = useOrders();
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
+  // Debug logging
+  useEffect(() => {
+    console.log('OrderManagement - Orders updated:', orders.length);
+    console.log('OrderManagement - All orders:', orders);
+  }, [orders]);
+
   const filteredOrders = orders.filter(order => {
     if (statusFilter === 'all') return true;
     return order.status === statusFilter;
   });
+
+  console.log('OrderManagement - Filtered orders:', filteredOrders.length);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -57,6 +64,9 @@ const OrderManagement = () => {
           <CardTitle className="gold-text flex items-center">
             <Package className="h-5 w-5 mr-2" />
             Commandes ({filteredOrders.length})
+            <span className="ml-2 text-sm text-gray-400">
+              (Total: {orders.length})
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -138,7 +148,10 @@ const OrderManagement = () => {
           
           {filteredOrders.length === 0 && (
             <div className="text-center py-8 text-gray-400">
-              Aucune commande trouvée
+              {orders.length === 0 
+                ? "Aucune commande enregistrée" 
+                : "Aucune commande trouvée pour ce filtre"
+              }
             </div>
           )}
         </CardContent>
