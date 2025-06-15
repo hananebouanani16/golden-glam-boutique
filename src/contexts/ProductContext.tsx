@@ -13,45 +13,29 @@ interface ProductContextType {
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
-function deduplicateProducts(products: Product[]): Product[] {
-  const seen = new Set();
-  const deduped: Product[] = [];
-  for (const p of products) {
-    if (!seen.has(p.id)) {
-      deduped.push(p);
-      seen.add(p.id);
-    }
-  }
-  return deduped;
-}
-
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const savedProductsRaw = localStorage.getItem('products');
-    let initialProducts: Product[] = [
-      ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
-      ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" })),
-    ];
-
     if (savedProductsRaw) {
       try {
+        // Utiliser UNIQUEMENT les produits sauvegardés
         const savedProducts: Product[] = JSON.parse(savedProductsRaw);
-
-        // Mélange les produits initiaux avec ceux du localStorage,
-        // en gardant les modifs/localStorage “par-dessus”
-        const merged: Product[] = deduplicateProducts([
-          ...savedProducts,
-          ...initialProducts
-        ]);
-        setProducts(merged);
+        setProducts(savedProducts);
       } catch(e) {
-        // Si la lecture échoue, fallback sur initial
-        setProducts(initialProducts);
+        // Si la lecture échoue, fallback sur initial par défaut (sera très rare)
+        setProducts([
+          ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
+          ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" })),
+        ]);
       }
     } else {
-      setProducts(initialProducts);
+      // Premier lancement : injecter les produits de base
+      setProducts([
+        ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
+        ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" })),
+      ]);
     }
   }, []);
 
