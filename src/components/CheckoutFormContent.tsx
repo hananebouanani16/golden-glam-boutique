@@ -26,14 +26,17 @@ interface CheckoutFormContentProps {
 }
 
 const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentProps) => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [personalInfo, setPersonalInfo] = useState({
+    firstName: "",
+    lastName: "",
+    phone: ""
+  });
   const [wilaya, setWilaya] = useState("");
   const [deliveryType, setDeliveryType] = useState<'home' | 'office'>('home');
   const [address, setAddress] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { cartItems, clearCart } = useCart();
   const { addOrder } = useOrders();
@@ -56,7 +59,7 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!firstName || !lastName || !phone || !wilaya || !deliveryType) {
+    if (!personalInfo.firstName || !personalInfo.lastName || !personalInfo.phone || !wilaya || !deliveryType) {
       toast.error("Veuillez remplir tous les champs obligatoires");
       return;
     }
@@ -68,9 +71,9 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
 
     const order = {
       customerInfo: {
-        firstName,
-        lastName,
-        phone,
+        firstName: personalInfo.firstName,
+        lastName: personalInfo.lastName,
+        phone: personalInfo.phone,
         wilaya,
         deliveryType: deliveryType as 'home' | 'office',
         address: deliveryType === 'home' ? address : undefined
@@ -105,9 +108,9 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
       <OrderConfirmationPage
         orderNumber={orderNumber}
         customerInfo={{
-          firstName,
-          lastName,
-          phone,
+          firstName: personalInfo.firstName,
+          lastName: personalInfo.lastName,
+          phone: personalInfo.phone,
           wilaya,
           deliveryType,
           address
@@ -121,12 +124,9 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
     <div className="space-y-6 p-6">
       <form onSubmit={handleSubmit} className="space-y-6">
         <PersonalInfoSection
-          firstName={firstName}
-          setFirstName={setFirstName}
-          lastName={lastName}
-          setLastName={setLastName}
-          phone={phone}
-          setPhone={setPhone}
+          personalInfo={personalInfo}
+          setPersonalInfo={setPersonalInfo}
+          errors={errors}
         />
 
         <Separator className="bg-gold-500/20" />
