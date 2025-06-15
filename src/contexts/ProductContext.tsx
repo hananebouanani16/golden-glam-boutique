@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from '@/types/product';
@@ -49,11 +50,11 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   const addProduct = async (productData: Omit<Product, "id">) => {
     const { error } = await supabase.from('products').insert([productData]);
-    if (!error) {
-      await fetchProducts();  // On force le refetch
-    } else {
+    if (error) {
       console.error("[ProductContext] addProduct Supabase error:", error);
+      throw error;
     }
+    await fetchProducts();  // On force le refetch
   };
 
   const updateProduct = async (updatedProduct: Product) => {
@@ -67,11 +68,11 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         image: updatedProduct.image ?? null,
       })
       .eq("id", updatedProduct.id);
-    if (!error) {
-      await fetchProducts(); // On force le refetch ici aussi
-    } else {
+    if (error) {
       console.error("[ProductContext] updateProduct Supabase error:", error);
+      throw error;
     }
+    await fetchProducts(); // On force le refetch ici aussi
   };
 
   // Soft delete : pose simplement deleted_at 
@@ -80,11 +81,11 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       .from("products")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", productId);
-    if (!error) {
-      await fetchProducts(); // On force le refetch
-    } else {
+    if (error) {
       console.error("[ProductContext] deleteProduct Supabase error:", error);
+      throw error;
     }
+    await fetchProducts(); // On force le refetch
   };
 
   // Restaure : repasse deleted_at à null
@@ -93,11 +94,11 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       .from("products")
       .update({ deleted_at: null })
       .eq("id", productId);
-    if (!error) {
-      await fetchProducts();
-    } else {
+    if (error) {
       console.error("[ProductContext] restoreProduct Supabase error:", error);
+      throw error;
     }
+    await fetchProducts();
   };
 
   // Pour interface : on garde la méthode pour forcer rafraîchissement manuel

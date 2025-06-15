@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -39,20 +40,29 @@ const ProductManagement = () => {
       });
       return;
     }
-    if (editingProduct) {
-      await updateProduct({ ...formData, id: editingProduct.id });
+    try {
+      if (editingProduct) {
+        await updateProduct({ ...formData, id: editingProduct.id });
+        toast({
+          title: "Produit modifié",
+          description: "Le produit a été modifié avec succès."
+        });
+      } else {
+        await addProduct(formData);
+        toast({
+          title: "Produit ajouté",
+          description: "Le nouveau produit a été ajouté avec succès."
+        });
+      }
+      resetForm();
+    } catch (error: any) {
+      console.error("Product form submission error:", error);
       toast({
-        title: "Produit modifié",
-        description: "Le produit a été modifié avec succès."
-      });
-    } else {
-      await addProduct(formData);
-      toast({
-        title: "Produit ajouté",
-        description: "Le nouveau produit a été ajouté avec succès."
+        title: "Échec de la soumission",
+        description: `Une erreur est survenue: ${error.message}`,
+        variant: "destructive",
       });
     }
-    resetForm();
   };
 
   const handleEdit = (product: Product) => {
@@ -69,19 +79,37 @@ const ProductManagement = () => {
   };
 
   const handleDelete = async (id: string) => {
-    await deleteProduct(id);
-    toast({
-      title: "Produit supprimé",
-      description: "Le produit a été supprimé avec succès. (Restaurable)"
-    });
+    try {
+      await deleteProduct(id);
+      toast({
+        title: "Produit supprimé",
+        description: "Le produit a été supprimé avec succès. (Restaurable)"
+      });
+    } catch (error: any) {
+      console.error("Delete product error:", error);
+      toast({
+        title: "Échec de la suppression",
+        description: `Une erreur est survenue: ${error.message}`,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleRestore = async (id: string) => {
-    await restoreProduct(id);
-    toast({
-      title: "Produit restauré",
-      description: "Le produit a bien été restauré."
-    });
+    try {
+      await restoreProduct(id);
+      toast({
+        title: "Produit restauré",
+        description: "Le produit a bien été restauré."
+      });
+    } catch (error: any) {
+      console.error("Restore product error:", error);
+      toast({
+        title: "Échec de la restauration",
+        description: `Une erreur est survenue: ${error.message}`,
+        variant: "destructive",
+      });
+    }
   };
 
   const resetForm = () => {
