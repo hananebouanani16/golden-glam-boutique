@@ -27,6 +27,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart, addToWishlist, isInWishlist } = useCart();
   const [showCheckout, setShowCheckout] = useState(false);
   
+  // Safety check for undefined product or missing price
+  if (!product || !product.price) {
+    console.error('ProductCard received invalid product:', product);
+    return null;
+  }
+  
   const handleAddToCart = () => {
     addToCart(product);
   };

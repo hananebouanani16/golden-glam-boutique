@@ -27,15 +27,10 @@ const ProductGrid = ({ id, title, subtitle, products }: ProductGridProps) => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {products.map((product) => (
+          {products.filter(product => product && product.price).map((product) => (
             <ProductCard
               key={product.id}
-              id={product.id}
-              image={product.image}
-              title={product.title}
-              price={product.price}
-              originalPrice={product.originalPrice}
-              category={product.category}
+              product={product}
             />
           ))}
         </div>
