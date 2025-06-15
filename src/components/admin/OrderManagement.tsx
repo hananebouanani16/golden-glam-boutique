@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -77,21 +76,6 @@ const OrderManagement = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <h4 className="text-blue-300 font-semibold mb-2">Debug Info:</h4>
-            <div className="text-sm text-blue-200">
-              <div>Total orders in context: {orders.length}</div>
-              <div>Current filter: {statusFilter}</div>
-              <div>Filtered orders: {filteredOrders.length}</div>
-              <div>Orders by status:</div>
-              <ul className="ml-4">
-                <li>Confirmed: {orders.filter(o => o.status === 'confirmed').length}</li>
-                <li>Pending: {orders.filter(o => o.status === 'pending').length}</li>
-                <li>Cancelled: {orders.filter(o => o.status === 'cancelled').length}</li>
-              </ul>
-            </div>
-          </div>
-
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
