@@ -26,10 +26,15 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
       console.log('OrderContext - Loading orders from localStorage:', savedOrders);
       if (savedOrders) {
         const parsedOrders = JSON.parse(savedOrders);
-        // Convert date strings back to Date objects
+        // Convert date strings (or objects) back to Date objects
         const ordersWithDates = parsedOrders.map((order: any) => ({
           ...order,
-          createdAt: new Date(order.createdAt)
+          createdAt:
+            typeof order.createdAt === 'string'
+              ? new Date(order.createdAt)
+              : order.createdAt && typeof order.createdAt.value?.iso === 'string'
+                ? new Date(order.createdAt.value.iso)
+                : new Date(),
         }));
         console.log('OrderContext - Parsed orders with dates:', ordersWithDates);
         setOrders(ordersWithDates);
@@ -41,11 +46,17 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  // Save orders to localStorage
+  // Save orders to localStorage, always serialize Date as ISO string
   useEffect(() => {
     try {
       console.log('OrderContext - Saving orders to localStorage:', orders.length, 'orders');
-      localStorage.setItem('orders', JSON.stringify(orders));
+      const serializableOrders = orders.map(order => ({
+        ...order,
+        createdAt: order.createdAt instanceof Date
+          ? order.createdAt.toISOString()
+          : order.createdAt, // fallback
+      }));
+      localStorage.setItem('orders', JSON.stringify(serializableOrders));
     } catch (error) {
       console.error('OrderContext - Error saving orders to localStorage:', error);
     }
