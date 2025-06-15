@@ -28,7 +28,8 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       const savedProductsRaw = localStorage.getItem('products');
       if (savedProductsRaw) {
         const parsed = JSON.parse(savedProductsRaw);
-        if (Array.isArray(parsed)) {
+        // Nouvelle logique : si le tableau est vide, on remet les produits de base !
+        if (Array.isArray(parsed) && parsed.length > 0) {
           setProducts(parsed);
         } else {
           useBase = true;
@@ -84,4 +85,3 @@ export const useProducts = () => {
   }
   return context;
 };
-
