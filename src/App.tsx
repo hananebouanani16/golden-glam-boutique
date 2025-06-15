@@ -29,7 +29,7 @@ const App = () => (
           </TooltipProvider>
         </OrderProvider>
       </CartProvider>
-    </Auth>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
