@@ -14,34 +14,40 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
+  const baseProducts: Product[] = [
+    ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
+    ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" })),
+  ];
   const [products, setProducts] = useState<Product[]>([]);
 
+  // Charger les produits au démarrage
   useEffect(() => {
     const savedProductsRaw = localStorage.getItem('products');
     if (savedProductsRaw) {
       try {
-        // Utiliser UNIQUEMENT les produits sauvegardés
         const savedProducts: Product[] = JSON.parse(savedProductsRaw);
         setProducts(savedProducts);
-      } catch(e) {
-        // Si la lecture échoue, fallback sur initial par défaut (sera très rare)
-        setProducts([
-          ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
-          ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" })),
-        ]);
+      } catch (e) {
+        setProducts(baseProducts);
       }
     } else {
-      // Premier lancement : injecter les produits de base
-      setProducts([
-        ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
-        ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" })),
-      ]);
+      setProducts(baseProducts);
     }
   }, []);
 
+  // Sauvegarder à chaque modification
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
   }, [products]);
+
+  // Si liste vide, réinjecter les produits de base
+  useEffect(() => {
+    if (products.length === 0) {
+      setProducts(baseProducts);
+      localStorage.setItem('products', JSON.stringify(baseProducts));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products.length]);
 
   const addProduct = (productData: Omit<Product, 'id'>) => {
     const newProduct: Product = {
