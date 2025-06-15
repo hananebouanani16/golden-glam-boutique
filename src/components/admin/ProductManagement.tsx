@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { bagsData } from "@/data/bagsData";
+import { jewelryData } from "@/data/jewelryData";
 
 interface Product {
   id: string;
@@ -20,24 +22,28 @@ interface Product {
 
 const ProductManagement = () => {
   const { toast } = useToast();
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: "1",
-      title: "Sac à Main Élégant",
-      price: "89€",
-      originalPrice: "120€",
+  
+  // Convertir les données des sacs et bijoux au format uniforme
+  const allProducts: Product[] = [
+    ...bagsData.map(bag => ({
+      id: bag.id,
+      title: bag.title,
+      price: bag.price,
+      originalPrice: bag.originalPrice,
       category: "sacs",
-      image: "/lovable-uploads/c9200fe8-042b-4ac7-ae45-607103646612.png"
-    },
-    {
-      id: "2", 
-      title: "Collier Or Rose",
-      price: "145€",
+      image: bag.image
+    })),
+    ...jewelryData.map(jewelry => ({
+      id: jewelry.id,
+      title: jewelry.title,
+      price: jewelry.price,
+      originalPrice: jewelry.originalPrice,
       category: "bijoux",
-      image: "/lovable-uploads/db919936-c4c1-4126-83b9-1baa157af9ae.png"
-    }
-  ]);
+      image: jewelry.image
+    }))
+  ];
 
+  const [products, setProducts] = useState<Product[]>(allProducts);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
@@ -116,7 +122,12 @@ const ProductManagement = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold gold-text">Gestion des Articles</h2>
+        <div>
+          <h2 className="text-2xl font-bold gold-text">Gestion des Articles</h2>
+          <p className="text-gray-400 mt-1">
+            {products.length} produits au total ({products.filter(p => p.category === 'sacs').length} sacs, {products.filter(p => p.category === 'bijoux').length} bijoux)
+          </p>
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="gold-button">
@@ -202,62 +213,66 @@ const ProductManagement = () => {
       </div>
 
       <div className="bg-gray-800/50 rounded-lg border border-gold-500/20 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-gold-500/20">
-              <TableHead className="text-gold-300">Image</TableHead>
-              <TableHead className="text-gold-300">Titre</TableHead>
-              <TableHead className="text-gold-300">Prix</TableHead>
-              <TableHead className="text-gold-300">Catégorie</TableHead>
-              <TableHead className="text-gold-300">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id} className="border-gold-500/20">
-                <TableCell>
-                  <img 
-                    src={product.image} 
-                    alt={product.title}
-                    className="w-12 h-12 object-cover rounded-lg"
-                  />
-                </TableCell>
-                <TableCell className="text-white">{product.title}</TableCell>
-                <TableCell className="text-gold-300">
-                  {product.price}
-                  {product.originalPrice && (
-                    <span className="text-gray-400 line-through ml-2 text-sm">
-                      {product.originalPrice}
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell className="text-white">
-                  {categories.find(c => c.value === product.category)?.label}
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(product)}
-                      className="text-gold-300 hover:text-gold-200"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(product.id)}
-                      className="text-red-400 hover:text-red-300"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+        <div className="max-h-96 overflow-y-auto">
+          <Table>
+            <TableHeader className="sticky top-0 bg-gray-800">
+              <TableRow className="border-gold-500/20">
+                <TableHead className="text-gold-300">Image</TableHead>
+                <TableHead className="text-gold-300">Titre</TableHead>
+                <TableHead className="text-gold-300">Prix</TableHead>
+                <TableHead className="text-gold-300">Catégorie</TableHead>
+                <TableHead className="text-gold-300">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {products.map((product) => (
+                <TableRow key={product.id} className="border-gold-500/20">
+                  <TableCell>
+                    <img 
+                      src={product.image} 
+                      alt={product.title}
+                      className="w-12 h-12 object-cover rounded-lg"
+                    />
+                  </TableCell>
+                  <TableCell className="text-white max-w-xs truncate" title={product.title}>
+                    {product.title}
+                  </TableCell>
+                  <TableCell className="text-gold-300">
+                    {product.price}
+                    {product.originalPrice && (
+                      <span className="text-gray-400 line-through ml-2 text-sm">
+                        {product.originalPrice}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-white">
+                    {categories.find(c => c.value === product.category)?.label}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(product)}
+                        className="text-gold-300 hover:text-gold-200"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(product.id)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );
