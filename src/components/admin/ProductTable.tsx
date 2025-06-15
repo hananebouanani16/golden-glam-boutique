@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, RotateCcw } from "lucide-react";
 import { Product } from "@/types/product";
 
 const categories = [
@@ -13,9 +13,13 @@ interface ProductTableProps {
   products: Product[];
   onEdit: (product: Product) => void;
   onDelete: (id: string) => void;
+  onRestore: (id: string) => void;
+  loading: boolean;
 }
-
-export default function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
+export default function ProductTable({ products, onEdit, onDelete, onRestore, loading }: ProductTableProps) {
+  if (loading) {
+    return <div className="p-8 text-center text-gold-400">Chargement des produits…</div>;
+  }
   return (
     <div className="bg-gray-800/50 rounded-lg border border-gold-500/20 overflow-hidden">
       <div className="max-h-96 overflow-y-auto">
@@ -71,6 +75,17 @@ export default function ProductTable({ products, onEdit, onDelete }: ProductTabl
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
+                    {/* Bouton RESTAURER (invisible si non supprimé) */}
+                    {product.deleted_at && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onRestore(product.id)}
+                        className="text-green-400 hover:text-green-300"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                      </Button>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

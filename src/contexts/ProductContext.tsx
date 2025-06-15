@@ -1,109 +1,113 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from "@/integrations/supabase/client";
 import { Product } from '@/types/product';
-import { bagsData } from "@/data/bagsData";
-import { jewelryData } from "@/data/jewelryData";
 
 interface ProductContextType {
   products: Product[];
-  addProduct: (product: Omit<Product, 'id'>) => void;
-  updateProduct: (product: Product) => void;
-  deleteProduct: (productId: string) => void;
+  addProduct: (product: Omit<Product, 'id'>) => Promise<void>;
+  updateProduct: (product: Product) => Promise<void>;
+  deleteProduct: (productId: string) => Promise<void>;
+  restoreProduct: (productId: string) => Promise<void>;
   resetProducts: () => void;
+  loading: boolean;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
-  // Construction de la base à chaque démarrage
-  const baseProducts: Product[] = [
-    ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
-    ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" })),
-  ];
-
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Chargement initial : priorité 100% au localStorage (même si tableau vide)
-  useEffect(() => {
-    try {
-      const savedProductsRaw = localStorage.getItem('products');
-      console.log('[ProductContext] Chargement depuis localStorage:', savedProductsRaw);
-
-      if (savedProductsRaw !== null) {
-        // On se fie totalement à la source locale, même pour [] vide (cas suppression totale).
-        const parsed = JSON.parse(savedProductsRaw);
-        if (Array.isArray(parsed)) {
-          setProducts(parsed);
-          console.log("[ProductContext] Produits chargés depuis localStorage (y compris tableau vide !)", parsed.length);
-          return;
-        } else {
-          // Cas inattendu : localStorage présent mais format mauvais -> on réinitialise pour ne pas bloquer l’UI.
-          setProducts(baseProducts);
-          localStorage.setItem('products', JSON.stringify(baseProducts));
-          console.log("[ProductContext] Format localStorage mauvais, baseProducts insérés.");
-          return;
-        }
-      } else {
-        // Pas de clé enregistrée : première visite, on injecte la base.
-        setProducts(baseProducts);
-        localStorage.setItem('products', JSON.stringify(baseProducts));
-        console.log("[ProductContext] Rien dans le localStorage, baseProducts insérés :", baseProducts.length);
-        return;
-      }
-    } catch (e) {
-      // Cas d’erreur parsing : on reset à la base.
-      setProducts(baseProducts);
-      localStorage.setItem('products', JSON.stringify(baseProducts));
-      console.log("[ProductContext] Erreur parsing localStorage, reset avec base :", e);
+  // Fetch all products non-supprimés
+  const fetchProducts = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false }); // Si created_at non présent, supprimer
+    if (error) {
+      console.error("[ProductContext] Error fetching products from Supabase:", error);
+      setProducts([]);
+      setLoading(false);
+      return;
     }
+    // Exclure soft-deleted (deleted_at non null)
+    const filtered = (data as Product[])
+      .filter((p) => !p.deleted_at);
+    setProducts(filtered);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    // Optionnel: ajouter du temps réel ici
   }, []);
 
-  // Sauvegarde automatique dès qu'on modifie products
-  useEffect(() => {
-    localStorage.setItem('products', JSON.stringify(products));
-    console.log("[ProductContext] Sauvegarde dans localStorage:", products.length, products.map(p => ({title: p.title, price: p.price})));
-  }, [products]);
+  const addProduct = async (productData: Omit<Product, "id">) => {
+    const { error } = await supabase.from('products').insert([productData]);
+    if (!error) {
+      await fetchProducts();
+    } else {
+      console.error("[ProductContext] addProduct Supabase error:", error);
+    }
+  };
 
-  // Actions
+  const updateProduct = async (updatedProduct: Product) => {
+    const { error } = await supabase
+      .from("products")
+      .update(updatedProduct)
+      .eq("id", updatedProduct.id);
+    if (!error) {
+      await fetchProducts();
+    } else {
+      console.error("[ProductContext] updateProduct Supabase error:", error);
+    }
+  };
+
+  // Soft delete : pose simplement deleted_at 
+  const deleteProduct = async (productId: string) => {
+    const { error } = await supabase
+      .from("products")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", productId);
+    if (!error) {
+      await fetchProducts();
+    } else {
+      console.error("[ProductContext] deleteProduct Supabase error:", error);
+    }
+  };
+
+  // Restaure : repasse deleted_at à null
+  const restoreProduct = async (productId: string) => {
+    const { error } = await supabase
+      .from("products")
+      .update({ deleted_at: null })
+      .eq("id", productId);
+    if (!error) {
+      await fetchProducts();
+    } else {
+      console.error("[ProductContext] restoreProduct Supabase error:", error);
+    }
+  };
+
+  // RESET : pas utile avec la base Supabase, mais on conserve une interface compatible
   const resetProducts = () => {
-    setProducts(baseProducts);
-    localStorage.setItem('products', JSON.stringify(baseProducts));
-    console.log("[ProductContext] resetProducts : retour à la baseProducts.");
-  };
-
-  const addProduct = (productData: Omit<Product, 'id'>) => {
-    const newProduct: Product = {
-      ...productData,
-      id: Date.now().toString(),
-    };
-    setProducts(prev => {
-      const updated = [newProduct, ...prev];
-      localStorage.setItem('products', JSON.stringify(updated));
-      console.log("[ProductContext] addProduct : produit ajouté");
-      return updated;
-    });
-  };
-
-  const updateProduct = (updatedProduct: Product) => {
-    setProducts(prev => {
-      const updated = prev.map(p => p.id === updatedProduct.id ? updatedProduct : p);
-      localStorage.setItem('products', JSON.stringify(updated));
-      console.log("[ProductContext] updateProduct : produit modifié", updatedProduct.id);
-      return updated;
-    });
-  };
-
-  const deleteProduct = (productId: string) => {
-    setProducts(prev => {
-      const updated = prev.filter(p => p.id !== productId);
-      localStorage.setItem('products', JSON.stringify(updated));
-      console.log("[ProductContext] deleteProduct : produit supprimé", productId);
-      return updated;
-    });
+    fetchProducts();
   };
 
   return (
-    <ProductContext.Provider value={{ products, addProduct, updateProduct, deleteProduct, resetProducts }}>
+    <ProductContext.Provider
+      value={{
+        products,
+        addProduct,
+        updateProduct,
+        deleteProduct,
+        restoreProduct,
+        resetProducts,
+        loading
+      }}
+    >
       {children}
     </ProductContext.Provider>
   );
@@ -111,9 +115,6 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
 export const useProducts = () => {
   const context = useContext(ProductContext);
-  if (!context) {
-    throw new Error('useProducts must be used within a ProductProvider');
-  }
+  if (!context) throw new Error("useProducts must be used within a ProductProvider");
   return context;
 };
-

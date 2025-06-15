@@ -14,7 +14,7 @@ import ProductTable from "./ProductTable";
 
 const ProductManagement = () => {
   const { toast } = useToast();
-  const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
+  const { products, addProduct, updateProduct, deleteProduct, restoreProduct, resetProducts, loading } = useProducts();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -39,9 +39,8 @@ const ProductManagement = () => {
     console.log("[DEBUG Products] Liste complète des produits :", products);
   }, [products]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!/^\d+$/.test(formData.price) || (formData.originalPrice && !/^\d+$/.test(formData.originalPrice))) {
       toast({
         title: "Format de prix invalide",
@@ -50,21 +49,19 @@ const ProductManagement = () => {
       });
       return;
     }
-
     if (editingProduct) {
-      updateProduct({ ...formData, id: editingProduct.id });
+      await updateProduct({ ...formData, id: editingProduct.id });
       toast({
         title: "Produit modifié",
         description: "Le produit a été modifié avec succès."
       });
     } else {
-      addProduct(formData);
+      await addProduct(formData);
       toast({
         title: "Produit ajouté",
         description: "Le nouveau produit a été ajouté avec succès."
       });
     }
-
     resetForm();
   };
 
@@ -81,11 +78,19 @@ const ProductManagement = () => {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    deleteProduct(id);
+  const handleDelete = async (id: string) => {
+    await deleteProduct(id);
     toast({
       title: "Produit supprimé",
-      description: "Le produit a été supprimé avec succès."
+      description: "Le produit a été supprimé avec succès. (Restaurable)"
+    });
+  };
+
+  const handleRestore = async (id: string) => {
+    await restoreProduct(id);
+    toast({
+      title: "Produit restauré",
+      description: "Le produit a bien été restauré."
     });
   };
 
@@ -123,12 +128,12 @@ const ProductManagement = () => {
             onClick={() => {
               resetProducts();
               toast({
-                title: "Produits réinitialisés",
-                description: "La liste de produits a été réinitialisée avec les articles de base."
+                title: "Produits rafraîchis",
+                description: "La liste des produits a été actualisée depuis Supabase."
               });
             }}
           >
-            Réinitialiser les produits
+            Rafraîchir les produits
           </Button>
           <ProductForm
             formData={formData}
@@ -144,7 +149,13 @@ const ProductManagement = () => {
         </div>
       </div>
       {/* Affiche tous les produits dans la table */}
-      <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
+      <ProductTable 
+        products={products}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onRestore={handleRestore}
+        loading={loading}
+      />
     </div>
   );
 };
