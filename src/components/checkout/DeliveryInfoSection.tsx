@@ -3,6 +3,7 @@ import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Truck } from "lucide-react";
 import { deliveryRates } from "@/data/deliveryRates";
 
@@ -50,36 +51,32 @@ const DeliveryInfoSection = ({
         <Label className="text-gold-300">
           Type de Livraison
         </Label>
-        <div className="flex items-center space-x-6 mt-2">
-          <div className="flex items-center">
-            <input
-              type="radio"
+        <RadioGroup 
+          value={deliveryType} 
+          onValueChange={(value) => setDeliveryType(value as 'home' | 'office')}
+          className="flex items-center space-x-6 mt-2"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem 
+              value="home" 
               id="homeDelivery"
-              name="deliveryType"
-              value="home"
-              className="mr-2 h-4 w-4 text-gold-500 focus:ring-gold-500 bg-gray-800 border-gold-500/30"
-              checked={deliveryType === 'home'}
-              onChange={() => setDeliveryType('home')}
+              className="border-gold-500/30 text-gold-500 focus:ring-gold-500"
             />
             <Label htmlFor="homeDelivery" className="text-gold-300">
               À Domicile
             </Label>
           </div>
-          <div className="flex items-center">
-            <input
-              type="radio"
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem 
+              value="office" 
               id="officeDelivery"
-              name="deliveryType"
-              value="office"
-              className="mr-2 h-4 w-4 text-gold-500 focus:ring-gold-500 bg-gray-800 border-gold-500/30"
-              checked={deliveryType === 'office'}
-              onChange={() => setDeliveryType('office')}
+              className="border-gold-500/30 text-gold-500 focus:ring-gold-500"
             />
             <Label htmlFor="officeDelivery" className="text-gold-300">
               Point de Retrait
             </Label>
           </div>
-        </div>
+        </RadioGroup>
       </div>
       {deliveryType === 'home' && (
         <div>
@@ -92,6 +89,7 @@ const DeliveryInfoSection = ({
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500"
+            placeholder="Entrez votre adresse de livraison"
             required={deliveryType === 'home'}
           />
         </div>
