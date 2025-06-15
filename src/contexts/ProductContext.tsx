@@ -13,19 +13,44 @@ interface ProductContextType {
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
+function deduplicateProducts(products: Product[]): Product[] {
+  const seen = new Set();
+  const deduped: Product[] = [];
+  for (const p of products) {
+    if (!seen.has(p.id)) {
+      deduped.push(p);
+      seen.add(p.id);
+    }
+  }
+  return deduped;
+}
+
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    const savedProducts = localStorage.getItem('products');
-    if (savedProducts) {
-      setProducts(JSON.parse(savedProducts));
+    const savedProductsRaw = localStorage.getItem('products');
+    let initialProducts: Product[] = [
+      ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
+      ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" })),
+    ];
+
+    if (savedProductsRaw) {
+      try {
+        const savedProducts: Product[] = JSON.parse(savedProductsRaw);
+
+        // Mélange les produits initiaux avec ceux du localStorage,
+        // en gardant les modifs/localStorage “par-dessus”
+        const merged: Product[] = deduplicateProducts([
+          ...savedProducts,
+          ...initialProducts
+        ]);
+        setProducts(merged);
+      } catch(e) {
+        // Si la lecture échoue, fallback sur initial
+        setProducts(initialProducts);
+      }
     } else {
-      // Initialize with default data if localStorage is empty
-      const initialProducts: Product[] = [
-        ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
-        ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" }))
-      ];
       setProducts(initialProducts);
     }
   }, []);
