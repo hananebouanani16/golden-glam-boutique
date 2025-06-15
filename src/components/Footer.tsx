@@ -1,5 +1,5 @@
 
-import { Facebook, Instagram, Mail, Phone, MapPin, tiktok as Tiktok } from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin, Video } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 
 const Footer = () => {
@@ -33,7 +33,7 @@ const Footer = () => {
                 <Instagram className="h-6 w-6" />
               </a>
               <a href="https://www.tiktok.com/@nesrine.golden.hands?_t=ZN-8xEcJ6bwtyo&_r=1" target="_blank" rel="noopener noreferrer" className="text-gold-400 hover:text-gold-300 transition-colors duration-300">
-                <Tiktok className="h-6 w-6" />
+                <Video className="h-6 w-6" />
               </a>
             </div>
           </div>
