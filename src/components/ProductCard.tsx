@@ -37,13 +37,41 @@ const ProductCard = ({ product }: ProductCardProps) => {
     return null;
   }
 
-  // Vérifier si le produit a déjà été acheté
-  const isProductPurchased = orders.some(order => 
-    order.items.some(item => item.id === product.id)
-  );
+  // Debug: Log orders and current product
+  console.log('All orders:', orders);
+  console.log('Current product ID:', product.id);
+  console.log('Checking product purchase status for:', product.title);
+
+  // Vérifier si le produit a déjà été acheté avec des logs détaillés
+  const isProductPurchased = orders.some(order => {
+    console.log('Checking order:', order.id, 'status:', order.status);
+    console.log('Order items:', order.items);
+    
+    // Vérifier seulement les commandes confirmées
+    if (order.status !== 'confirmed') {
+      console.log('Order not confirmed, skipping');
+      return false;
+    }
+    
+    const found = order.items.some(item => {
+      console.log('Comparing item ID:', item.id, 'with product ID:', product.id);
+      return item.id === product.id;
+    });
+    
+    if (found) {
+      console.log('Product found in confirmed order!');
+    }
+    
+    return found;
+  });
+  
+  console.log('Final isProductPurchased result:', isProductPurchased, 'for product:', product.title);
   
   const handleAddToCart = () => {
+    console.log('handleAddToCart called, isProductPurchased:', isProductPurchased);
+    
     if (isProductPurchased) {
+      console.log('Product already purchased, showing error toast');
       toast.error("Ce produit a déjà été acheté !", {
         description: "Vous ne pouvez pas l'ajouter au panier.",
         duration: 4000,
@@ -51,6 +79,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       return;
     }
 
+    console.log('Adding product to cart:', product.title);
     addToCart(product);
     toast.success("Produit ajouté au panier !", {
       description: product.title,
@@ -69,7 +98,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   const handleBuyNow = () => {
+    console.log('handleBuyNow called, isProductPurchased:', isProductPurchased);
+    
     if (isProductPurchased) {
+      console.log('Product already purchased, showing error toast');
       toast.error("Ce produit a déjà été acheté !", {
         description: "Vous ne pouvez pas l'acheter à nouveau.",
         duration: 4000,
@@ -77,6 +109,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       return;
     }
 
+    console.log('Adding product to cart for immediate purchase:', product.title);
     addToCart(product);
     setShowCheckout(true);
   };
@@ -93,7 +126,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             alt={product.title}
             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          {product.badge && (
+          {product.badge && !isProductPurchased && (
             <Badge className="absolute top-2 left-2 bg-gold-500 text-black hover:bg-gold-400">
               {product.badge}
             </Badge>

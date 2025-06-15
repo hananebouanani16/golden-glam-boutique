@@ -24,6 +24,7 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     try {
       const savedOrders = localStorage.getItem('orders');
+      console.log('Loading orders from localStorage:', savedOrders);
       if (savedOrders) {
         const parsedOrders = JSON.parse(savedOrders);
         // Convert date strings back to Date objects
@@ -31,6 +32,7 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
           ...order,
           createdAt: new Date(order.createdAt)
         }));
+        console.log('Parsed orders with dates:', ordersWithDates);
         setOrders(ordersWithDates);
       }
     } catch (error) {
@@ -41,6 +43,7 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
   // Save orders to localStorage
   useEffect(() => {
     try {
+      console.log('Saving orders to localStorage:', orders);
       localStorage.setItem('orders', JSON.stringify(orders));
     } catch (error) {
       console.error('Error saving orders to localStorage:', error);
@@ -52,12 +55,17 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
       ...orderData,
       id: Date.now().toString(),
       orderNumber: `CMD-${Date.now()}`,
-      status: 'pending',
+      status: 'confirmed', // Changer le statut par défaut à 'confirmed' au lieu de 'pending'
       createdAt: new Date()
     };
     
-    console.log('Adding new order:', newOrder);
-    setOrders(prev => [newOrder, ...prev]);
+    console.log('Adding new order with confirmed status:', newOrder);
+    console.log('Order items:', newOrder.items);
+    setOrders(prev => {
+      const newOrders = [newOrder, ...prev];
+      console.log('Updated orders list:', newOrders);
+      return newOrders;
+    });
   };
 
   const updateOrderStatus = (orderId: string, status: 'confirmed' | 'cancelled') => {
