@@ -1,134 +1,101 @@
 
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { sanitizeInput, validateEmail, validatePhone, validateName } from "@/utils/securityUtils";
-import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { validateName, validatePhone, sanitizeInput } from "@/utils/securityUtils";
+import { useState } from "react";
 
 interface PersonalInfoSectionProps {
-  formData: {
+  personalInfo: {
     firstName: string;
     lastName: string;
-    email: string;
     phone: string;
   };
-  onUpdate: (field: string, value: string) => void;
+  setPersonalInfo: (info: { firstName: string; lastName: string; phone: string }) => void;
   errors: Record<string, string>;
 }
 
-const PersonalInfoSection = ({ formData, onUpdate, errors }: PersonalInfoSectionProps) => {
+const PersonalInfoSection = ({ personalInfo, setPersonalInfo, errors }: PersonalInfoSectionProps) => {
   const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
 
-  const handleInputChange = (field: string, value: string) => {
-    const sanitizedValue = sanitizeInput(value);
-    onUpdate(field, sanitizedValue);
+  const handleFirstNameChange = (value: string) => {
+    const sanitized = sanitizeInput(value);
+    setPersonalInfo({ ...personalInfo, firstName: sanitized });
     
-    // Validation en temps réel
-    let error = '';
-    switch (field) {
-      case 'firstName':
-      case 'lastName':
-        if (!validateName(sanitizedValue)) {
-          error = 'Le nom doit contenir entre 2 et 50 caractères (lettres uniquement)';
-        }
-        break;
-      case 'email':
-        if (!validateEmail(sanitizedValue)) {
-          error = 'Format d\'email invalide';
-        }
-        break;
-      case 'phone':
-        if (!validatePhone(sanitizedValue)) {
-          error = 'Numéro de téléphone invalide (8-15 caractères)';
-        }
-        break;
+    if (!validateName(sanitized)) {
+      setLocalErrors({ ...localErrors, firstName: "Prénom invalide (2-50 caractères, lettres uniquement)" });
+    } else {
+      const { firstName, ...rest } = localErrors;
+      setLocalErrors(rest);
     }
+  };
+
+  const handleLastNameChange = (value: string) => {
+    const sanitized = sanitizeInput(value);
+    setPersonalInfo({ ...personalInfo, lastName: sanitized });
     
-    setLocalErrors(prev => ({ ...prev, [field]: error }));
+    if (!validateName(sanitized)) {
+      setLocalErrors({ ...localErrors, lastName: "Nom invalide (2-50 caractères, lettres uniquement)" });
+    } else {
+      const { lastName, ...rest } = localErrors;
+      setLocalErrors(rest);
+    }
+  };
+
+  const handlePhoneChange = (value: string) => {
+    const sanitized = sanitizeInput(value);
+    setPersonalInfo({ ...personalInfo, phone: sanitized });
+    
+    if (!validatePhone(sanitized)) {
+      setLocalErrors({ ...localErrors, phone: "Numéro de téléphone invalide" });
+    } else {
+      const { phone, ...rest } = localErrors;
+      setLocalErrors(rest);
+    }
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gold-300 mb-4">Informations personnelles</h3>
-      
+    <div className="space-y-6">
+      <h3 className="text-xl font-semibold gold-text">Informations Personnelles</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="firstName" className="text-gold-300">
-            Prénom *
-          </Label>
+        <div>
+          <Label htmlFor="firstName">Prénom *</Label>
           <Input
             id="firstName"
-            type="text"
-            value={formData.firstName}
-            onChange={(e) => handleInputChange('firstName', e.target.value)}
-            className="bg-gray-700 border-gold-500/30 text-white"
-            placeholder="Votre prénom"
+            value={personalInfo.firstName}
+            onChange={(e) => handleFirstNameChange(e.target.value)}
+            className="bg-gray-800 border-gold-500/20 text-white"
             required
-            maxLength={50}
-            autoComplete="given-name"
           />
-          {(localErrors.firstName || errors.firstName) && (
-            <p className="text-red-400 text-sm">{localErrors.firstName || errors.firstName}</p>
+          {(errors.firstName || localErrors.firstName) && (
+            <p className="text-red-400 text-sm mt-1">{errors.firstName || localErrors.firstName}</p>
           )}
         </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="lastName" className="text-gold-300">
-            Nom *
-          </Label>
+        <div>
+          <Label htmlFor="lastName">Nom *</Label>
           <Input
             id="lastName"
-            type="text"
-            value={formData.lastName}
-            onChange={(e) => handleInputChange('lastName', e.target.value)}
-            className="bg-gray-700 border-gold-500/30 text-white"
-            placeholder="Votre nom"
+            value={personalInfo.lastName}
+            onChange={(e) => handleLastNameChange(e.target.value)}
+            className="bg-gray-800 border-gold-500/20 text-white"
             required
-            maxLength={50}
-            autoComplete="family-name"
           />
-          {(localErrors.lastName || errors.lastName) && (
-            <p className="text-red-400 text-sm">{localErrors.lastName || errors.lastName}</p>
+          {(errors.lastName || localErrors.lastName) && (
+            <p className="text-red-400 text-sm mt-1">{errors.lastName || localErrors.lastName}</p>
           )}
         </div>
       </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-gold-300">
-          Email *
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          value={formData.email}
-          onChange={(e) => handleInputChange('email', e.target.value)}
-          className="bg-gray-700 border-gold-500/30 text-white"
-          placeholder="votre@email.com"
-          required
-          maxLength={254}
-          autoComplete="email"
-        />
-        {(localErrors.email || errors.email) && (
-          <p className="text-red-400 text-sm">{localErrors.email || errors.email}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="phone" className="text-gold-300">
-          Téléphone *
-        </Label>
+      <div>
+        <Label htmlFor="phone">Téléphone *</Label>
         <Input
           id="phone"
-          type="tel"
-          value={formData.phone}
-          onChange={(e) => handleInputChange('phone', e.target.value)}
-          className="bg-gray-700 border-gold-500/30 text-white"
-          placeholder="+213 XXX XXX XXX"
+          value={personalInfo.phone}
+          onChange={(e) => handlePhoneChange(e.target.value)}
+          className="bg-gray-800 border-gold-500/20 text-white"
+          placeholder="+213 XX XX XX XX"
           required
-          maxLength={15}
-          autoComplete="tel"
         />
-        {(localErrors.phone || errors.phone) && (
-          <p className="text-red-400 text-sm">{localErrors.phone || errors.phone}</p>
+        {(errors.phone || localErrors.phone) && (
+          <p className="text-red-400 text-sm mt-1">{errors.phone || localErrors.phone}</p>
         )}
       </div>
     </div>

@@ -2,11 +2,12 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, ShoppingCart, Star } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { convertToDinars, formatPrice } from "@/utils/priceUtils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CheckoutFormContent from "./CheckoutFormContent";
+import RatingComponent from "./RatingComponent";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -60,9 +61,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const priceInDA = convertToDinars(product.price);
   const originalPriceInDA = product.originalPrice ? convertToDinars(product.originalPrice) : null;
 
-  // Generate random rating for display (between 4.0 and 5.0)
-  const rating = (4 + Math.random()).toFixed(1);
-
   return (
     <>
       <div className="group relative bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white/20 transition-all duration-300 border border-gold-500/20 hover:border-gold-500/40 hover:shadow-lg hover:shadow-gold-500/20">
@@ -94,19 +92,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <div className="p-4">
           <h3 className="text-gold-200 font-semibold mb-2 line-clamp-2">{product.title}</h3>
           
-          {/* Rating */}
-          <div className="flex items-center gap-1 mb-2">
-            {[...Array(5)].map((_, i) => (
-              <Star 
-                key={i} 
-                className={`h-3 w-3 ${
-                  i < Math.floor(parseFloat(rating)) 
-                    ? 'text-gold-400 fill-current' 
-                    : 'text-gray-400'
-                }`} 
-              />
-            ))}
-            <span className="text-xs text-gold-400 ml-1">({rating})</span>
+          {/* Composant d'évaluation */}
+          <div className="mb-3">
+            <RatingComponent productId={product.id} productTitle={product.title} />
           </div>
 
           <div className="flex items-center justify-between mb-3">
