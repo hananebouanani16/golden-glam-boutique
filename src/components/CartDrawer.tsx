@@ -11,11 +11,11 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
+import { ShoppingBag, Plus, Minus, Trash2, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useApp } from "@/contexts/AppContext";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import CheckoutForm from "./CheckoutForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import CheckoutFormContent from "./CheckoutFormContent";
 import { useState } from "react";
 import { convertToDinars, formatPrice } from "@/utils/priceUtils";
 
@@ -123,8 +123,24 @@ const CartDrawer = () => {
       </Drawer>
 
       <Dialog open={showCheckout} onOpenChange={setShowCheckout}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-black/95 backdrop-blur-sm border-gold-500/20">
-          <CheckoutForm onClose={() => setShowCheckout(false)} />
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900/95 backdrop-blur-sm border-gold-500/20 shadow-2xl">
+          <DialogHeader className="bg-gray-800/80 border-b border-gold-500/20 p-6 -m-6 mb-6">
+            <DialogTitle className="text-2xl gold-text flex items-center justify-between">
+              <div className="flex items-center">
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Finaliser la Commande
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowCheckout(false)}
+                className="text-gold-300 hover:text-gold-200"
+              >
+                ✕
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          <CheckoutFormContent onClose={() => setShowCheckout(false)} />
         </DialogContent>
       </Dialog>
     </>
