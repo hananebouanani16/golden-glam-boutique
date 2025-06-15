@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -7,6 +6,7 @@ import { Product } from "@/types/product";
 import ProductForm from "./ProductForm";
 import ProductTable from "./ProductTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import ImportRealProducts from "./ImportRealProducts";
 
 const ProductManagement = () => {
   const { toast } = useToast();
@@ -25,7 +25,6 @@ const ProductManagement = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
 
-  // Affiche tous les produits dans la console pour vérification
   useEffect(() => {
     console.log("[DEBUG Products] Liste complète des produits :", products);
   }, [products]);
@@ -127,7 +126,6 @@ const ProductManagement = () => {
             Rafraîchir les produits
           </Button>
 
-          {/* Bouton qui ouvre le Dialog pour ajouter un produit */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button
@@ -160,7 +158,9 @@ const ProductManagement = () => {
           </Dialog>
         </div>
       </div>
-      {/* Affiche tous les produits dans la table */}
+
+      <ImportRealProducts />
+
       <ProductTable 
         products={products}
         onEdit={handleEdit}
@@ -168,7 +168,6 @@ const ProductManagement = () => {
         onRestore={handleRestore}
         loading={loading}
       />
-      {/* Dialog pour édition : ouverture au clic "Modifier" */}
       <Dialog open={isDialogOpen && !!editingProduct} onOpenChange={setIsDialogOpen}>
         <DialogContent className="bg-gray-900 border border-gold-500/30">
           <DialogHeader>
@@ -192,4 +191,3 @@ const ProductManagement = () => {
 };
 
 export default ProductManagement;
-
