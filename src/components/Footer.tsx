@@ -1,6 +1,25 @@
 
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
+
+// J'ai importé une icône personnalisée pour TikTok car elle n'est pas dans la bibliothèque standard.
+const TiktokIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="h-6 w-6"
+  >
+    <path d="M12 12a4 4 0 1 0 4 4V8a8 8 0 1 1-8 8" />
+  </svg>
+);
+
 
 const Footer = () => {
   const { t } = useApp();
@@ -26,14 +45,14 @@ const Footer = () => {
               {t('footer_description')}
             </p>
             <div className="flex space-x-4 mt-6">
-              <a href="#" className="text-gold-400 hover:text-gold-300 transition-colors duration-300">
+              <a href="https://www.facebook.com/profile.php?id=100064048024708" target="_blank" rel="noopener noreferrer" className="text-gold-400 hover:text-gold-300 transition-colors duration-300">
                 <Facebook className="h-6 w-6" />
               </a>
-              <a href="#" className="text-gold-400 hover:text-gold-300 transition-colors duration-300">
+              <a href="https://www.instagram.com/nesrine._goldenhands?igsh=MXFwcnVrY3d3NTI0cg==" target="_blank" rel="noopener noreferrer" className="text-gold-400 hover:text-gold-300 transition-colors duration-300">
                 <Instagram className="h-6 w-6" />
               </a>
-              <a href="#" className="text-gold-400 hover:text-gold-300 transition-colors duration-300">
-                <Twitter className="h-6 w-6" />
+              <a href="https://www.tiktok.com/@nesrine.golden.hands?_t=ZN-8xEcJ6bwtyo&_r=1" target="_blank" rel="noopener noreferrer" className="text-gold-400 hover:text-gold-300 transition-colors duration-300">
+                <TiktokIcon />
               </a>
             </div>
           </div>
@@ -55,11 +74,11 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center text-gold-300">
                 <Mail className="h-4 w-4 mr-3" />
-                <span>contact@nesrinegoldenhands.com</span>
+                <span>goldenladytlm@gmail.com</span>
               </li>
               <li className="flex items-center text-gold-300">
                 <Phone className="h-4 w-4 mr-3" />
-                <span>+33 1 23 45 67 89</span>
+                <span>0560128042</span>
               </li>
               <li className="flex items-center text-gold-300">
                 <MapPin className="h-4 w-4 mr-3" />

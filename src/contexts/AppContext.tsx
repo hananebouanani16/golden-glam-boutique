@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Language = 'fr' | 'en' | 'ar';
@@ -39,7 +40,7 @@ const translations = {
     light_theme: 'Clair',
     footer_description: 'Nesrine Golden Hands vous propose une collection unique de sacs à main et bijoux artisanaux, créés avec passion pour sublimer votre style et votre élégance au quotidien.',
     quick_links: 'Liens Rapides',
-    location: 'Paris, France',
+    location: 'Tlemcen, Algérie',
     copyright: '© 2024 Nesrine Golden Hands. Tous droits réservés.',
     privacy_policy: 'Politique de Confidentialité',
     terms_of_use: 'Conditions d\'Utilisation'
@@ -69,7 +70,7 @@ const translations = {
     light_theme: 'Light',
     footer_description: 'Nesrine Golden Hands offers you a unique collection of handcrafted handbags and jewelry, created with passion to enhance your style and elegance in everyday life.',
     quick_links: 'Quick Links',
-    location: 'Paris, France',
+    location: 'Tlemcen, Algeria',
     copyright: '© 2024 Nesrine Golden Hands. All rights reserved.',
     privacy_policy: 'Privacy Policy',
     terms_of_use: 'Terms of Use'
@@ -99,7 +100,7 @@ const translations = {
     light_theme: 'فاتح',
     footer_description: 'نسرين الأيادي الذهبية تقدم لك مجموعة فريدة من الحقائب والمجوهرات المصنوعة يدوياً، والمصممة بشغف لتعزيز أناقتك وجمالك في الحياة اليومية.',
     quick_links: 'روابط سريعة',
-    location: 'باريس، فرنسا',
+    location: 'تلمسان، الجزائر',
     copyright: '© 2024 نسرين الأيادي الذهبية. جميع الحقوق محفوظة.',
     privacy_policy: 'سياسة الخصوصية',
     terms_of_use: 'شروط الاستخدام'
