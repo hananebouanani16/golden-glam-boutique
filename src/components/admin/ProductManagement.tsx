@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +33,11 @@ const ProductManagement = () => {
     { value: "sacs", label: "Sacs à main" },
     { value: "bijoux", label: "Bijoux" }
   ];
+
+  // Affiche tous les produits dans la console pour vérification
+  useEffect(() => {
+    console.log("[DEBUG Products] Liste complète des produits :", products);
+  }, [products]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,39 +130,20 @@ const ProductManagement = () => {
           >
             Réinitialiser les produits
           </Button>
-          <Dialog open={isDialogOpen} onOpenChange={(isOpen) => {
-            setIsDialogOpen(isOpen);
-            if (!isOpen) {
-              resetForm();
-            }
-          }}>
-            <DialogTrigger asChild>
-              <Button className="gold-button">
-                <Plus className="w-4 h-4 mr-2" />
-                Ajouter un Article
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-900 border border-gold-500/20 text-white max-w-md">
-              <DialogHeader>
-                <DialogTitle className="gold-text">
-                  {editingProduct ? "Modifier l'Article" : "Nouvel Article"}
-                </DialogTitle>
-              </DialogHeader>
-              <ProductForm
-                formData={formData}
-                setFormData={setFormData}
-                editingProduct={editingProduct}
-                imagePreview={imagePreview}
-                setImagePreview={setImagePreview}
-                setImageFile={setImageFile}
-                fileInputRef={fileInputRef}
-                onSubmit={handleSubmit}
-                onCancel={resetForm}
-              />
-            </DialogContent>
-          </Dialog>
+          <ProductForm
+            formData={formData}
+            setFormData={setFormData}
+            editingProduct={editingProduct}
+            imagePreview={imagePreview}
+            setImagePreview={setImagePreview}
+            setImageFile={setImageFile}
+            fileInputRef={fileInputRef}
+            onSubmit={handleSubmit}
+            onCancel={resetForm}
+          />
         </div>
       </div>
+      {/* Affiche tous les produits dans la table */}
       <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
     </div>
   );

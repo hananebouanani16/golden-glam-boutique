@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,26 +11,20 @@ import { CheckCircle, XCircle, Package, Phone, MapPin } from "lucide-react";
 
 const OrderManagement = () => {
   const { orders, updateOrderStatus } = useOrders();
+  // Par défaut, le filtre est "all" pour voir toutes les commandes
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  // Debug logging avec plus de détails
+  // Debug logging pour t'aider
   useEffect(() => {
-    console.log('=== OrderManagement Debug ===');
-    console.log('OrderManagement - Orders updated:', orders.length);
-    console.log('OrderManagement - All orders:', orders);
-    console.log('OrderManagement - Orders with status:', orders.map(o => ({ id: o.id, status: o.status, orderNumber: o.orderNumber })));
-    console.log('OrderManagement - Current statusFilter:', statusFilter);
-    console.log('=== End Debug ===');
-  }, [orders, statusFilter]);
+    console.log('=== DEBUG Orders ===');
+    console.log('Liste complète des commandes :', orders);
+    console.log('=== FIN DEBUG ===');
+  }, [orders]);
 
-  const filteredOrders = orders.filter(order => {
-    console.log(`Filtering order ${order.id} with status ${order.status} against filter ${statusFilter}`);
-    if (statusFilter === 'all') return true;
-    return order.status === statusFilter;
-  });
-
-  console.log('OrderManagement - Filtered orders:', filteredOrders.length);
-  console.log('OrderManagement - Filtered orders details:', filteredOrders.map(o => ({ id: o.id, status: o.status })));
+  // Ne filtre rien si statusFilter est "all"
+  const filteredOrders = statusFilter === 'all'
+    ? orders
+    : orders.filter(order => order.status === statusFilter);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
