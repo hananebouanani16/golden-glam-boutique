@@ -1,12 +1,12 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { bagsData } from "@/data/bagsData";
 import { jewelryData } from "@/data/jewelryData";
@@ -22,6 +22,7 @@ interface Product {
 
 const ProductManagement = () => {
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Convertir les données des sacs et bijoux au format uniforme
   const allProducts: Product[] = [
@@ -53,11 +54,28 @@ const ProductManagement = () => {
     category: "",
     image: ""
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   const categories = [
     { value: "sacs", label: "Sacs à main" },
     { value: "bijoux", label: "Bijoux" }
   ];
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setImagePreview(result);
+        setFormData({...formData, image: result});
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,6 +114,7 @@ const ProductManagement = () => {
       category: product.category,
       image: product.image
     });
+    setImagePreview(product.image);
     setIsDialogOpen(true);
   };
 
@@ -116,7 +135,12 @@ const ProductManagement = () => {
       image: ""
     });
     setEditingProduct(null);
+    setImageFile(null);
+    setImagePreview("");
     setIsDialogOpen(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -135,7 +159,7 @@ const ProductManagement = () => {
               Ajouter un Article
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-gray-900 border border-gold-500/20 text-white">
+          <DialogContent className="bg-gray-900 border border-gold-500/20 text-white max-w-md">
             <DialogHeader>
               <DialogTitle className="gold-text">
                 {editingProduct ? "Modifier l'Article" : "Nouvel Article"}
@@ -179,9 +203,9 @@ const ProductManagement = () => {
                   <SelectTrigger className="bg-gray-800 border-gold-500/20 text-white">
                     <SelectValue placeholder="Sélectionner une catégorie" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gold-500/20">
+                  <SelectContent className="bg-gray-800 border-gold-500/20 z-50">
                     {categories.map(cat => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-white">
+                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-gray-700">
                         {cat.label}
                       </SelectItem>
                     ))}
@@ -189,21 +213,44 @@ const ProductManagement = () => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="image">URL de l'Image</Label>
-                <Input
-                  id="image"
-                  value={formData.image}
-                  onChange={(e) => setFormData({...formData, image: e.target.value})}
-                  className="bg-gray-800 border-gold-500/20 text-white"
-                  placeholder="/lovable-uploads/..."
-                  required
-                />
+                <Label htmlFor="image">Image du Produit</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      ref={fileInputRef}
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="bg-gray-800 border-gold-500/20 text-white file:bg-gold-500 file:text-black file:border-0 file:rounded-md file:px-3 file:py-1 file:mr-3"
+                      required={!editingProduct}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-gold-500/20 text-gold-300 hover:bg-gold-500/10"
+                    >
+                      <Upload className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  {imagePreview && (
+                    <div className="mt-2">
+                      <img
+                        src={imagePreview}
+                        alt="Aperçu"
+                        className="w-20 h-20 object-cover rounded-lg border border-gold-500/20"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 pt-4">
                 <Button type="submit" className="gold-button flex-1">
                   {editingProduct ? "Modifier" : "Ajouter"}
                 </Button>
-                <Button type="button" variant="outline" onClick={resetForm} className="flex-1">
+                <Button type="button" variant="outline" onClick={resetForm} className="flex-1 border-gold-500/20 text-gold-300">
                   Annuler
                 </Button>
               </div>
