@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from '@/types/product';
@@ -19,7 +18,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch all products non-supprimés
+  // Force à chaque modification une lecture fraîche depuis Supabase !
   const fetchProducts = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -37,17 +36,21 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       .filter((p) => !p.deleted_at);
     setProducts(filtered);
     setLoading(false);
+
+    // Log pour tracking
+    console.log("[ProductContext] Produits rafraîchis: ", filtered);
   };
 
   useEffect(() => {
+    // Rafraîchit toujours à l’init (montage)
     fetchProducts();
-    // Optionnel: ajouter du temps réel ici
+    // ... on pourrait ajouter du temps réel plus tard
   }, []);
 
   const addProduct = async (productData: Omit<Product, "id">) => {
     const { error } = await supabase.from('products').insert([productData]);
     if (!error) {
-      await fetchProducts();
+      await fetchProducts();  // On force le refetch
     } else {
       console.error("[ProductContext] addProduct Supabase error:", error);
     }
@@ -56,10 +59,16 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   const updateProduct = async (updatedProduct: Product) => {
     const { error } = await supabase
       .from("products")
-      .update(updatedProduct)
+      .update({
+        title: updatedProduct.title,
+        price: updatedProduct.price,
+        original_price: updatedProduct.originalPrice || null,
+        category: updatedProduct.category,
+        image: updatedProduct.image ?? null,
+      })
       .eq("id", updatedProduct.id);
     if (!error) {
-      await fetchProducts();
+      await fetchProducts(); // On force le refetch ici aussi
     } else {
       console.error("[ProductContext] updateProduct Supabase error:", error);
     }
@@ -72,7 +81,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", productId);
     if (!error) {
-      await fetchProducts();
+      await fetchProducts(); // On force le refetch
     } else {
       console.error("[ProductContext] deleteProduct Supabase error:", error);
     }
@@ -91,7 +100,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     }
   };
 
-  // RESET : pas utile avec la base Supabase, mais on conserve une interface compatible
+  // Pour interface : on garde la méthode pour forcer rafraîchissement manuel
   const resetProducts = () => {
     fetchProducts();
   };
