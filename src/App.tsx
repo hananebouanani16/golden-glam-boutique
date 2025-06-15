@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { OrderProvider } from "@/contexts/OrderContext";
+import { ProductProvider } from "@/contexts/ProductContext";
 import { AppProvider } from "@/contexts/AppContext";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
@@ -17,20 +18,22 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AppProvider>
       <AuthProvider>
-        <CartProvider>
-          <OrderProvider>
-            <TooltipProvider>
-              <Toaster />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/admin_gestion" element={<Admin />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </TooltipProvider>
-          </OrderProvider>
-        </CartProvider>
+        <ProductProvider>
+          <CartProvider>
+            <OrderProvider>
+              <TooltipProvider>
+                <Toaster />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/admin_gestion" element={<Admin />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </TooltipProvider>
+            </OrderProvider>
+          </CartProvider>
+        </ProductProvider>
       </AuthProvider>
     </AppProvider>
   </QueryClientProvider>

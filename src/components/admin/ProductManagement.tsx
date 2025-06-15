@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,46 +7,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Edit, Trash2, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { bagsData } from "@/data/bagsData";
-import { jewelryData } from "@/data/jewelryData";
-
-interface Product {
-  id: string;
-  title: string;
-  price: string;
-  originalPrice?: string;
-  category: string;
-  image: string;
-}
+import { useProducts } from "@/contexts/ProductContext";
+import { Product } from "@/types/product";
 
 const ProductManagement = () => {
   const { toast } = useToast();
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Convertir les données des sacs et bijoux au format uniforme
-  const allProducts: Product[] = [
-    ...bagsData.map(bag => ({
-      id: bag.id,
-      title: bag.title,
-      price: bag.price,
-      originalPrice: bag.originalPrice,
-      category: "sacs",
-      image: bag.image
-    })),
-    ...jewelryData.map(jewelry => ({
-      id: jewelry.id,
-      title: jewelry.title,
-      price: jewelry.price,
-      originalPrice: jewelry.originalPrice,
-      category: "bijoux",
-      image: jewelry.image
-    }))
-  ];
-
-  const [products, setProducts] = useState<Product[]>(allProducts);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Omit<Product, 'id'>>({
     title: "",
     price: "",
     originalPrice: "",
@@ -66,7 +36,6 @@ const ProductManagement = () => {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
-      // Create preview URL
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
@@ -81,21 +50,13 @@ const ProductManagement = () => {
     e.preventDefault();
     
     if (editingProduct) {
-      setProducts(products.map(p => 
-        p.id === editingProduct.id 
-          ? { ...editingProduct, ...formData }
-          : p
-      ));
+      updateProduct({ ...formData, id: editingProduct.id });
       toast({
         title: "Produit modifié",
         description: "Le produit a été modifié avec succès."
       });
     } else {
-      const newProduct: Product = {
-        id: Date.now().toString(),
-        ...formData
-      };
-      setProducts([...products, newProduct]);
+      addProduct(formData);
       toast({
         title: "Produit ajouté",
         description: "Le nouveau produit a été ajouté avec succès."
@@ -119,7 +80,7 @@ const ProductManagement = () => {
   };
 
   const handleDelete = (id: string) => {
-    setProducts(products.filter(p => p.id !== id));
+    deleteProduct(id);
     toast({
       title: "Produit supprimé",
       description: "Le produit a été supprimé avec succès."
@@ -152,7 +113,12 @@ const ProductManagement = () => {
             {products.length} produits au total ({products.filter(p => p.category === 'sacs').length} sacs, {products.filter(p => p.category === 'bijoux').length} bijoux)
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={(isOpen) => {
+          setIsDialogOpen(isOpen);
+          if (!isOpen) {
+            resetForm();
+          }
+        }}>
           <DialogTrigger asChild>
             <Button className="gold-button">
               <Plus className="w-4 h-4 mr-2" />
@@ -191,7 +157,7 @@ const ProductManagement = () => {
                 <Label htmlFor="originalPrice">Prix Original (optionnel)</Label>
                 <Input
                   id="originalPrice"
-                  value={formData.originalPrice}
+                  value={formData.originalPrice || ''}
                   onChange={(e) => setFormData({...formData, originalPrice: e.target.value})}
                   className="bg-gray-800 border-gold-500/20 text-white"
                   placeholder="ex: 120€"

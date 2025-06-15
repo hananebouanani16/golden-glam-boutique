@@ -67,11 +67,11 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
       ...orderData,
       id: Date.now().toString(),
       orderNumber: `CMD-${Date.now()}`,
-      status: 'confirmed',
+      status: 'pending', // <--- CORRECTIF: le statut par défaut est maintenant 'pending'
       createdAt: new Date()
     };
     
-    console.log('OrderContext - Adding new order with confirmed status:', newOrder);
+    console.log('OrderContext - Adding new order with pending status:', newOrder);
     console.log('OrderContext - Order items:', newOrder.items);
     console.log('OrderContext - Customer info:', newOrder.customerInfo);
     
