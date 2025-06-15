@@ -49,7 +49,13 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   const addProduct = async (productData: Omit<Product, "id">) => {
-    const { error } = await supabase.from('products').insert([productData]);
+    const { error } = await supabase.from('products').insert([{
+      title: productData.title,
+      price: productData.price,
+      original_price: productData.originalPrice || null,
+      category: productData.category,
+      image: productData.image || null,
+    }]);
     if (error) {
       console.error("[ProductContext] addProduct Supabase error:", error);
       throw error;
