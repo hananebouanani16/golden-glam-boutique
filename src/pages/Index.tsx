@@ -10,7 +10,10 @@ const Index = () => {
   const { t } = useApp();
   const { products } = useProducts();
 
-  // On filtre dynamiquement par catégorie en utilisant les produits du contexte
+  // Affiche maintenant TOUS les produits non supprimés, peu importe la catégorie
+  const allData = products;
+
+  // On garde aussi les sections par catégories comme avant
   const bagsData = products.filter((p) => p.category === "sacs");
   const jewelryData = products.filter((p) => p.category === "bijoux");
 
@@ -18,6 +21,12 @@ const Index = () => {
     <div className="min-h-screen">
       <Header />
       <Hero />
+      <ProductGrid
+        id="all-products"
+        title="Tous les produits"
+        subtitle="Liste complète de tous les produits présents dans la base (hors supprimés)"
+        products={allData}
+      />
       <ProductGrid
         id="sacs"
         title={t('bags_title')}
@@ -36,3 +45,4 @@ const Index = () => {
 };
 
 export default Index;
+
