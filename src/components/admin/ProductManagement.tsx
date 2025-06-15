@@ -1,22 +1,18 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProducts } from "@/contexts/ProductContext";
 import { Product } from "@/types/product";
 import ProductForm from "./ProductForm";
 import ProductTable from "./ProductTable";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const ProductManagement = () => {
   const { toast } = useToast();
   const { products, addProduct, updateProduct, deleteProduct, restoreProduct, resetProducts, loading } = useProducts();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState<Omit<Product, 'id'>>({
@@ -28,11 +24,6 @@ const ProductManagement = () => {
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
-
-  const categories = [
-    { value: "sacs", label: "Sacs à main" },
-    { value: "bijoux", label: "Bijoux" }
-  ];
 
   // Affiche tous les produits dans la console pour vérification
   useEffect(() => {
@@ -74,7 +65,7 @@ const ProductManagement = () => {
       category: product.category,
       image: product.image
     });
-    setImagePreview(product.image);
+    setImagePreview(product.image || "");
     setIsDialogOpen(true);
   };
 
@@ -135,6 +126,54 @@ const ProductManagement = () => {
           >
             Rafraîchir les produits
           </Button>
+
+          {/* Bouton qui ouvre le Dialog pour ajouter un produit */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                type="button"
+                className="gold-button"
+                onClick={() => {
+                  resetForm();
+                  setIsDialogOpen(true);
+                }}
+              >
+                Ajouter un produit
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border border-gold-500/30">
+              <DialogHeader>
+                <DialogTitle>{editingProduct ? "Modifier le produit" : "Ajouter un produit"}</DialogTitle>
+              </DialogHeader>
+              <ProductForm
+                formData={formData}
+                setFormData={setFormData}
+                editingProduct={editingProduct}
+                imagePreview={imagePreview}
+                setImagePreview={setImagePreview}
+                setImageFile={setImageFile}
+                fileInputRef={fileInputRef}
+                onSubmit={handleSubmit}
+                onCancel={resetForm}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+      {/* Affiche tous les produits dans la table */}
+      <ProductTable 
+        products={products}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onRestore={handleRestore}
+        loading={loading}
+      />
+      {/* Dialog pour édition : ouverture au clic "Modifier" */}
+      <Dialog open={isDialogOpen && !!editingProduct} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="bg-gray-900 border border-gold-500/30">
+          <DialogHeader>
+            <DialogTitle>Modifier le produit</DialogTitle>
+          </DialogHeader>
           <ProductForm
             formData={formData}
             setFormData={setFormData}
@@ -146,18 +185,11 @@ const ProductManagement = () => {
             onSubmit={handleSubmit}
             onCancel={resetForm}
           />
-        </div>
-      </div>
-      {/* Affiche tous les produits dans la table */}
-      <ProductTable 
-        products={products}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onRestore={handleRestore}
-        loading={loading}
-      />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
 export default ProductManagement;
+
