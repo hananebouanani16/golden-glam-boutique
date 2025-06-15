@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '@/types/product';
 import { bagsData } from "@/data/bagsData";
@@ -9,6 +8,7 @@ interface ProductContextType {
   addProduct: (product: Omit<Product, 'id'>) => void;
   updateProduct: (product: Product) => void;
   deleteProduct: (productId: string) => void;
+  resetProducts: () => void; // nouvelle méthode pour réinitialiser
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -40,7 +40,11 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     localStorage.setItem('products', JSON.stringify(products));
   }, [products]);
 
-  // --- On SUPPRIME le useEffect qui réinjecte baseProducts en cas de produits.length === 0 ---
+  // Ajout de la fonction pour réinitialiser les produits
+  const resetProducts = () => {
+    setProducts(baseProducts);
+    localStorage.setItem('products', JSON.stringify(baseProducts));
+  };
 
   const addProduct = (productData: Omit<Product, 'id'>) => {
     const newProduct: Product = {
@@ -59,7 +63,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   };
 
   return (
-    <ProductContext.Provider value={{ products, addProduct, updateProduct, deleteProduct }}>
+    <ProductContext.Provider value={{ products, addProduct, updateProduct, deleteProduct, resetProducts }}>
       {children}
     </ProductContext.Provider>
   );

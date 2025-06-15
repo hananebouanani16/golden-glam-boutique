@@ -14,7 +14,7 @@ import ProductTable from "./ProductTable";
 
 const ProductManagement = () => {
   const { toast } = useToast();
-  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
+  const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -110,37 +110,53 @@ const ProductManagement = () => {
             {products.length} produits au total ({products.filter(p => p.category === 'sacs').length} sacs, {products.filter(p => p.category === 'bijoux').length} bijoux)
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={(isOpen) => {
-          setIsDialogOpen(isOpen);
-          if (!isOpen) {
-            resetForm();
-          }
-        }}>
-          <DialogTrigger asChild>
-            <Button className="gold-button">
-              <Plus className="w-4 h-4 mr-2" />
-              Ajouter un Article
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-gray-900 border border-gold-500/20 text-white max-w-md">
-            <DialogHeader>
-              <DialogTitle className="gold-text">
-                {editingProduct ? "Modifier l'Article" : "Nouvel Article"}
-              </DialogTitle>
-            </DialogHeader>
-            <ProductForm
-              formData={formData}
-              setFormData={setFormData}
-              editingProduct={editingProduct}
-              imagePreview={imagePreview}
-              setImagePreview={setImagePreview}
-              setImageFile={setImageFile}
-              fileInputRef={fileInputRef}
-              onSubmit={handleSubmit}
-              onCancel={resetForm}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="border-gold-500/20 text-gold-300"
+            onClick={() => {
+              resetProducts();
+              toast({
+                title: "Produits réinitialisés",
+                description: "La liste de produits a été réinitialisée avec les articles de base."
+              });
+            }}
+          >
+            Réinitialiser les produits
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={(isOpen) => {
+            setIsDialogOpen(isOpen);
+            if (!isOpen) {
+              resetForm();
+            }
+          }}>
+            <DialogTrigger asChild>
+              <Button className="gold-button">
+                <Plus className="w-4 h-4 mr-2" />
+                Ajouter un Article
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border border-gold-500/20 text-white max-w-md">
+              <DialogHeader>
+                <DialogTitle className="gold-text">
+                  {editingProduct ? "Modifier l'Article" : "Nouvel Article"}
+                </DialogTitle>
+              </DialogHeader>
+              <ProductForm
+                formData={formData}
+                setFormData={setFormData}
+                editingProduct={editingProduct}
+                imagePreview={imagePreview}
+                setImagePreview={setImagePreview}
+                setImageFile={setImageFile}
+                fileInputRef={fileInputRef}
+                onSubmit={handleSubmit}
+                onCancel={resetForm}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
     </div>
