@@ -17,6 +17,7 @@ import { useApp } from "@/contexts/AppContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import CheckoutForm from "./CheckoutForm";
 import { useState } from "react";
+import { convertToDinars, formatPrice } from "@/utils/priceUtils";
 
 const CartDrawer = () => {
   const { t } = useApp();
@@ -50,46 +51,49 @@ const CartDrawer = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {cartItems.map(item => (
-                  <div key={item.id} className="flex items-center space-x-4 p-4 gold-border rounded-lg">
-                    <img 
-                      src={item.image} 
-                      alt={item.title}
-                      className="w-16 h-16 object-cover rounded-lg"
-                    />
-                    <div className="flex-1">
-                      <h4 className="text-gold-200 font-semibold">{item.title}</h4>
-                      <p className="text-gold-400">{item.price}</p>
+                {cartItems.map(item => {
+                  const priceInDA = convertToDinars(item.price);
+                  return (
+                    <div key={item.id} className="flex items-center space-x-4 p-4 gold-border rounded-lg">
+                      <img 
+                        src={item.image} 
+                        alt={item.title}
+                        className="w-16 h-16 object-cover rounded-lg"
+                      />
+                      <div className="flex-1">
+                        <h4 className="text-gold-200 font-semibold">{item.title}</h4>
+                        <p className="text-gold-400">{formatPrice(priceInDA)}</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="h-8 w-8 text-gold-300 hover:text-gold-200"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="text-gold-200 min-w-[2rem] text-center">{item.quantity}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="h-8 w-8 text-gold-300 hover:text-gold-200"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeFromCart(item.id)}
+                          className="h-8 w-8 text-red-400 hover:text-red-300"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="h-8 w-8 text-gold-300 hover:text-gold-200"
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="text-gold-200 min-w-[2rem] text-center">{item.quantity}</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="h-8 w-8 text-gold-300 hover:text-gold-200"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeFromCart(item.id)}
-                        className="h-8 w-8 text-red-400 hover:text-red-300"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -98,7 +102,7 @@ const CartDrawer = () => {
             <DrawerFooter>
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-bold text-gold-200">Total:</span>
-                <span className="text-lg font-bold gold-text">{getCartTotal().toFixed(2)} DA</span>
+                <span className="text-lg font-bold gold-text">{formatPrice(getCartTotal())}</span>
               </div>
               <div className="flex gap-2">
                 <DrawerClose asChild>
@@ -119,7 +123,7 @@ const CartDrawer = () => {
       </Drawer>
 
       <Dialog open={showCheckout} onOpenChange={setShowCheckout}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-black/95 backdrop-blur-sm border-gold-500/20">
           <CheckoutForm onClose={() => setShowCheckout(false)} />
         </DialogContent>
       </Dialog>

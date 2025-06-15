@@ -1,109 +1,117 @@
 
+import React from 'react';
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, ShoppingBag } from "lucide-react";
-import { useApp } from "@/contexts/AppContext";
+import { Heart, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { convertToDinars, formatPrice } from "@/utils/priceUtils";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import CheckoutForm from "./CheckoutForm";
+import { useState } from "react";
 
-interface ProductCardProps {
+export interface Product {
   id: string;
   image: string;
   title: string;
   price: string;
   originalPrice?: string;
+  badge?: string;
   category: string;
 }
 
-const ProductCard = ({ id, image, title, price, originalPrice, category }: ProductCardProps) => {
-  const { t } = useApp();
-  const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
+interface ProductCardProps {
+  product: Product;
+}
 
-  // Créer un objet product pour les fonctions du panier
-  const product = {
-    id,
-    image,
-    title,
-    price,
-    originalPrice,
-    category
-  };
-
-  const isLiked = isInWishlist(product.id);
-
-  const handleWishlistToggle = () => {
-    console.log('Wishlist toggle clicked for product:', product.id);
-    console.log('Current wishlist state:', isLiked);
-    
-    if (isLiked) {
-      console.log('Removing from wishlist');
-      removeFromWishlist(product.id);
-    } else {
-      console.log('Adding to wishlist');
-      addToWishlist(product);
-    }
-  };
-
+const ProductCard = ({ product }: ProductCardProps) => {
+  const { addToCart, addToWishlist, isInWishlist } = useCart();
+  const [showCheckout, setShowCheckout] = useState(false);
+  
   const handleAddToCart = () => {
-    console.log('Adding to cart:', product);
     addToCart(product);
   };
 
+  const handleToggleWishlist = () => {
+    addToWishlist(product);
+  };
+
+  const handleBuyNow = () => {
+    addToCart(product);
+    setShowCheckout(true);
+  };
+
+  const priceInDA = convertToDinars(product.price);
+  const originalPriceInDA = product.originalPrice ? convertToDinars(product.originalPrice) : null;
+
   return (
-    <div className="group relative bg-gradient-to-br from-gray-900 to-black [data-theme='light']_&:from-white [data-theme='light']_&:to-gray-50 rounded-xl overflow-hidden gold-border hover:shadow-2xl hover:shadow-gold-500/20 transition-all duration-500 transform hover:-translate-y-2">
-      {/* Image container */}
-      <div className="relative aspect-square overflow-hidden">
-        <img 
-          src={image} 
-          alt={title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-        />
-        
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
-        {/* Favorite button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className={`absolute top-3 right-3 rounded-full z-10 ${isLiked ? 'text-red-500 bg-white/20' : 'text-white/70 bg-black/20'} hover:bg-white/30 transition-all duration-300`}
-          onClick={handleWishlistToggle}
-        >
-          <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
-        </Button>
-
-        {/* Category badge */}
-        <div className="absolute top-3 left-3 bg-gold-500 text-black px-3 py-1 rounded-full text-xs font-semibold">
-          {category}
+    <>
+      <div className="group relative bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white/20 transition-all duration-300 border border-gold-500/20">
+        <div className="relative overflow-hidden">
+          <img
+            src={product.image}
+            alt={product.title}
+            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          {product.badge && (
+            <Badge className="absolute top-2 left-2 bg-gold-500 text-black hover:bg-gold-400">
+              {product.badge}
+            </Badge>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleToggleWishlist}
+            className={`absolute top-2 right-2 ${
+              isInWishlist(product.id) 
+                ? 'text-red-500 hover:text-red-400' 
+                : 'text-gold-300 hover:text-gold-200'
+            } hover:bg-black/20`}
+          >
+            <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+          </Button>
         </div>
-
-        {/* Shimmer effect */}
-        <div className="absolute inset-0 shimmer-effect opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      </div>
-
-      {/* Content */}
-      <div className="p-6">
-        <h3 className="text-lg font-semibold text-gold-200 mb-2 group-hover:gold-text transition-colors duration-300">
-          {title}
-        </h3>
         
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-2">
-            <span className="text-xl font-bold gold-text">{price}</span>
-            {originalPrice && (
-              <span className="text-sm text-gray-400 line-through">{originalPrice}</span>
-            )}
+        <div className="p-4">
+          <h3 className="text-gold-200 font-semibold mb-2 line-clamp-2">{product.title}</h3>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-gold-400 font-bold">{formatPrice(priceInDA)}</span>
+              {originalPriceInDA && (
+                <span className="text-gray-400 line-through text-sm">
+                  {formatPrice(originalPriceInDA)}
+                </span>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button
+              onClick={handleAddToCart}
+              variant="outline"
+              className="flex-1 gold-border hover:bg-gold-500/10"
+            >
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Ajouter
+            </Button>
+            <Button
+              onClick={handleBuyNow}
+              className="flex-1 gold-button"
+            >
+              Acheter
+            </Button>
           </div>
         </div>
-
-        {/* Action button */}
-        <Button 
-          className="w-full gold-button group-hover:animate-glow"
-          onClick={handleAddToCart}
-        >
-          <ShoppingBag className="w-4 h-4 mr-2" />
-          {t('add_to_cart')}
-        </Button>
       </div>
-    </div>
+
+      <Dialog open={showCheckout} onOpenChange={setShowCheckout}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-black/95 backdrop-blur-sm border-gold-500/20">
+          <CheckoutForm 
+            onClose={() => setShowCheckout(false)}
+            initialProduct={product}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

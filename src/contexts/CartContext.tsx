@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { convertToDinars } from '@/utils/priceUtils';
 
 export interface Product {
   id: string;
@@ -134,8 +135,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => {
-      const price = parseFloat(item.price.replace(/[^\d.]/g, ''));
-      return total + (price * item.quantity);
+      const priceInDA = convertToDinars(item.price);
+      return total + (priceInDA * item.quantity);
     }, 0);
   };
 
