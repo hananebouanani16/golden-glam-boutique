@@ -1,10 +1,10 @@
 
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useApp } from "@/contexts/AppContext";
 import LanguageThemeSelector from "./LanguageThemeSelector";
 import CartDrawer from "./CartDrawer";
 import WishlistDrawer from "./WishlistDrawer";
-import { useApp } from "@/contexts/AppContext";
+import MobileMenu from "./MobileMenu";
+import SearchBar from "./SearchBar";
 
 const Header = () => {
   const { t } = useApp();
@@ -49,11 +49,10 @@ const Header = () => {
           {/* Actions */}
           <div className="flex items-center space-x-4">
             <LanguageThemeSelector />
+            <SearchBar />
             <WishlistDrawer />
             <CartDrawer />
-            <Button variant="ghost" size="icon" className="md:hidden text-gold-300 hover:text-gold-200">
-              <Menu className="h-5 w-5" />
-            </Button>
+            <MobileMenu />
           </div>
         </div>
       </div>

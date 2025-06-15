@@ -11,6 +11,7 @@ import PersonalInfoSection from "./checkout/PersonalInfoSection";
 import DeliveryInfoSection from "./checkout/DeliveryInfoSection";
 import OrderSummarySection from "./checkout/OrderSummarySection";
 import PaymentInfoSection from "./checkout/PaymentInfoSection";
+import OrderConfirmationPage from "./OrderConfirmationPage";
 
 interface CheckoutFormContentProps {
   onClose: () => void;
@@ -31,6 +32,8 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
   const [wilaya, setWilaya] = useState("");
   const [deliveryType, setDeliveryType] = useState<'home' | 'office'>('home');
   const [address, setAddress] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
 
   const { cartItems, clearCart } = useCart();
   const { addOrder } = useOrders();
@@ -85,10 +88,34 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
     };
 
     addOrder(order);
+    const newOrderNumber = `CMD-${Date.now()}`;
+    setOrderNumber(newOrderNumber);
     clearCart();
-    toast.success("Commande enregistrée avec succès!");
-    onClose();
+    
+    toast.success("Commande enregistrée avec succès!", {
+      description: `Numéro de commande: ${newOrderNumber}`,
+      duration: 5000,
+    });
+    
+    setShowConfirmation(true);
   };
+
+  if (showConfirmation) {
+    return (
+      <OrderConfirmationPage
+        orderNumber={orderNumber}
+        customerInfo={{
+          firstName,
+          lastName,
+          phone,
+          wilaya,
+          deliveryType,
+          address
+        }}
+        onClose={onClose}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 p-6">
