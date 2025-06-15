@@ -4,33 +4,32 @@ import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
 import Footer from "@/components/Footer";
 import { useApp } from "@/contexts/AppContext";
-import { getBagsWithTranslations, getJewelryWithTranslations } from "@/utils/productUtils";
+import { useProducts } from "@/contexts/ProductContext";
 
 const Index = () => {
   const { t } = useApp();
+  const { products } = useProducts();
 
-  const bagsData = getBagsWithTranslations(t);
-  const jewelryData = getJewelryWithTranslations();
+  // Filtrer dynamiquement selon la catégorie
+  const bagsData = products.filter((p) => p.category === "sacs");
+  const jewelryData = products.filter((p) => p.category === "bijoux");
 
   return (
     <div className="min-h-screen">
       <Header />
       <Hero />
-      
-      <ProductGrid 
+      <ProductGrid
         id="sacs"
         title={t('bags_title')}
         subtitle={t('bags_subtitle')}
         products={bagsData}
       />
-      
-      <ProductGrid 
+      <ProductGrid
         id="bijoux"
         title={t('jewelry_title')}
         subtitle={t('jewelry_subtitle')}
         products={jewelryData}
       />
-      
       <Footer />
     </div>
   );
