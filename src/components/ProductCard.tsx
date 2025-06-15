@@ -9,7 +9,7 @@ import { convertToDinars, formatPrice } from "@/utils/priceUtils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CheckoutFormContent from "./CheckoutFormContent";
 import RatingComponent from "./RatingComponent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export interface Product {
@@ -28,6 +28,8 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart, addToWishlist, isInWishlist } = useCart();
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [isProductPurchased, setIsProductPurchased] = useState(false);
   
   // Utilisation sécurisée de useOrders avec try/catch
   let orders: any[] = [];
@@ -42,44 +44,47 @@ const ProductCard = ({ product }: ProductCardProps) => {
     ordersError = true;
   }
   
-  const [showCheckout, setShowCheckout] = useState(false);
-  
   // Safety check for undefined product or missing price
   if (!product || !product.price) {
     console.error('ProductCard received invalid product:', product);
     return null;
   }
 
-  // Debug: Log orders and current product
-  console.log('ProductCard Debug - All orders:', orders);
-  console.log('ProductCard Debug - Current product ID:', product.id);
-  console.log('ProductCard Debug - Checking product purchase status for:', product.title);
-  console.log('ProductCard Debug - Orders error:', ordersError);
-
-  // Vérifier si le produit a déjà été acheté avec des logs détaillés
-  const isProductPurchased = !ordersError && orders.some(order => {
-    console.log('ProductCard Debug - Checking order:', order.id, 'status:', order.status);
-    console.log('ProductCard Debug - Order items:', order.items);
+  // Effet pour mettre à jour le statut d'achat quand les commandes changent
+  useEffect(() => {
+    console.log('ProductCard useEffect - Orders changed:', orders.length);
+    console.log('ProductCard useEffect - Current product ID:', product.id);
     
-    // Vérifier seulement les commandes confirmées
-    if (order.status !== 'confirmed') {
-      console.log('ProductCard Debug - Order not confirmed, skipping');
-      return false;
+    if (ordersError) {
+      setIsProductPurchased(false);
+      return;
     }
-    
-    const found = order.items.some(item => {
-      console.log('ProductCard Debug - Comparing item ID:', item.id, 'with product ID:', product.id);
-      return item.id === product.id;
+
+    const purchased = orders.some(order => {
+      console.log('ProductCard useEffect - Checking order:', order.id, 'status:', order.status);
+      console.log('ProductCard useEffect - Order items:', order.items);
+      
+      // Vérifier seulement les commandes confirmées
+      if (order.status !== 'confirmed') {
+        console.log('ProductCard useEffect - Order not confirmed, skipping');
+        return false;
+      }
+      
+      const found = order.items.some(item => {
+        console.log('ProductCard useEffect - Comparing item ID:', item.id, 'with product ID:', product.id);
+        return item.id === product.id;
+      });
+      
+      if (found) {
+        console.log('ProductCard useEffect - Product found in confirmed order!');
+      }
+      
+      return found;
     });
     
-    if (found) {
-      console.log('ProductCard Debug - Product found in confirmed order!');
-    }
-    
-    return found;
-  });
-  
-  console.log('ProductCard Debug - Final isProductPurchased result:', isProductPurchased, 'for product:', product.title);
+    console.log('ProductCard useEffect - Final purchased result:', purchased, 'for product:', product.title);
+    setIsProductPurchased(purchased);
+  }, [orders, product.id, product.title, ordersError]);
   
   const handleAddToCart = () => {
     console.log('ProductCard Debug - handleAddToCart called, isProductPurchased:', isProductPurchased);
