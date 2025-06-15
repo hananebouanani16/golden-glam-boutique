@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -140,7 +141,7 @@ const ProductManagement = () => {
         <div>
           <h2 className="text-2xl font-bold gold-text">Gestion des Articles</h2>
           <p className="text-gray-400 mt-1">
-            {products.length} produits au total ({products.filter(p => p.category === 'sacs').length} sacs, {products.filter(p => p.category === 'bijoux').length} bijoux)
+            {products.length} produits au total ({products.filter(p => p.category?.trim() === 'sacs').length} sacs, {products.filter(p => p.category?.trim() === 'bijoux').length} bijoux)
           </p>
         </div>
         <div className="flex gap-2">

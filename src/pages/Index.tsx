@@ -25,9 +25,9 @@ const Index = () => {
   // Affiche maintenant TOUS les produits non supprimés, peu importe la catégorie
   const allData = products;
 
-  // On garde aussi les sections par catégories comme avant
-  const bagsData = products.filter((p) => p.category === "sacs");
-  const jewelryData = products.filter((p) => p.category === "bijoux");
+  // On garde aussi les sections par catégories comme avant, en s'assurant de la propreté des données
+  const bagsData = products.filter((p) => p.category?.trim() === "sacs");
+  const jewelryData = products.filter((p) => p.category?.trim() === "bijoux");
 
   return (
     <div className="min-h-screen">

@@ -29,7 +29,7 @@ const ProductGrid = ({ id, title, subtitle, products }: ProductGridProps) => {
     if (!product || !product.price) return false;
 
     // Category filter
-    if (filters.category !== "all" && product.category !== filters.category) {
+    if (filters.category !== "all" && product.category?.trim() !== filters.category) {
       return false;
     }
 
