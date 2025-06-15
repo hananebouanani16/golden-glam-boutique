@@ -5,10 +5,22 @@ import ProductGrid from "@/components/ProductGrid";
 import Footer from "@/components/Footer";
 import { useApp } from "@/contexts/AppContext";
 import { useProducts } from "@/contexts/ProductContext";
+import { useEffect } from "react";
 
 const Index = () => {
   const { t } = useApp();
-  const { products } = useProducts();
+  const { products, loading } = useProducts();
+
+  // Log pour débogage
+  useEffect(() => {
+    if (!loading && products.length > 0) {
+      console.log("--- [Debug] Vérification des catégories des produits sur la page d'accueil ---");
+      products.forEach(p => {
+        console.log(`Produit: "${p.title}", Catégorie: "${p.category}"`);
+      });
+      console.log("--- Fin de la vérification ---");
+    }
+  }, [products, loading]);
 
   // Affiche maintenant TOUS les produits non supprimés, peu importe la catégorie
   const allData = products;
@@ -45,4 +57,3 @@ const Index = () => {
 };
 
 export default Index;
-
