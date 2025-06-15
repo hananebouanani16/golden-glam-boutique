@@ -20,7 +20,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   ];
   const [products, setProducts] = useState<Product[]>([]);
 
-  // Charger les produits au démarrage
+  // Charger les produits au démarrage uniquement
   useEffect(() => {
     const savedProductsRaw = localStorage.getItem('products');
     if (savedProductsRaw) {
@@ -40,14 +40,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     localStorage.setItem('products', JSON.stringify(products));
   }, [products]);
 
-  // Si liste vide, réinjecter les produits de base
-  useEffect(() => {
-    if (products.length === 0) {
-      setProducts(baseProducts);
-      localStorage.setItem('products', JSON.stringify(baseProducts));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products.length]);
+  // --- On SUPPRIME le useEffect qui réinjecte baseProducts en cas de produits.length === 0 ---
 
   const addProduct = (productData: Omit<Product, 'id'>) => {
     const newProduct: Product = {
