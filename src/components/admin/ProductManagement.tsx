@@ -48,7 +48,17 @@ const ProductManagement = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // On vérifie que le prix est un nombre positif
+    if (!/^\d+$/.test(formData.price) || (formData.originalPrice && !/^\d+$/.test(formData.originalPrice))) {
+      toast({
+        title: "Format de prix invalide",
+        description: "Veuillez entrer un prix en dinar algérien sans caractères spéciaux.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (editingProduct) {
       updateProduct({ ...formData, id: editingProduct.id });
       toast({
@@ -143,24 +153,33 @@ const ProductManagement = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="price">Prix</Label>
+                <Label htmlFor="price">Prix (en DA)</Label>
                 <Input
                   id="price"
                   value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: e.target.value})}
+                  onChange={(e) => {
+                    // on accepte seulement des chiffres
+                    const val = e.target.value.replace(/[^\d]/g,"");
+                    setFormData({...formData, price: val});
+                  }}
                   className="bg-gray-800 border-gold-500/20 text-white"
-                  placeholder="ex: 89€"
+                  placeholder="ex: 12000"
+                  inputMode="numeric"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="originalPrice">Prix Original (optionnel)</Label>
+                <Label htmlFor="originalPrice">Prix Original (optionnel, en DA)</Label>
                 <Input
                   id="originalPrice"
                   value={formData.originalPrice || ''}
-                  onChange={(e) => setFormData({...formData, originalPrice: e.target.value})}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^\d]/g,"");
+                    setFormData({...formData, originalPrice: val});
+                  }}
                   className="bg-gray-800 border-gold-500/20 text-white"
-                  placeholder="ex: 120€"
+                  placeholder="ex: 15000"
+                  inputMode="numeric"
                 />
               </div>
               <div>
@@ -251,10 +270,11 @@ const ProductManagement = () => {
                     {product.title}
                   </TableCell>
                   <TableCell className="text-gold-300">
-                    {product.price}
+                    {/* Affichage du prix en DA (formaté avec séparateur de milliers si possible) */}
+                    {parseInt(product.price, 10).toLocaleString()} DA
                     {product.originalPrice && (
                       <span className="text-gray-400 line-through ml-2 text-sm">
-                        {product.originalPrice}
+                        {parseInt(product.originalPrice, 10).toLocaleString()} DA
                       </span>
                     )}
                   </TableCell>
