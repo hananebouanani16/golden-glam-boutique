@@ -13,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Plus, Minus, Trash2, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { useOrders } from "@/contexts/OrderContext";
 import { useApp } from "@/contexts/AppContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CheckoutFormContent from "./CheckoutFormContent";
@@ -23,16 +22,9 @@ import { convertToDinars, formatPrice } from "@/utils/priceUtils";
 const CartDrawer = () => {
   const { t } = useApp();
   const { cartItems, updateQuantity, removeFromCart, getCartTotal, getCartItemsCount } = useCart();
-  const { orders } = useOrders();
   const [showCheckout, setShowCheckout] = useState(false);
 
-  // Filtrer les produits déjà achetés du panier
-  const availableCartItems = cartItems.filter(item => {
-    const isProductPurchased = orders.some(order => 
-      order.items.some(orderItem => orderItem.id === item.id)
-    );
-    return !isProductPurchased;
-  });
+  console.log('CartDrawer: Current cart items:', cartItems);
 
   return (
     <>
@@ -41,27 +33,27 @@ const CartDrawer = () => {
           <Button variant="ghost" size="icon" className="text-gold-300 hover:text-gold-200 hover:bg-gold-500/10 relative">
             <ShoppingBag className="h-5 w-5" />
             <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-gold-500 text-black text-xs flex items-center justify-center font-bold">
-              {availableCartItems.reduce((acc, item) => acc + item.quantity, 0)}
+              {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
             </span>
           </Button>
         </DrawerTrigger>
         <DrawerContent className="max-h-[80vh]">
           <DrawerHeader>
-            <DrawerTitle className="gold-text">Panier ({availableCartItems.reduce((acc, item) => acc + item.quantity, 0)} articles)</DrawerTitle>
+            <DrawerTitle className="gold-text">Panier ({cartItems.reduce((acc, item) => acc + item.quantity, 0)} articles)</DrawerTitle>
             <DrawerDescription>
               Gérez vos articles avant de finaliser votre commande
             </DrawerDescription>
           </DrawerHeader>
           
           <div className="px-4 flex-1 overflow-y-auto">
-            {availableCartItems.length === 0 ? (
+            {cartItems.length === 0 ? (
               <div className="text-center py-8">
                 <ShoppingBag className="h-12 w-12 text-gold-400 mx-auto mb-4" />
                 <p className="text-gold-300">Votre panier est vide</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {availableCartItems.map(item => {
+                {cartItems.map(item => {
                   const priceInDA = convertToDinars(item.price);
                   return (
                     <div key={item.id} className="flex items-center space-x-4 p-4 gold-border rounded-lg">
@@ -108,12 +100,12 @@ const CartDrawer = () => {
             )}
           </div>
 
-          {availableCartItems.length > 0 && (
+          {cartItems.length > 0 && (
             <DrawerFooter>
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-bold text-gold-200">Total:</span>
                 <span className="text-lg font-bold gold-text">
-                  {formatPrice(availableCartItems.reduce((total, item) => {
+                  {formatPrice(cartItems.reduce((total, item) => {
                     const priceInDA = convertToDinars(item.price);
                     return total + (priceInDA * item.quantity);
                   }, 0))}

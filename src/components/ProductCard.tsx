@@ -28,7 +28,20 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart, addToWishlist, isInWishlist } = useCart();
-  const { orders } = useOrders();
+  
+  // Utilisation sécurisée de useOrders avec try/catch
+  let orders: any[] = [];
+  let ordersError = false;
+  
+  try {
+    const ordersContext = useOrders();
+    orders = ordersContext.orders;
+    console.log('ProductCard: Successfully got orders:', orders.length);
+  } catch (error) {
+    console.warn('ProductCard: Could not access orders context:', error);
+    ordersError = true;
+  }
+  
   const [showCheckout, setShowCheckout] = useState(false);
   
   // Safety check for undefined product or missing price
@@ -38,40 +51,41 @@ const ProductCard = ({ product }: ProductCardProps) => {
   }
 
   // Debug: Log orders and current product
-  console.log('All orders:', orders);
-  console.log('Current product ID:', product.id);
-  console.log('Checking product purchase status for:', product.title);
+  console.log('ProductCard Debug - All orders:', orders);
+  console.log('ProductCard Debug - Current product ID:', product.id);
+  console.log('ProductCard Debug - Checking product purchase status for:', product.title);
+  console.log('ProductCard Debug - Orders error:', ordersError);
 
   // Vérifier si le produit a déjà été acheté avec des logs détaillés
-  const isProductPurchased = orders.some(order => {
-    console.log('Checking order:', order.id, 'status:', order.status);
-    console.log('Order items:', order.items);
+  const isProductPurchased = !ordersError && orders.some(order => {
+    console.log('ProductCard Debug - Checking order:', order.id, 'status:', order.status);
+    console.log('ProductCard Debug - Order items:', order.items);
     
     // Vérifier seulement les commandes confirmées
     if (order.status !== 'confirmed') {
-      console.log('Order not confirmed, skipping');
+      console.log('ProductCard Debug - Order not confirmed, skipping');
       return false;
     }
     
     const found = order.items.some(item => {
-      console.log('Comparing item ID:', item.id, 'with product ID:', product.id);
+      console.log('ProductCard Debug - Comparing item ID:', item.id, 'with product ID:', product.id);
       return item.id === product.id;
     });
     
     if (found) {
-      console.log('Product found in confirmed order!');
+      console.log('ProductCard Debug - Product found in confirmed order!');
     }
     
     return found;
   });
   
-  console.log('Final isProductPurchased result:', isProductPurchased, 'for product:', product.title);
+  console.log('ProductCard Debug - Final isProductPurchased result:', isProductPurchased, 'for product:', product.title);
   
   const handleAddToCart = () => {
-    console.log('handleAddToCart called, isProductPurchased:', isProductPurchased);
+    console.log('ProductCard Debug - handleAddToCart called, isProductPurchased:', isProductPurchased);
     
     if (isProductPurchased) {
-      console.log('Product already purchased, showing error toast');
+      console.log('ProductCard Debug - Product already purchased, showing error toast');
       toast.error("Ce produit a déjà été acheté !", {
         description: "Vous ne pouvez pas l'ajouter au panier.",
         duration: 4000,
@@ -79,7 +93,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       return;
     }
 
-    console.log('Adding product to cart:', product.title);
+    console.log('ProductCard Debug - Adding product to cart:', product.title);
     addToCart(product);
     toast.success("Produit ajouté au panier !", {
       description: product.title,
@@ -98,10 +112,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   const handleBuyNow = () => {
-    console.log('handleBuyNow called, isProductPurchased:', isProductPurchased);
+    console.log('ProductCard Debug - handleBuyNow called, isProductPurchased:', isProductPurchased);
     
     if (isProductPurchased) {
-      console.log('Product already purchased, showing error toast');
+      console.log('ProductCard Debug - Product already purchased, showing error toast');
       toast.error("Ce produit a déjà été acheté !", {
         description: "Vous ne pouvez pas l'acheter à nouveau.",
         duration: 4000,
@@ -109,7 +123,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       return;
     }
 
-    console.log('Adding product to cart for immediate purchase:', product.title);
+    console.log('ProductCard Debug - Adding product to cart for immediate purchase:', product.title);
     addToCart(product);
     setShowCheckout(true);
   };
