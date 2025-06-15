@@ -11,7 +11,7 @@ import { useOrders } from "@/contexts/OrderContext";
 import { deliveryRates } from "@/data/deliveryRates";
 import { convertToDinars, formatPrice } from "@/utils/priceUtils";
 import { toast } from "sonner";
-import { ShoppingCart, Truck, Package, MapPin, Phone, User, CreditCard } from "lucide-react";
+import { ShoppingCart, Truck, Package, User, CreditCard } from "lucide-react";
 
 interface CheckoutFormProps {
   onClose: () => void;
@@ -33,20 +33,23 @@ const CheckoutForm = ({ onClose, initialProduct }: CheckoutFormProps) => {
   const [deliveryType, setDeliveryType] = useState<'home' | 'office'>('home');
   const [address, setAddress] = useState("");
 
-  const { cartItems, clearCart, addToCart } = useCart();
+  const { cartItems, clearCart } = useCart();
   const { addOrder } = useOrders();
 
   const items = initialProduct ? [{ ...initialProduct, quantity: 1 }] : cartItems;
   const totalProducts = items.reduce((acc, item) => acc + item.quantity, 0);
 
-  const deliveryFee = deliveryRates[wilaya] ? deliveryRates[wilaya][deliveryType === 'home' ? 'home' : 'office'] : 0;
+  const selectedDeliveryRate = deliveryRates.find(rate => rate.wilaya === wilaya);
+  const deliveryFee = selectedDeliveryRate 
+    ? (deliveryType === 'home' ? selectedDeliveryRate.home : (selectedDeliveryRate.office || selectedDeliveryRate.home))
+    : 0;
   
   const subtotal = items.reduce((acc, item) => {
     const priceInDA = convertToDinars(item.price);
     return acc + (priceInDA * item.quantity);
   }, 0);
 
-  const totalAmount = subtotal + convertToDinars(deliveryFee.toString());
+  const totalAmount = subtotal + deliveryFee;
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,22 +64,6 @@ const CheckoutForm = ({ onClose, initialProduct }: CheckoutFormProps) => {
       return;
     }
 
-    const orderData = {
-      firstName,
-      lastName,
-      phone,
-      wilaya,
-      deliveryType,
-      address: deliveryType === 'home' ? address : undefined
-    };
-
-    console.log('Commande soumise:', orderData);
-    console.log('Articles:', items);
-    console.log('Total produits:', totalProducts);
-    console.log('Frais de livraison:', deliveryFee);
-    console.log('Total final:', totalAmount);
-
-    // Create order object
     const order = {
       customerInfo: {
         firstName,
@@ -98,10 +85,7 @@ const CheckoutForm = ({ onClose, initialProduct }: CheckoutFormProps) => {
       totalAmount
     };
 
-    // Add order to context
     addOrder(order);
-
-    // Clear cart and close form
     clearCart();
     toast.success("Commande enregistrée avec succès!");
     onClose();
@@ -110,7 +94,7 @@ const CheckoutForm = ({ onClose, initialProduct }: CheckoutFormProps) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <Card className="w-full bg-gray-900 border-gold-500/20 shadow-2xl">
+        <Card className="w-full bg-gray-900/95 backdrop-blur-sm border-gold-500/20 shadow-2xl">
           <CardHeader className="bg-gray-800/80 border-b border-gold-500/20">
             <CardTitle className="text-2xl gold-text flex items-center justify-between">
               <div className="flex items-center">
@@ -127,7 +111,8 @@ const CheckoutForm = ({ onClose, initialProduct }: CheckoutFormProps) => {
               </Button>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6 p-6 bg-gray-900">
+          
+          <CardContent className="space-y-6 p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Personal Information */}
               <div className="space-y-4">
@@ -194,10 +179,10 @@ const CheckoutForm = ({ onClose, initialProduct }: CheckoutFormProps) => {
                     <SelectTrigger className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500">
                       <SelectValue placeholder="Sélectionner une wilaya" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50">
-                      {Object.keys(deliveryRates).sort().map((wilayaName) => (
-                        <SelectItem key={wilayaName} value={wilayaName} className="hover:bg-gray-700">
-                          {wilayaName}
+                    <SelectContent className="bg-gray-800 border-gold-500/30 text-white">
+                      {deliveryRates.map((rate) => (
+                        <SelectItem key={rate.wilaya} value={rate.wilaya} className="hover:bg-gray-700">
+                          {rate.wilaya}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -264,9 +249,9 @@ const CheckoutForm = ({ onClose, initialProduct }: CheckoutFormProps) => {
                   Récapitulatif de la Commande
                 </h3>
                 <div className="bg-gray-800/50 rounded-lg p-4 border border-gold-500/20">
-                  <ul className="space-y-3">
+                  <div className="space-y-3">
                     {items.map((item) => (
-                      <li key={item.id} className="flex items-center justify-between text-white">
+                      <div key={item.id} className="flex items-center justify-between text-white">
                         <div className="flex items-center">
                           <img
                             src={item.image}
@@ -275,10 +260,12 @@ const CheckoutForm = ({ onClose, initialProduct }: CheckoutFormProps) => {
                           />
                           <span>{item.title} x {item.quantity}</span>
                         </div>
-                        <span className="text-gold-300 font-semibold">{formatPrice(convertToDinars(item.price) * item.quantity)}</span>
-                      </li>
+                        <span className="text-gold-300 font-semibold">
+                          {formatPrice(convertToDinars(item.price) * item.quantity)}
+                        </span>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                   <Separator className="bg-gold-500/20 my-4" />
                   <div className="space-y-2">
                     <div className="flex justify-between text-gold-300">
@@ -287,7 +274,7 @@ const CheckoutForm = ({ onClose, initialProduct }: CheckoutFormProps) => {
                     </div>
                     <div className="flex justify-between text-gold-300">
                       <span>Frais de livraison</span>
-                      <span>{formatPrice(convertToDinars(deliveryFee.toString()))}</span>
+                      <span>{formatPrice(deliveryFee)}</span>
                     </div>
                     <Separator className="bg-gold-500/20 my-2" />
                     <div className="flex justify-between font-bold text-gold-400 text-lg">
