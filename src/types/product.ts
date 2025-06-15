@@ -6,4 +6,5 @@ export interface Product {
   originalPrice?: string;
   category: string;
   image: string;
+  deleted_at?: string | null;
 }
