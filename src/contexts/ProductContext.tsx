@@ -15,36 +15,36 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
-  // On injecte ici les catégories principales (sacs / bijoux)
+  // Construction de la base à chaque démarrage
   const baseProducts: Product[] = [
     ...bagsData.map(bag => ({ ...bag, category: "sacs" })),
     ...jewelryData.map(jewelry => ({ ...jewelry, category: "bijoux" })),
   ];
   const [products, setProducts] = useState<Product[]>([]);
 
-  // Correction : Forcer l'initialisation si rien en localStorage ou si le contenu est incorrect
   useEffect(() => {
-    let loaded = false;
+    let useBase = false;
     try {
       const savedProductsRaw = localStorage.getItem('products');
       if (savedProductsRaw) {
-        const savedProducts = JSON.parse(savedProductsRaw);
-        if (Array.isArray(savedProducts) && savedProducts.length > 0) {
-          setProducts(savedProducts);
-          loaded = true;
+        const parsed = JSON.parse(savedProductsRaw);
+        if (Array.isArray(parsed)) {
+          setProducts(parsed);
+        } else {
+          useBase = true;
         }
+      } else {
+        useBase = true;
       }
     } catch (e) {
-      // Erreur de parsing, on n'utilise pas le localStorage !
-      loaded = false;
+      useBase = true;
     }
-    if (!loaded) {
+    if (useBase) {
       setProducts(baseProducts);
       localStorage.setItem('products', JSON.stringify(baseProducts));
     }
   }, []);
 
-  // Sauvegarder à chaque modification
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
   }, [products]);
