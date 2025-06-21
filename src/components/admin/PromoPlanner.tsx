@@ -60,69 +60,133 @@ const PromoPlanner = () => {
   ];
 
   const getStatusBadge = (status: string) => {
-    const variants = {
-      active: "bg-green-500",
-      scheduled: "bg-blue-500", 
-      expired: "bg-red-500"
+    const config = {
+      active: { className: "bg-green-500 text-white", label: "Active" },
+      scheduled: { className: "bg-blue-500 text-white", label: "Programmée" },
+      expired: { className: "bg-red-500 text-white", label: "Expirée" }
     };
     
-    const labels = {
-      active: "Active",
-      scheduled: "Programmée",
-      expired: "Expirée"
-    };
-
+    const statusConfig = config[status as keyof typeof config] || config.scheduled;
+    
     return (
-      <Badge className={`${variants[status as keyof typeof variants]} text-white`}>
-        {labels[status as keyof typeof labels]}
+      <Badge className={statusConfig.className}>
+        {statusConfig.label}
       </Badge>
     );
+  };
+
+  const validateForm = () => {
+    if (!formData.title.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le titre est requis",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    const discount = parseInt(formData.discount);
+    if (!discount || discount < 1 || discount > 99) {
+      toast({
+        title: "Erreur",
+        description: "La réduction doit être entre 1 et 99%",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    if (!formData.startDate || !formData.endDate) {
+      toast({
+        title: "Erreur",
+        description: "Les dates de début et fin sont requises",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    if (new Date(formData.startDate) >= new Date(formData.endDate)) {
+      toast({
+        title: "Erreur",
+        description: "La date de fin doit être après la date de début",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    if (!formData.category) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez sélectionner une catégorie",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    return true;
+  };
+
+  const determineStatus = (startDate: string, endDate: string): "active" | "scheduled" | "expired" => {
+    const now = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    if (now >= start && now <= end) return "active";
+    if (now < start) return "scheduled";
+    return "expired";
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const currentDate = new Date();
-    const startDate = new Date(formData.startDate);
-    const endDate = new Date(formData.endDate);
+    if (!validateForm()) return;
     
-    let status: "active" | "scheduled" | "expired" = "scheduled";
-    if (currentDate >= startDate && currentDate <= endDate) {
-      status = "active";
-    } else if (currentDate > endDate) {
-      status = "expired";
-    }
+    const status = determineStatus(formData.startDate, formData.endDate);
     
-    if (editingPromo) {
-      setPromotions(promotions.map(p => 
-        p.id === editingPromo.id 
-          ? { 
-              ...editingPromo, 
-              ...formData, 
-              discount: parseInt(formData.discount),
-              status 
-            }
-          : p
-      ));
+    try {
+      if (editingPromo) {
+        setPromotions(prev => prev.map(p => 
+          p.id === editingPromo.id 
+            ? { 
+                ...p,
+                title: formData.title,
+                discount: parseInt(formData.discount),
+                startDate: formData.startDate,
+                endDate: formData.endDate,
+                category: formData.category,
+                status 
+              }
+            : p
+        ));
+        toast({
+          title: "Succès",
+          description: "Promotion modifiée avec succès"
+        });
+      } else {
+        const newPromo: Promotion = {
+          id: Date.now().toString(),
+          title: formData.title,
+          discount: parseInt(formData.discount),
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          category: formData.category,
+          status
+        };
+        setPromotions(prev => [...prev, newPromo]);
+        toast({
+          title: "Succès",
+          description: "Promotion créée avec succès"
+        });
+      }
+      
+      resetForm();
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde:", error);
       toast({
-        title: "Promotion modifiée",
-        description: "La promotion a été modifiée avec succès."
-      });
-    } else {
-      const newPromo: Promotion = {
-        id: Date.now().toString(),
-        ...formData,
-        discount: parseInt(formData.discount),
-        status
-      };
-      setPromotions([...promotions, newPromo]);
-      toast({
-        title: "Promotion ajoutée",
-        description: "La nouvelle promotion a été ajoutée avec succès."
+        title: "Erreur",
+        description: "Erreur lors de la sauvegarde de la promotion",
+        variant: "destructive"
       });
     }
-    
-    resetForm();
   };
 
   const handleEdit = (promo: Promotion) => {
@@ -138,11 +202,20 @@ const PromoPlanner = () => {
   };
 
   const handleDelete = (id: string) => {
-    setPromotions(promotions.filter(p => p.id !== id));
-    toast({
-      title: "Promotion supprimée",
-      description: "La promotion a été supprimée avec succès."
-    });
+    try {
+      setPromotions(prev => prev.filter(p => p.id !== id));
+      toast({
+        title: "Succès",
+        description: "Promotion supprimée avec succès"
+      });
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la suppression",
+        variant: "destructive"
+      });
+    }
   };
 
   const resetForm = () => {
@@ -157,18 +230,23 @@ const PromoPlanner = () => {
     setIsDialogOpen(false);
   };
 
+  const handleDialogOpen = () => {
+    resetForm();
+    setIsDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold gold-text">Planification des Promotions</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gold-button">
+            <Button onClick={handleDialogOpen} className="gold-button">
               <Plus className="w-4 h-4 mr-2" />
-              Planifier une Promotion
+              Nouvelle Promotion
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-gray-900 border border-gold-500/20 text-white">
+          <DialogContent className="bg-gray-900 border border-gold-500/20 text-white max-w-md">
             <DialogHeader>
               <DialogTitle className="gold-text">
                 {editingPromo ? "Modifier la Promotion" : "Nouvelle Promotion"}
@@ -176,7 +254,7 @@ const PromoPlanner = () => {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="title">Titre de la Promotion</Label>
+                <Label htmlFor="title">Titre de la Promotion *</Label>
                 <Input
                   id="title"
                   value={formData.title}
@@ -186,8 +264,9 @@ const PromoPlanner = () => {
                   required
                 />
               </div>
+              
               <div>
-                <Label htmlFor="discount">Réduction (%)</Label>
+                <Label htmlFor="discount">Réduction (%) *</Label>
                 <Input
                   id="discount"
                   type="number"
@@ -200,8 +279,9 @@ const PromoPlanner = () => {
                   required
                 />
               </div>
+              
               <div>
-                <Label htmlFor="startDate">Date de Début</Label>
+                <Label htmlFor="startDate">Date de Début *</Label>
                 <Input
                   id="startDate"
                   type="date"
@@ -211,8 +291,9 @@ const PromoPlanner = () => {
                   required
                 />
               </div>
+              
               <div>
-                <Label htmlFor="endDate">Date de Fin</Label>
+                <Label htmlFor="endDate">Date de Fin *</Label>
                 <Input
                   id="endDate"
                   type="date"
@@ -222,26 +303,28 @@ const PromoPlanner = () => {
                   required
                 />
               </div>
+              
               <div>
-                <Label htmlFor="category">Catégorie</Label>
+                <Label htmlFor="category">Catégorie *</Label>
                 <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
                   <SelectTrigger className="bg-gray-800 border-gold-500/20 text-white">
                     <SelectValue placeholder="Sélectionner une catégorie" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-gold-500/20">
                     {categories.map(cat => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-white">
+                      <SelectItem key={cat.value} value={cat.value} className="text-white focus:bg-gold-500/20">
                         {cat.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex space-x-2">
+              
+              <div className="flex gap-2 pt-4">
                 <Button type="submit" className="gold-button flex-1">
-                  {editingPromo ? "Modifier" : "Planifier"}
+                  {editingPromo ? "Modifier" : "Créer"}
                 </Button>
-                <Button type="button" variant="outline" onClick={resetForm} className="flex-1">
+                <Button type="button" variant="outline" onClick={resetForm} className="flex-1 border-gold-500/20 text-gold-300 hover:bg-gold-500/10">
                   Annuler
                 </Button>
               </div>
@@ -263,46 +346,54 @@ const PromoPlanner = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {promotions.map((promo) => (
-              <TableRow key={promo.id} className="border-gold-500/20">
-                <TableCell className="text-white font-medium">{promo.title}</TableCell>
-                <TableCell className="text-gold-300">{promo.discount}%</TableCell>
-                <TableCell className="text-gray-300">
-                  <div className="flex items-center space-x-1">
-                    <Calendar className="w-3 h-3" />
-                    <span className="text-xs">
-                      {new Date(promo.startDate).toLocaleDateString()} - {new Date(promo.endDate).toLocaleDateString()}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-white">
-                  {categories.find(c => c.value === promo.category)?.label}
-                </TableCell>
-                <TableCell>
-                  {getStatusBadge(promo.status)}
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(promo)}
-                      className="text-gold-300 hover:text-gold-200"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(promo.id)}
-                      className="text-red-400 hover:text-red-300"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+            {promotions.length === 0 ? (
+              <TableRow className="border-gold-500/20">
+                <TableCell colSpan={6} className="text-center text-gray-400 py-8">
+                  Aucune promotion créée
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              promotions.map((promo) => (
+                <TableRow key={promo.id} className="border-gold-500/20">
+                  <TableCell className="text-white font-medium">{promo.title}</TableCell>
+                  <TableCell className="text-gold-300">{promo.discount}%</TableCell>
+                  <TableCell className="text-gray-300">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span className="text-xs">
+                        {new Date(promo.startDate).toLocaleDateString('fr-FR')} - {new Date(promo.endDate).toLocaleDateString('fr-FR')}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-white">
+                    {categories.find(c => c.value === promo.category)?.label || promo.category}
+                  </TableCell>
+                  <TableCell>
+                    {getStatusBadge(promo.status)}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(promo)}
+                        className="text-gold-300 hover:text-gold-200 hover:bg-gold-500/10"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(promo.id)}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
