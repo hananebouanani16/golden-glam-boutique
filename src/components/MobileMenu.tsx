@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
+import LanguageThemeSelector from "./LanguageThemeSelector";
+import SearchBar from "./SearchBar";
 
 const MobileMenu = () => {
   const { t } = useApp();
@@ -24,12 +26,13 @@ const MobileMenu = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden text-gold-300 hover:text-gold-200">
+        <Button variant="ghost" size="icon" className="md:hidden text-gold-300 hover:text-gold-200 touch-target">
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[300px] bg-gray-900/95 backdrop-blur-sm border-gold-500/20">
+      <SheetContent side="right" className="w-[280px] sm:w-[350px] bg-gray-900/95 backdrop-blur-sm border-gold-500/20">
         <div className="flex flex-col space-y-6 mt-8">
+          {/* Header avec logo */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <img 
@@ -43,18 +46,29 @@ const MobileMenu = () => {
               </div>
             </div>
           </div>
+
+          {/* Barre de recherche mobile */}
+          <div className="md:hidden">
+            <SearchBar />
+          </div>
           
+          {/* Navigation */}
           <nav className="flex flex-col space-y-4">
             {menuItems.map((item) => (
               <button
                 key={item.href}
                 onClick={() => handleItemClick(item.href)}
-                className="text-left text-gold-300 hover:text-gold-200 transition-colors duration-300 py-2 text-lg"
+                className="text-left text-gold-300 hover:text-gold-200 transition-colors duration-300 py-3 text-lg touch-target"
               >
                 {item.label}
               </button>
             ))}
           </nav>
+
+          {/* Sélecteur de langue et thème */}
+          <div className="sm:hidden pt-4 border-t border-gold-500/20">
+            <LanguageThemeSelector />
+          </div>
         </div>
       </SheetContent>
     </Sheet>
