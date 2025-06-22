@@ -2,18 +2,8 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/|.*\\..*).*)",
       "destination": "/index.html"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/admin_gestion",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
     }
   ],
   "headers": [
