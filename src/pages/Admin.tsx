@@ -21,9 +21,9 @@ import {
 } from "lucide-react";
 
 const Admin = () => {
-  const { isAdmin } = useAuth();
+  const { isAuthenticated } = useAuth();
 
-  if (!isAdmin) {
+  if (!isAuthenticated) {
     return <AdminLogin />;
   }
 
