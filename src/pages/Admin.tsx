@@ -1,89 +1,102 @@
+
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Tags, Calendar, ArrowLeft, LogOut, ShoppingBag, BarChart3 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminLogin from "@/components/AdminLogin";
-import ProductManagement from "@/components/admin/ProductManagement";
-import CategoryManagement from "@/components/admin/CategoryManagement";  
-import PromoPlanner from "@/components/admin/PromoPlanner";
-import OrderManagement from "@/components/admin/OrderManagement";
 import Dashboard from "@/components/admin/Dashboard";
+import ProductManagement from "@/components/admin/ProductManagement";
+import OrderManagement from "@/components/admin/OrderManagement";
+import CategoryManagement from "@/components/admin/CategoryManagement";
+import PromoPlanner from "@/components/admin/PromoPlanner";
+import ChatManagement from "@/components/admin/ChatManagement";
+import ImportRealProducts from "@/components/admin/ImportRealProducts";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  LayoutDashboard, 
+  Package, 
+  ShoppingCart, 
+  Tags, 
+  Calendar,
+  MessageCircle,
+  Download 
+} from "lucide-react";
 
 const Admin = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAdmin } = useAuth();
 
-  if (!isAuthenticated) {
+  if (!isAdmin) {
     return <AdminLogin />;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <Link to="/">
-              <Button variant="ghost" size="icon" className="text-gold-300 hover:text-gold-200">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <h1 className="text-3xl font-bold gold-text">Administration</h1>
-          </div>
-          <Button 
-            onClick={logout}
-            variant="ghost" 
-            className="text-gold-300 hover:text-gold-200"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Déconnexion
-          </Button>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-4 py-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Administration
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Gérez votre boutique Nesrine Golden Hands
+          </p>
         </div>
 
-        {/* Admin Tabs */}
-        <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-gray-800 border border-gold-500/20">
-            <TabsTrigger value="dashboard" className="data-[state=active]:bg-gold-500 data-[state=active]:text-black">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Dashboard
+        <Tabs defaultValue="dashboard" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:grid-cols-7">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden sm:inline">Tableau de bord</span>
             </TabsTrigger>
-            <TabsTrigger value="orders" className="data-[state=active]:bg-gold-500 data-[state=active]:text-black">
-              <ShoppingBag className="w-4 h-4 mr-2" />
-              Commandes
+            <TabsTrigger value="products" className="flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              <span className="hidden sm:inline">Produits</span>
             </TabsTrigger>
-            <TabsTrigger value="products" className="data-[state=active]:bg-gold-500 data-[state=active]:text-black">
-              <Package className="w-4 h-4 mr-2" />
-              Articles
+            <TabsTrigger value="orders" className="flex items-center gap-2">
+              <ShoppingCart className="h-4 w-4" />
+              <span className="hidden sm:inline">Commandes</span>
             </TabsTrigger>
-            <TabsTrigger value="categories" className="data-[state=active]:bg-gold-500 data-[state=active]:text-black">
-              <Tags className="w-4 h-4 mr-2" />
-              Catégories
+            <TabsTrigger value="categories" className="flex items-center gap-2">
+              <Tags className="h-4 w-4" />
+              <span className="hidden sm:inline">Catégories</span>
             </TabsTrigger>
-            <TabsTrigger value="promos" className="data-[state=active]:bg-gold-500 data-[state=active]:text-black">
-              <Calendar className="w-4 h-4 mr-2" />
-              Promotions
+            <TabsTrigger value="promos" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              <span className="hidden sm:inline">Promotions</span>
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="flex items-center gap-2">
+              <MessageCircle className="h-4 w-4" />
+              <span className="hidden sm:inline">Chat</span>
+            </TabsTrigger>
+            <TabsTrigger value="import" className="flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Import</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="mt-6">
+          <TabsContent value="dashboard">
             <Dashboard />
           </TabsContent>
 
-          <TabsContent value="orders" className="mt-6">
-            <OrderManagement />
-          </TabsContent>
-
-          <TabsContent value="products" className="mt-6">
+          <TabsContent value="products">
             <ProductManagement />
           </TabsContent>
 
-          <TabsContent value="categories" className="mt-6">
+          <TabsContent value="orders">
+            <OrderManagement />
+          </TabsContent>
+
+          <TabsContent value="categories">
             <CategoryManagement />
           </TabsContent>
 
-          <TabsContent value="promos" className="mt-6">
+          <TabsContent value="promos">
             <PromoPlanner />
+          </TabsContent>
+
+          <TabsContent value="chat">
+            <ChatManagement />
+          </TabsContent>
+
+          <TabsContent value="import">
+            <ImportRealProducts />
           </TabsContent>
         </Tabs>
       </div>
