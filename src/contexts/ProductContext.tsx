@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from '@/types/product';
@@ -21,29 +20,48 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   // Force à chaque modification une lecture fraîche depuis Supabase !
   const fetchProducts = async () => {
+    console.log("[ProductContext] Début de fetchProducts");
     setLoading(true);
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('title', { ascending: true });
-    if (error) {
-      console.error("[ProductContext] Error fetching products from Supabase:", error);
+    
+    try {
+      console.log("[ProductContext] Tentative de connexion à Supabase...");
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('title', { ascending: true });
+      
+      console.log("[ProductContext] Réponse Supabase - data:", data);
+      console.log("[ProductContext] Réponse Supabase - error:", error);
+      
+      if (error) {
+        console.error("[ProductContext] Error fetching products from Supabase:", error);
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+      
+      // Exclure soft-deleted (deleted_at non null)
+      const filtered = (data as Product[])
+        .filter((p) => !p.deleted_at);
+      
+      console.log("[ProductContext] Produits filtrés (sans deleted_at):", filtered);
+      console.log("[ProductContext] Nombre de produits:", filtered.length);
+      
+      setProducts(filtered);
+      setLoading(false);
+
+      // Log pour tracking
+      console.log("[ProductContext] Produits rafraîchis: ", filtered);
+    } catch (err) {
+      console.error("[ProductContext] Exception lors de fetchProducts:", err);
       setProducts([]);
       setLoading(false);
-      return;
     }
-    // Exclure soft-deleted (deleted_at non null)
-    const filtered = (data as Product[])
-      .filter((p) => !p.deleted_at);
-    setProducts(filtered);
-    setLoading(false);
-
-    // Log pour tracking
-    console.log("[ProductContext] Produits rafraîchis: ", filtered);
   };
 
   useEffect(() => {
-    // Rafraîchit toujours à l’init (montage)
+    console.log("[ProductContext] useEffect - Début du chargement des produits");
+    // Rafraîchit toujours à l'init (montage)
     fetchProducts();
     // ... on pourrait ajouter du temps réel plus tard
   }, []);
@@ -81,7 +99,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     await fetchProducts(); // On force le refetch ici aussi
   };
 
-  // Soft delete : pose simplement deleted_at 
+  // Soft delete : pose simplement deleted_at 
   const deleteProduct = async (productId: string) => {
     const { error } = await supabase
       .from("products")
@@ -94,7 +112,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     await fetchProducts(); // On force le refetch
   };
 
-  // Restaure : repasse deleted_at à null
+  // Restaure : repasse deleted_at à null
   const restoreProduct = async (productId: string) => {
     const { error } = await supabase
       .from("products")

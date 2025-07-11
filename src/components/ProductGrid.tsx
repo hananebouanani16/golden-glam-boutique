@@ -24,6 +24,9 @@ const ProductGrid = ({ id, title, subtitle, products }: ProductGridProps) => {
   const { t } = useApp();
   const [filters, setFilters] = useState({ category: "all", priceRange: "all" });
 
+  console.log(`[ProductGrid-${id}] Reçu ${products.length} produits`);
+  console.log(`[ProductGrid-${id}] Produits:`, products);
+
   const categories = [...new Set(products.map(p => p.category))];
 
   const filteredProducts = products.filter(product => {
@@ -57,6 +60,8 @@ const ProductGrid = ({ id, title, subtitle, products }: ProductGridProps) => {
     return true;
   });
 
+  console.log(`[ProductGrid-${id}] Après filtrage: ${filteredProducts.length} produits`);
+
   const handleFilterChange = (category: string, priceRange: string) => {
     setFilters({ category, priceRange });
   };
@@ -69,26 +74,37 @@ const ProductGrid = ({ id, title, subtitle, products }: ProductGridProps) => {
           <p className="text-xl text-gold-300 max-w-2xl mx-auto">{subtitle}</p>
         </div>
         
-        <FilterSection
-          onFilterChange={handleFilterChange}
-          categories={categories}
-          activeFilters={filters}
-        />
+        {products.length > 0 && (
+          <FilterSection
+            onFilterChange={handleFilterChange}
+            categories={categories}
+            activeFilters={filters}
+          />
+        )}
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-            />
-          ))}
-        </div>
-
-        {filteredProducts.length === 0 && (
+        {products.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gold-300 text-lg">{t('no_products_found')}</p>
-            <p className="text-gold-500">{t('try_other_filters')}</p>
+            <p className="text-gold-300 text-lg">Aucun produit disponible dans cette catégorie</p>
+            <p className="text-gold-500">Les produits seront bientôt disponibles!</p>
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                />
+              ))}
+            </div>
+
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gold-300 text-lg">{t('no_products_found')}</p>
+                <p className="text-gold-500">{t('try_other_filters')}</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>
