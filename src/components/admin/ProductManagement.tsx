@@ -21,7 +21,10 @@ const ProductManagement = () => {
     price: "",
     originalPrice: "",
     category: "",
-    image: ""
+    image: "",
+    stock_quantity: 0,
+    low_stock_threshold: 5,
+    is_out_of_stock: false
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
@@ -78,7 +81,10 @@ const ProductManagement = () => {
       price: product.price,
       originalPrice: product.originalPrice || "",
       category: product.category,
-      image: product.image
+      image: product.image,
+      stock_quantity: product.stock_quantity || 0,
+      low_stock_threshold: product.low_stock_threshold || 5,
+      is_out_of_stock: product.is_out_of_stock || false
     });
     setImagePreview(product.image || "");
     setIsDialogOpen(true);
@@ -124,7 +130,10 @@ const ProductManagement = () => {
       price: "",
       originalPrice: "",
       category: "",
-      image: ""
+      image: "",
+      stock_quantity: 0,
+      low_stock_threshold: 5,
+      is_out_of_stock: false
     });
     setEditingProduct(null);
     setImageFile(null);

@@ -105,6 +105,35 @@ export default function ProductForm({
           </SelectContent>
         </Select>
       </div>
+
+      {/* Stock Management Fields */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="stock_quantity">Quantité en stock</Label>
+          <Input
+            id="stock_quantity"
+            type="number"
+            min="0"
+            value={formData.stock_quantity || 0}
+            onChange={(e) => setFormData({...formData, stock_quantity: parseInt(e.target.value) || 0})}
+            className="bg-gray-800 border-gold-500/20 text-white"
+            placeholder="0"
+          />
+        </div>
+        <div>
+          <Label htmlFor="low_stock_threshold">Seuil stock faible</Label>
+          <Input
+            id="low_stock_threshold"
+            type="number"
+            min="0"
+            value={formData.low_stock_threshold || 5}
+            onChange={(e) => setFormData({...formData, low_stock_threshold: parseInt(e.target.value) || 5})}
+            className="bg-gray-800 border-gold-500/20 text-white"
+            placeholder="5"
+          />
+        </div>
+      </div>
+
       <div>
         <Label htmlFor="image">Image du Produit</Label>
         <div className="space-y-2">

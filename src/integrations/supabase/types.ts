@@ -68,6 +68,36 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_rates: {
+        Row: {
+          created_at: string | null
+          home_price: number
+          id: string
+          is_active: boolean | null
+          office_price: number | null
+          updated_at: string | null
+          wilaya: string
+        }
+        Insert: {
+          created_at?: string | null
+          home_price: number
+          id?: string
+          is_active?: boolean | null
+          office_price?: number | null
+          updated_at?: string | null
+          wilaya: string
+        }
+        Update: {
+          created_at?: string | null
+          home_price?: number
+          id?: string
+          is_active?: boolean | null
+          office_price?: number | null
+          updated_at?: string | null
+          wilaya?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string | null
@@ -110,8 +140,11 @@ export type Database = {
           deleted_at: string | null
           id: string
           image: string | null
+          is_out_of_stock: boolean | null
+          low_stock_threshold: number | null
           original_price: string | null
           price: string
+          stock_quantity: number | null
           title: string
         }
         Insert: {
@@ -119,8 +152,11 @@ export type Database = {
           deleted_at?: string | null
           id?: string
           image?: string | null
+          is_out_of_stock?: boolean | null
+          low_stock_threshold?: number | null
           original_price?: string | null
           price: string
+          stock_quantity?: number | null
           title: string
         }
         Update: {
@@ -128,9 +164,51 @@ export type Database = {
           deleted_at?: string | null
           id?: string
           image?: string | null
+          is_out_of_stock?: boolean | null
+          low_stock_threshold?: number | null
           original_price?: string | null
           price?: string
+          stock_quantity?: number | null
           title?: string
+        }
+        Relationships: []
+      }
+      promotions: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          discount_percentage: number
+          end_date: string
+          id: string
+          is_active: boolean | null
+          start_date: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          discount_percentage: number
+          end_date: string
+          id?: string
+          is_active?: boolean | null
+          start_date: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          discount_percentage?: number
+          end_date?: string
+          id?: string
+          is_active?: boolean | null
+          start_date?: string
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }

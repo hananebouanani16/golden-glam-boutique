@@ -9,6 +9,9 @@ import CategoryManagement from "@/components/admin/CategoryManagement";
 import PromoPlanner from "@/components/admin/PromoPlanner";
 import ChatManagement from "@/components/admin/ChatManagement";
 import ImportRealProducts from "@/components/admin/ImportRealProducts";
+import StockManagement from "@/components/admin/StockManagement";
+import PromotionManagement from "@/components/admin/PromotionManagement";
+import DeliveryManagement from "@/components/admin/DeliveryManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   LayoutDashboard, 
@@ -17,7 +20,10 @@ import {
   Tags, 
   Calendar,
   MessageCircle,
-  Download 
+  Download,
+  Warehouse,
+  Percent,
+  Truck 
 } from "lucide-react";
 
 const Admin = () => {
@@ -40,26 +46,30 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8 lg:w-auto lg:grid-cols-8">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4" />
-              <span className="hidden sm:inline">Tableau de bord</span>
+              <span className="hidden sm:inline">Tableau</span>
             </TabsTrigger>
             <TabsTrigger value="products" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
               <span className="hidden sm:inline">Produits</span>
             </TabsTrigger>
+            <TabsTrigger value="stock" className="flex items-center gap-2">
+              <Warehouse className="h-4 w-4" />
+              <span className="hidden sm:inline">Stocks</span>
+            </TabsTrigger>
             <TabsTrigger value="orders" className="flex items-center gap-2">
               <ShoppingCart className="h-4 w-4" />
               <span className="hidden sm:inline">Commandes</span>
             </TabsTrigger>
-            <TabsTrigger value="categories" className="flex items-center gap-2">
-              <Tags className="h-4 w-4" />
-              <span className="hidden sm:inline">Catégories</span>
+            <TabsTrigger value="promotions" className="flex items-center gap-2">
+              <Percent className="h-4 w-4" />
+              <span className="hidden sm:inline">Promos</span>
             </TabsTrigger>
-            <TabsTrigger value="promos" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">Promotions</span>
+            <TabsTrigger value="delivery" className="flex items-center gap-2">
+              <Truck className="h-4 w-4" />
+              <span className="hidden sm:inline">Livraison</span>
             </TabsTrigger>
             <TabsTrigger value="chat" className="flex items-center gap-2">
               <MessageCircle className="h-4 w-4" />
@@ -79,6 +89,10 @@ const Admin = () => {
             <ProductManagement />
           </TabsContent>
 
+          <TabsContent value="stock">
+            <StockManagement />
+          </TabsContent>
+
           <TabsContent value="orders">
             <OrderManagement />
           </TabsContent>
@@ -87,8 +101,12 @@ const Admin = () => {
             <CategoryManagement />
           </TabsContent>
 
-          <TabsContent value="promos">
-            <PromoPlanner />
+          <TabsContent value="promotions">
+            <PromotionManagement />
+          </TabsContent>
+
+          <TabsContent value="delivery">
+            <DeliveryManagement />
           </TabsContent>
 
           <TabsContent value="chat">
