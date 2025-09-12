@@ -8,7 +8,7 @@ import OrderManagement from "@/components/admin/OrderManagement";
 import CategoryManagement from "@/components/admin/CategoryManagement";
 import PromoPlanner from "@/components/admin/PromoPlanner";
 import ChatManagement from "@/components/admin/ChatManagement";
-import ImportRealProducts from "@/components/admin/ImportRealProducts";
+
 import StockManagement from "@/components/admin/StockManagement";
 import PromotionManagement from "@/components/admin/PromotionManagement";
 import DeliveryManagement from "@/components/admin/DeliveryManagement";
@@ -20,7 +20,6 @@ import {
   Tags, 
   Calendar,
   MessageCircle,
-  Download,
   Warehouse,
   Percent,
   Truck 
@@ -46,7 +45,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 lg:w-auto lg:grid-cols-8">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:grid-cols-7">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">Tableau</span>
@@ -74,10 +73,6 @@ const Admin = () => {
             <TabsTrigger value="chat" className="flex items-center gap-2">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Chat</span>
-            </TabsTrigger>
-            <TabsTrigger value="import" className="flex items-center gap-2">
-              <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Import</span>
             </TabsTrigger>
           </TabsList>
 
@@ -113,9 +108,6 @@ const Admin = () => {
             <ChatManagement />
           </TabsContent>
 
-          <TabsContent value="import">
-            <ImportRealProducts />
-          </TabsContent>
         </Tabs>
       </div>
     </div>

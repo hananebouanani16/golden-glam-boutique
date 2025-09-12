@@ -7,7 +7,7 @@ import { Product } from "@/types/product";
 import ProductForm from "./ProductForm";
 import ProductTable from "./ProductTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import ImportRealProducts from "./ImportRealProducts";
+
 
 const ProductManagement = () => {
   const { toast } = useToast();
@@ -205,7 +205,7 @@ const ProductManagement = () => {
         </div>
       </div>
 
-      <ImportRealProducts />
+      
 
       <ProductTable 
         products={products}
