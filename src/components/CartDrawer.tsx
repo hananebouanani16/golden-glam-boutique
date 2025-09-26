@@ -50,7 +50,7 @@ const CartDrawer = () => {
             ) : (
               <div className="space-y-4">
                 {cartItems.map(item => {
-                  const priceInDA = convertToDinars(item.price);
+                  const priceInDA = Number(item.price);
                   return (
                     <div key={item.id} className="flex items-center space-x-4 p-4 gold-border rounded-lg">
                       <img 
@@ -102,7 +102,7 @@ const CartDrawer = () => {
                 <span className="text-lg font-bold text-gold-200">{t('total')}:</span>
                 <span className="text-lg font-bold gold-text">
                   {formatPrice(cartItems.reduce((total, item) => {
-                    const priceInDA = convertToDinars(item.price);
+                    const priceInDA = Number(item.price);
                     return total + (priceInDA * item.quantity);
                   }, 0))}
                 </span>

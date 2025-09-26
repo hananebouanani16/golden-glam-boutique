@@ -135,7 +135,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => {
-      const priceInDA = convertToDinars(item.price);
+      const priceInDA = Number(item.price);
       return total + (priceInDA * item.quantity);
     }, 0);
   };

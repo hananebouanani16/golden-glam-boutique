@@ -52,7 +52,7 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
     : 0;
   
   const subtotal = items.reduce((acc, item) => {
-    const priceInDA = convertToDinars(item.price);
+    const priceInDA = Number(item.price);
     return acc + (priceInDA * item.quantity);
   }, 0);
 
