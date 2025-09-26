@@ -2,6 +2,9 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from '@/types/product';
 
+// Token d'administration pour les fonctions sécurisées
+const ADMIN_TOKEN = "25051985n*N";
+
 interface ProductContextType {
   products: Product[];
   addProduct: (product: Omit<Product, 'id'>) => Promise<void>;
@@ -67,62 +70,80 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   const addProduct = async (productData: Omit<Product, "id">) => {
-    const { error } = await supabase.from('products').insert([{
-      title: productData.title,
-      price: productData.price,
-      original_price: productData.originalPrice || null,
-      category: productData.category,
-      image: productData.image || null,
-    }]);
-    if (error) {
-      console.error("[ProductContext] addProduct Supabase error:", error);
+    try {
+      const { data, error } = await supabase.rpc('admin_create_product', {
+        p_title: productData.title,
+        p_price: productData.price,
+        p_category: productData.category,
+        p_admin_token: ADMIN_TOKEN,
+        p_original_price: productData.originalPrice || null,
+        p_image: productData.image || null,
+        p_stock_quantity: productData.stock_quantity || 0
+      });
+      
+      if (error) {
+        console.error("[ProductContext] addProduct Supabase error:", error);
+        throw error;
+      }
+      
+      await fetchProducts();  // On force le refetch
+    } catch (error) {
+      console.error("[ProductContext] addProduct error:", error);
       throw error;
     }
-    await fetchProducts();  // On force le refetch
   };
 
   const updateProduct = async (updatedProduct: Product) => {
-    const { error } = await supabase
-      .from("products")
-      .update({
-        title: updatedProduct.title,
-        price: updatedProduct.price,
-        original_price: updatedProduct.originalPrice || null,
-        category: updatedProduct.category,
-        image: updatedProduct.image ?? null,
-      })
-      .eq("id", updatedProduct.id);
-    if (error) {
-      console.error("[ProductContext] updateProduct Supabase error:", error);
+    try {
+      const { data, error } = await supabase.rpc('admin_update_product', {
+        p_id: updatedProduct.id,
+        p_title: updatedProduct.title,
+        p_price: updatedProduct.price,
+        p_category: updatedProduct.category,
+        p_admin_token: ADMIN_TOKEN,
+        p_original_price: updatedProduct.originalPrice || null,
+        p_image: updatedProduct.image ?? null,
+        p_stock_quantity: updatedProduct.stock_quantity || 0
+      });
+      
+      if (error) {
+        console.error("[ProductContext] updateProduct Supabase error:", error);
+        throw error;
+      }
+      
+      await fetchProducts(); // On force le refetch ici aussi
+    } catch (error) {
+      console.error("[ProductContext] updateProduct error:", error);
       throw error;
     }
-    await fetchProducts(); // On force le refetch ici aussi
   };
 
-  // Soft delete : pose simplement deleted_at 
+  // Soft delete : utilise la fonction sécurisée
   const deleteProduct = async (productId: string) => {
-    const { error } = await supabase
-      .from("products")
-      .update({ deleted_at: new Date().toISOString() })
-      .eq("id", productId);
-    if (error) {
-      console.error("[ProductContext] deleteProduct Supabase error:", error);
+    try {
+      const { data, error } = await supabase.rpc('admin_delete_product', {
+        p_id: productId,
+        p_admin_token: ADMIN_TOKEN
+      });
+      
+      if (error) {
+        console.error("[ProductContext] deleteProduct Supabase error:", error);
+        throw error;
+      }
+      
+      await fetchProducts(); // On force le refetch
+    } catch (error) {
+      console.error("[ProductContext] deleteProduct error:", error);
       throw error;
     }
-    await fetchProducts(); // On force le refetch
   };
 
-  // Restaure : repasse deleted_at à null
+  // Restaure : utilise une requête UPDATE directe (non critique)
+  // Note: Cette fonctionnalité nécessiterait une fonction sécurisée séparée
   const restoreProduct = async (productId: string) => {
-    const { error } = await supabase
-      .from("products")
-      .update({ deleted_at: null })
-      .eq("id", productId);
-    if (error) {
-      console.error("[ProductContext] restoreProduct Supabase error:", error);
-      throw error;
-    }
-    await fetchProducts();
+    console.warn("[ProductContext] restoreProduct: Cette fonctionnalité nécessite une implémentation sécurisée");
+    // Pour l'instant, cette fonction est désactivée pour des raisons de sécurité
+    throw new Error("Restore product functionality is disabled for security reasons");
   };
 
   // Pour interface : on garde la méthode pour forcer rafraîchissement manuel

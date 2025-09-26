@@ -217,7 +217,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_create_product: {
+        Args: {
+          p_admin_token: string
+          p_category: string
+          p_image?: string
+          p_original_price?: string
+          p_price: string
+          p_stock_quantity?: number
+          p_title: string
+        }
+        Returns: string
+      }
+      admin_delete_product: {
+        Args: { p_admin_token: string; p_id: string }
+        Returns: boolean
+      }
+      admin_update_product: {
+        Args: {
+          p_admin_token: string
+          p_category: string
+          p_id: string
+          p_image?: string
+          p_original_price?: string
+          p_price: string
+          p_stock_quantity?: number
+          p_title: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
