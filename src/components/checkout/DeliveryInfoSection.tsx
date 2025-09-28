@@ -1,11 +1,18 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Truck } from "lucide-react";
+import { Truck, MapPin } from "lucide-react";
 import { deliveryRates } from "@/data/deliveryRates";
+import { toast } from "sonner";
+
+interface Location {
+  id: string;
+  name: string;
+  address?: string;
+}
 
 interface DeliveryInfoSectionProps {
   wilaya: string;
@@ -14,6 +21,10 @@ interface DeliveryInfoSectionProps {
   setDeliveryType: (value: 'home' | 'office') => void;
   address: string;
   setAddress: (value: string) => void;
+  commune: string;
+  setCommune: (value: string) => void;
+  office: string;
+  setOffice: (value: string) => void;
 }
 
 const DeliveryInfoSection = ({
@@ -22,23 +33,98 @@ const DeliveryInfoSection = ({
   deliveryType,
   setDeliveryType,
   address,
-  setAddress
+  setAddress,
+  commune,
+  setCommune,
+  office,
+  setOffice
 }: DeliveryInfoSectionProps) => {
+  const [communes, setCommunes] = useState<Location[]>([]);
+  const [offices, setOffices] = useState<Location[]>([]);
+  const [loadingLocations, setLoadingLocations] = useState(false);
+
+  // Charger les communes ou bureaux quand la wilaya ou le type de livraison change
+  useEffect(() => {
+    if (!wilaya) return;
+
+    const loadLocations = async () => {
+      setLoadingLocations(true);
+      try {
+        const locationType = deliveryType === 'home' ? 'communes' : 'offices';
+        
+        const response = await fetch('https://jgtrvwydouplehrchgoy.supabase.co/functions/v1/get-zr-locations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpndHJ2d3lkb3VwbGVocmNoZ295Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5OTc4MDEsImV4cCI6MjA2NTU3MzgwMX0.ijUq8CKVV3LRecUa2LxjV0XQZQTUgeHDhLrW2-jiE9E`
+          },
+          body: JSON.stringify({
+            wilaya: wilaya,
+            type: locationType
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          if (deliveryType === 'home') {
+            setCommunes(result.locations || []);
+            setCommune(''); // Reset la sélection
+          } else {
+            setOffices(result.locations || []);
+            setOffice(''); // Reset la sélection
+          }
+        } else {
+          console.error('Erreur lors du chargement des emplacements:', result);
+          toast.error('Erreur lors du chargement des emplacements', {
+            description: 'Impossible de charger la liste des emplacements pour cette wilaya'
+          });
+        }
+      } catch (error) {
+        console.error('Erreur de connexion:', error);
+        toast.error('Erreur de connexion', {
+          description: 'Impossible de contacter le service de livraison'
+        });
+      } finally {
+        setLoadingLocations(false);
+      }
+    };
+
+    loadLocations();
+  }, [wilaya, deliveryType]);
+
+  // Reset les sélections quand on change de wilaya
+  const handleWilayaChange = (newWilaya: string) => {
+    setWilaya(newWilaya);
+    setCommune('');
+    setOffice('');
+    setAddress('');
+  };
+
+  // Reset les sélections quand on change de type de livraison
+  const handleDeliveryTypeChange = (newType: 'home' | 'office') => {
+    setDeliveryType(newType);
+    setCommune('');
+    setOffice('');
+    setAddress('');
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold gold-text flex items-center">
         <Truck className="h-4 w-4 mr-2" />
         Informations de Livraison
       </h3>
+      
       <div>
         <Label htmlFor="wilaya" className="text-gold-300">
           Wilaya
         </Label>
-        <Select value={wilaya} onValueChange={setWilaya}>
+        <Select value={wilaya} onValueChange={handleWilayaChange}>
           <SelectTrigger className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500">
             <SelectValue placeholder="Sélectionner une wilaya" />
           </SelectTrigger>
-          <SelectContent className="bg-gray-800 border-gold-500/30 text-white">
+          <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50">
             {deliveryRates.map((rate) => (
               <SelectItem key={rate.wilaya} value={rate.wilaya} className="hover:bg-gray-700">
                 {rate.wilaya}
@@ -47,13 +133,14 @@ const DeliveryInfoSection = ({
           </SelectContent>
         </Select>
       </div>
+
       <div>
         <Label className="text-gold-300">
           Type de Livraison
         </Label>
         <RadioGroup 
           value={deliveryType} 
-          onValueChange={(value) => setDeliveryType(value as 'home' | 'office')}
+          onValueChange={handleDeliveryTypeChange}
           className="flex items-center space-x-6 mt-2"
         >
           <div className="flex items-center space-x-2">
@@ -78,10 +165,56 @@ const DeliveryInfoSection = ({
           </div>
         </RadioGroup>
       </div>
-      {deliveryType === 'home' && (
+
+      {wilaya && deliveryType === 'home' && (
+        <div>
+          <Label htmlFor="commune" className="text-gold-300 flex items-center">
+            <MapPin className="h-3 w-3 mr-1" />
+            Commune
+          </Label>
+          <Select value={commune} onValueChange={setCommune} disabled={loadingLocations}>
+            <SelectTrigger className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500">
+              <SelectValue placeholder={loadingLocations ? "Chargement..." : "Sélectionner une commune"} />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50">
+              {communes.map((communeItem) => (
+                <SelectItem key={communeItem.id} value={communeItem.name} className="hover:bg-gray-700">
+                  {communeItem.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {wilaya && deliveryType === 'office' && (
+        <div>
+          <Label htmlFor="office" className="text-gold-300 flex items-center">
+            <MapPin className="h-3 w-3 mr-1" />
+            Bureau ZR Express
+          </Label>
+          <Select value={office} onValueChange={setOffice} disabled={loadingLocations}>
+            <SelectTrigger className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500">
+              <SelectValue placeholder={loadingLocations ? "Chargement..." : "Sélectionner un bureau"} />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50">
+              {offices.map((officeItem) => (
+                <SelectItem key={officeItem.id} value={`${officeItem.name}${officeItem.address ? ` - ${officeItem.address}` : ''}`} className="hover:bg-gray-700">
+                  <div>
+                    <div className="font-medium">{officeItem.name}</div>
+                    {officeItem.address && <div className="text-xs text-gray-400">{officeItem.address}</div>}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {deliveryType === 'home' && commune && (
         <div>
           <Label htmlFor="address" className="text-gold-300">
-            Adresse
+            Adresse Complète
           </Label>
           <Input
             type="text"
@@ -89,7 +222,7 @@ const DeliveryInfoSection = ({
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500"
-            placeholder="Entrez votre adresse de livraison"
+            placeholder="Entrez votre adresse complète"
             required={deliveryType === 'home'}
           />
         </div>

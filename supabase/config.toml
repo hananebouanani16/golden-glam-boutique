@@ -2,3 +2,6 @@ project_id = "jgtrvwydouplehrchgoy"
 
 [functions.send-to-zr-express]
 verify_jwt = false
+
+[functions.get-zr-locations]
+verify_jwt = false

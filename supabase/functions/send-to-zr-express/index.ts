@@ -14,6 +14,8 @@ interface OrderData {
     wilaya: string;
     deliveryType: 'home' | 'office';
     address?: string;
+    commune?: string;
+    office?: string;
   };
   items: Array<{
     id: string;
@@ -119,9 +121,11 @@ const handler = async (req: Request): Promise<Response> => {
         "MobileB": "",
         "Adresse": orderData.customerInfo.address || `${orderData.customerInfo.wilaya} - ${orderData.customerInfo.deliveryType}`,
         "IDWilaya": wilayaInfo.id,
-        "Commune": wilayaInfo.commune,
+        "Commune": orderData.customerInfo.deliveryType === 'home' 
+          ? (orderData.customerInfo.commune || wilayaInfo.commune)
+          : wilayaInfo.commune,
         "Total": orderData.totalAmount.toString(),
-        "Note": `Commande ${orderData.orderNumber} - ${orderData.totalProducts} produit(s)`,
+        "Note": `Commande ${orderData.orderNumber} - ${orderData.totalProducts} produit(s)${orderData.customerInfo.deliveryType === 'office' ? ' - Point de retrait: ' + orderData.customerInfo.office : ''}`,
         "TProduit": productsList,
         "id_Externe": orderData.orderNumber,
         "Source": "Lovable Boutique"

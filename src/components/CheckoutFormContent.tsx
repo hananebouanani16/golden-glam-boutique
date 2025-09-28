@@ -36,6 +36,8 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
   const [wilaya, setWilaya] = useState("");
   const [deliveryType, setDeliveryType] = useState<'home' | 'office'>('home');
   const [address, setAddress] = useState("");
+  const [commune, setCommune] = useState("");
+  const [office, setOffice] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -66,8 +68,13 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
       return;
     }
 
-    if (deliveryType === 'home' && !address) {
-      toast.error(t('error_address_required'));
+    if (deliveryType === 'home' && (!commune || !address)) {
+      toast.error('Veuillez sélectionner une commune et entrer votre adresse complète');
+      return;
+    }
+
+    if (deliveryType === 'office' && !office) {
+      toast.error('Veuillez sélectionner un bureau de retrait');
       return;
     }
 
@@ -78,7 +85,9 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
         phone: personalInfo.phone,
         wilaya,
         deliveryType: deliveryType as 'home' | 'office',
-        address: deliveryType === 'home' ? address : undefined
+        address: deliveryType === 'home' ? `${commune} - ${address}` : office,
+        commune: deliveryType === 'home' ? commune : undefined,
+        office: deliveryType === 'office' ? office : undefined
       },
       items: items.map(item => ({
         id: item.id,
@@ -112,7 +121,7 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
           phone: personalInfo.phone,
           wilaya,
           deliveryType: deliveryType as 'home' | 'office',
-          address: deliveryType === 'home' ? address : undefined
+          address: deliveryType === 'home' ? `${commune} - ${address}` : office
         },
         items: items.map(item => ({
           id: item.id,
@@ -173,7 +182,7 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
           phone: personalInfo.phone,
           wilaya,
           deliveryType,
-          address
+          address: deliveryType === 'home' ? `${commune} - ${address}` : office
         }}
         onClose={onClose}
       />
@@ -198,6 +207,10 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
           setDeliveryType={setDeliveryType}
           address={address}
           setAddress={setAddress}
+          commune={commune}
+          setCommune={setCommune}
+          office={office}
+          setOffice={setOffice}
         />
 
         <Separator className="bg-gold-500/20" />
