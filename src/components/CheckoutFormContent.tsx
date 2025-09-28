@@ -58,7 +58,7 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
 
   const totalAmount = subtotal + deliveryFee;
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!personalInfo.firstName || !personalInfo.lastName || !personalInfo.phone || !wilaya || !deliveryType) {
@@ -101,6 +101,64 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
       description: `${t('order_number')} ${newOrderNumber}`,
       duration: 5000,
     });
+
+    // Envoyer automatiquement la commande vers ZR Express
+    try {
+      const zrExpressData = {
+        orderNumber: newOrderNumber,
+        customerInfo: {
+          firstName: personalInfo.firstName,
+          lastName: personalInfo.lastName,
+          phone: personalInfo.phone,
+          wilaya,
+          deliveryType: deliveryType as 'home' | 'office',
+          address: deliveryType === 'home' ? address : undefined
+        },
+        items: items.map(item => ({
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image
+        })),
+        totalProducts,
+        deliveryFee,
+        totalAmount
+      };
+
+      console.log('Envoi vers ZR Express:', zrExpressData);
+      
+      const response = await fetch('https://jgtrvwydouplehrchgoy.supabase.co/functions/v1/send-to-zr-express', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpndHJ2d3lkb3VwbGVocmNoZ295Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5OTc4MDEsImV4cCI6MjA2NTU3MzgwMX0.ijUq8CKVV3LRecUa2LxjV0XQZQTUgeHDhLrW2-jiE9E'}`
+        },
+        body: JSON.stringify(zrExpressData)
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('Commande envoyée avec succès à ZR Express:', result);
+        toast.success('Commande transmise au service de livraison', {
+          description: 'Votre commande a été automatiquement envoyée à ZR Express',
+          duration: 3000,
+        });
+      } else {
+        console.error('Erreur lors de l\'envoi à ZR Express:', result);
+        toast.error('Erreur de transmission', {
+          description: 'La commande n\'a pas pu être envoyée au service de livraison',
+          duration: 5000,
+        });
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi vers ZR Express:', error);
+      toast.error('Erreur de connexion', {
+        description: 'Impossible de contacter le service de livraison',
+        duration: 5000,
+      });
+    }
     
     setShowConfirmation(true);
   };

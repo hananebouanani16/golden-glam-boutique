@@ -1,1 +1,4 @@
 project_id = "jgtrvwydouplehrchgoy"
+
+[functions.send-to-zr-express]
+verify_jwt = false
