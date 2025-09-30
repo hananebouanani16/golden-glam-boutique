@@ -75,12 +75,20 @@ const DeliveryInfoSection = ({
         if (result.success) {
           const locations = result.locations || [];
           console.log(`${locations.length} emplacements trouvés`);
+          console.log('Exemple de location:', locations[0]);
+          
+          // S'assurer que les données ont le bon format
+          const formattedLocations = locations.map((loc: any) => ({
+            id: String(loc.id || loc.name || Math.random()),
+            name: String(loc.name || ''),
+            address: loc.address ? String(loc.address) : undefined
+          }));
           
           if (deliveryType === 'home') {
-            setCommunes(locations);
+            setCommunes(formattedLocations);
             setCommune(''); // Reset la sélection
           } else {
-            setOffices(locations);
+            setOffices(formattedLocations);
             setOffice(''); // Reset la sélection
           }
           
@@ -183,8 +191,7 @@ const DeliveryInfoSection = ({
 
       {wilaya && deliveryType === 'home' && (
         <div>
-          <Label htmlFor="commune" className="text-gold-300 flex items-center">
-            <MapPin className="h-3 w-3 mr-1" />
+          <Label htmlFor="commune" className="text-gold-300">
             Commune
           </Label>
           <Select value={commune} onValueChange={setCommune} disabled={loadingLocations}>
@@ -204,8 +211,7 @@ const DeliveryInfoSection = ({
 
       {wilaya && deliveryType === 'office' && (
         <div>
-          <Label htmlFor="office" className="text-gold-300 flex items-center">
-            <MapPin className="h-3 w-3 mr-1" />
+          <Label htmlFor="office" className="text-gold-300">
             Bureau ZR Express
           </Label>
           <Select value={office} onValueChange={setOffice} disabled={loadingLocations}>
