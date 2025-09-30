@@ -88,8 +88,20 @@ const handler = async (req: Request): Promise<Response> => {
     let responseData;
     try {
       responseData = JSON.parse(responseText);
-    } catch {
-      responseData = { rawResponse: responseText };
+    } catch (parseError) {
+      console.error('Erreur de parsing JSON:', parseError);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Réponse invalide de l\'API ZR Express',
+          details: 'La réponse reçue n\'est pas au format JSON valide',
+          rawText: responseText.substring(0, 200) // Limiter la taille
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     if (response.ok) {
@@ -122,11 +134,20 @@ const handler = async (req: Request): Promise<Response> => {
       );
     } else {
       console.error(`Erreur lors de la récupération des ${type}:`, responseData);
+      
+      // Extraire un message d'erreur utilisable
+      let errorDetails = 'Service temporairement indisponible';
+      if (responseData?.fault?.faultstring) {
+        errorDetails = responseData.fault.faultstring;
+      } else if (typeof responseData === 'string') {
+        errorDetails = responseData;
+      }
+      
       return new Response(
         JSON.stringify({ 
           success: false, 
           error: `Erreur lors de la récupération des ${type}`, 
-          details: responseData,
+          details: errorDetails,
           status: response.status
         }),
         { 
