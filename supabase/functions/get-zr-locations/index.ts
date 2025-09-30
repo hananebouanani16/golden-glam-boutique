@@ -11,6 +11,8 @@ interface LocationRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  console.log('get-zr-locations: Nouvelle requête reçue', req.method);
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -20,10 +22,19 @@ const handler = async (req: Request): Promise<Response> => {
     const TOKEN = Deno.env.get('ZR_EXPRESS_TOKEN');
     const KEY = Deno.env.get('ZR_EXPRESS_KEY');
     
+    console.log('Vérification des credentials ZR Express:', { 
+      hasToken: !!TOKEN, 
+      hasKey: !!KEY 
+    });
+    
     if (!TOKEN || !KEY) {
       console.error('Missing ZR Express credentials');
       return new Response(
-        JSON.stringify({ error: 'Configuration manquante pour ZR Express' }),
+        JSON.stringify({ 
+          success: false,
+          error: 'Configuration manquante pour ZR Express',
+          details: 'Les clés ZR_EXPRESS_TOKEN et ZR_EXPRESS_KEY doivent être configurées'
+        }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -31,7 +42,26 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const { wilaya, type }: LocationRequest = await req.json();
+    const requestBody = await req.json();
+    console.log('Corps de la requête:', requestBody);
+    
+    const { wilaya, type }: LocationRequest = requestBody;
+    
+    if (!wilaya || !type) {
+      console.error('Paramètres manquants:', { wilaya, type });
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Paramètres manquants',
+          details: 'wilaya et type sont requis'
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+    
     console.log(`Récupération des ${type} pour la wilaya: ${wilaya}`);
 
     let apiEndpoint: string;

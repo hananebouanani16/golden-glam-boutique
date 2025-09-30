@@ -49,8 +49,12 @@ const DeliveryInfoSection = ({
 
     const loadLocations = async () => {
       setLoadingLocations(true);
+      console.log('Chargement des emplacements pour:', { wilaya, deliveryType });
+      
       try {
         const locationType = deliveryType === 'home' ? 'communes' : 'offices';
+        
+        console.log('Appel à get-zr-locations avec:', { wilaya, type: locationType });
         
         const response = await fetch('https://jgtrvwydouplehrchgoy.supabase.co/functions/v1/get-zr-locations', {
           method: 'POST',
@@ -64,26 +68,37 @@ const DeliveryInfoSection = ({
           })
         });
 
+        console.log('Réponse HTTP status:', response.status);
         const result = await response.json();
+        console.log('Réponse complète:', result);
         
         if (result.success) {
+          const locations = result.locations || [];
+          console.log(`${locations.length} emplacements trouvés`);
+          
           if (deliveryType === 'home') {
-            setCommunes(result.locations || []);
+            setCommunes(locations);
             setCommune(''); // Reset la sélection
           } else {
-            setOffices(result.locations || []);
+            setOffices(locations);
             setOffice(''); // Reset la sélection
+          }
+          
+          if (locations.length === 0) {
+            toast.info('Aucun emplacement trouvé', {
+              description: `Aucun ${locationType === 'communes' ? 'commune' : 'bureau'} disponible pour ${wilaya}`
+            });
           }
         } else {
           console.error('Erreur lors du chargement des emplacements:', result);
           toast.error('Erreur lors du chargement des emplacements', {
-            description: 'Impossible de charger la liste des emplacements pour cette wilaya'
+            description: result.details || result.error || 'Impossible de charger la liste des emplacements pour cette wilaya'
           });
         }
       } catch (error) {
         console.error('Erreur de connexion:', error);
         toast.error('Erreur de connexion', {
-          description: 'Impossible de contacter le service de livraison'
+          description: error instanceof Error ? error.message : 'Impossible de contacter le service de livraison'
         });
       } finally {
         setLoadingLocations(false);
