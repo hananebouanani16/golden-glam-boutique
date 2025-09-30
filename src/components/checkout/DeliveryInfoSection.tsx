@@ -214,11 +214,12 @@ const DeliveryInfoSection = ({
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50">
               {offices.map((officeItem) => (
-                <SelectItem key={officeItem.id} value={`${officeItem.name}${officeItem.address ? ` - ${officeItem.address}` : ''}`} className="hover:bg-gray-700">
-                  <div>
-                    <div className="font-medium">{officeItem.name}</div>
-                    {officeItem.address && <div className="text-xs text-gray-400">{officeItem.address}</div>}
-                  </div>
+                <SelectItem 
+                  key={officeItem.id} 
+                  value={`${officeItem.name}${officeItem.address ? ` - ${officeItem.address}` : ''}`} 
+                  className="hover:bg-gray-700"
+                >
+                  {officeItem.name}{officeItem.address ? ` - ${officeItem.address}` : ''}
                 </SelectItem>
               ))}
             </SelectContent>
