@@ -93,32 +93,36 @@ const DeliveryInfoSection = ({
           }
           
           if (locations.length === 0) {
-            toast.info('Aucun emplacement trouvé', {
-              description: `Aucun ${locationType === 'communes' ? 'commune' : 'bureau'} disponible pour ${wilaya}`
+            toast.info('Saisie manuelle activée', {
+              description: `Aucun ${locationType === 'communes' ? 'commune' : 'bureau'} disponible. Veuillez saisir votre adresse manuellement.`
             });
+            // Permettre la saisie manuelle si pas de données
+            if (deliveryType === 'home') {
+              setCommune('manuel');
+            }
           }
         } else {
           console.error('Erreur lors du chargement des emplacements:', result);
           
-          // Extraire le message d'erreur de façon sûre
-          let errorMessage = 'Impossible de charger la liste des emplacements pour cette wilaya';
-          if (result.details?.fault?.faultstring) {
-            errorMessage = result.details.fault.faultstring;
-          } else if (typeof result.details === 'string') {
-            errorMessage = result.details;
-          } else if (result.error) {
-            errorMessage = result.error;
-          }
-          
-          toast.error('Erreur lors du chargement des emplacements', {
-            description: errorMessage
+          // Activer la saisie manuelle en cas d'erreur API
+          toast.warning('Saisie manuelle activée', {
+            description: 'Impossible de charger la liste automatiquement. Veuillez saisir votre adresse manuellement.'
           });
+          
+          if (deliveryType === 'home') {
+            setCommune('manuel');
+          }
         }
       } catch (error) {
         console.error('Erreur de connexion:', error);
-        toast.error('Erreur de connexion', {
-          description: error instanceof Error ? error.message : 'Impossible de contacter le service de livraison'
+        toast.warning('Saisie manuelle activée', {
+          description: 'Service temporairement indisponible. Veuillez saisir votre adresse manuellement.'
         });
+        
+        // Activer la saisie manuelle en cas d'erreur
+        if (deliveryType === 'home') {
+          setCommune('manuel');
+        }
       } finally {
         setLoadingLocations(false);
       }
@@ -205,18 +209,30 @@ const DeliveryInfoSection = ({
           <Label htmlFor="commune" className="text-gold-300">
             Commune
           </Label>
-          <Select value={commune} onValueChange={setCommune} disabled={loadingLocations}>
-            <SelectTrigger className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500">
-              <SelectValue placeholder={loadingLocations ? "Chargement..." : "Sélectionner une commune"} />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50">
-              {communes.map((communeItem) => (
-                <SelectItem key={communeItem.id} value={communeItem.name} className="hover:bg-gray-700">
-                  {communeItem.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {communes.length > 0 ? (
+            <Select value={commune} onValueChange={setCommune} disabled={loadingLocations}>
+              <SelectTrigger className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500">
+                <SelectValue placeholder={loadingLocations ? "Chargement..." : "Sélectionner une commune"} />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50">
+                {communes.map((communeItem) => (
+                  <SelectItem key={communeItem.id} value={communeItem.name} className="hover:bg-gray-700">
+                    {communeItem.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Input
+              type="text"
+              id="commune"
+              value={commune === 'manuel' ? '' : commune}
+              onChange={(e) => setCommune(e.target.value)}
+              className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500"
+              placeholder="Entrez votre commune"
+              disabled={loadingLocations}
+            />
+          )}
         </div>
       )}
 
@@ -225,26 +241,38 @@ const DeliveryInfoSection = ({
           <Label htmlFor="office" className="text-gold-300">
             Bureau ZR Express
           </Label>
-          <Select value={office} onValueChange={setOffice} disabled={loadingLocations}>
-            <SelectTrigger className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500">
-              <SelectValue placeholder={loadingLocations ? "Chargement..." : "Sélectionner un bureau"} />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50">
-              {offices.map((officeItem) => (
-                <SelectItem 
-                  key={officeItem.id} 
-                  value={`${officeItem.name}${officeItem.address ? ` - ${officeItem.address}` : ''}`} 
-                  className="hover:bg-gray-700"
-                >
-                  {officeItem.name}{officeItem.address ? ` - ${officeItem.address}` : ''}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {offices.length > 0 ? (
+            <Select value={office} onValueChange={setOffice} disabled={loadingLocations}>
+              <SelectTrigger className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500">
+                <SelectValue placeholder={loadingLocations ? "Chargement..." : "Sélectionner un bureau"} />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50">
+                {offices.map((officeItem) => (
+                  <SelectItem 
+                    key={officeItem.id} 
+                    value={`${officeItem.name}${officeItem.address ? ` - ${officeItem.address}` : ''}`} 
+                    className="hover:bg-gray-700"
+                  >
+                    {officeItem.name}{officeItem.address ? ` - ${officeItem.address}` : ''}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Input
+              type="text"
+              id="office"
+              value={office}
+              onChange={(e) => setOffice(e.target.value)}
+              className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500"
+              placeholder="Entrez le nom du bureau ZR Express"
+              disabled={loadingLocations}
+            />
+          )}
         </div>
       )}
 
-      {deliveryType === 'home' && commune && (
+      {deliveryType === 'home' && (commune && commune !== 'manuel') && (
         <div>
           <Label htmlFor="address" className="text-gold-300">
             Adresse Complète
