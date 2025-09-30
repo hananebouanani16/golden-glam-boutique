@@ -66,9 +66,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     let apiEndpoint: string;
     if (type === 'communes') {
-      apiEndpoint = 'https://procolis.com/api_v1/get_communes';
+      apiEndpoint = 'https://procolis.com/api_v2/get_communes';
     } else {
-      apiEndpoint = 'https://procolis.com/api_v1/get_offices';
+      apiEndpoint = 'https://procolis.com/api_v2/get_offices';
     }
 
     // Récupérer les données depuis l'API ZR Express

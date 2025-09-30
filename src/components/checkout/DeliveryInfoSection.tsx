@@ -99,8 +99,19 @@ const DeliveryInfoSection = ({
           }
         } else {
           console.error('Erreur lors du chargement des emplacements:', result);
+          
+          // Extraire le message d'erreur de façon sûre
+          let errorMessage = 'Impossible de charger la liste des emplacements pour cette wilaya';
+          if (result.details?.fault?.faultstring) {
+            errorMessage = result.details.fault.faultstring;
+          } else if (typeof result.details === 'string') {
+            errorMessage = result.details;
+          } else if (result.error) {
+            errorMessage = result.error;
+          }
+          
           toast.error('Erreur lors du chargement des emplacements', {
-            description: result.details || result.error || 'Impossible de charger la liste des emplacements pour cette wilaya'
+            description: errorMessage
           });
         }
       } catch (error) {
