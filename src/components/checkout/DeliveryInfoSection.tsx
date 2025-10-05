@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Truck } from "lucide-react";
 import { deliveryRates } from "@/data/deliveryRates";
+import { getCommunesByWilaya } from "@/data/communes";
 
 interface DeliveryInfoSectionProps {
   wilaya: string;
@@ -111,15 +112,18 @@ const DeliveryInfoSection = ({
           <Label htmlFor="commune" className="text-gold-300">
             Commune
           </Label>
-          <Input
-            type="text"
-            id="commune"
-            value={commune}
-            onChange={(e) => setCommune(e.target.value)}
-            className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500"
-            placeholder="Entrez votre commune"
-            required
-          />
+          <Select value={commune} onValueChange={setCommune}>
+            <SelectTrigger className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500">
+              <SelectValue placeholder="Sélectionner une commune" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50 max-h-[300px]">
+              {getCommunesByWilaya(wilaya).map((communeName) => (
+                <SelectItem key={communeName} value={communeName} className="hover:bg-gray-700">
+                  {communeName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       )}
 
