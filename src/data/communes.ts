@@ -238,35 +238,34 @@ export const communesByWilaya: Record<string, string[]> = {
     "Mendes", "Ouarizane"
   ],
   "Timimoun": [
-    "Timimoun", "Aougrout", "Charouine", "Tinerkouk", "Ouled Said", "Deldoul"
+    "Timimoun", "Ouled Said", "Charouine", "Tinerkouk", "Metarfa"
   ],
   "Bordj Badji Mokhtar": [
-    "Bordj Badji Mokhtar", "Timiaouine"
+    "Bordj Badji Mokhtar"
   ],
   "Ouled Djellal": [
-    "Ouled Djellal", "Ras El Miaad", "Doucen", "Chaiba"
+    "Ouled Djellal", "Ras El Miad", "Besbes"
   ],
   "Béni Abbès": [
-    "Béni Abbès", "Igli", "Ouled Khoudir", "Kerzaz", "Timoudi", "Tabelbala", "Beni Ikhlef"
+    "Béni Abbès", "Kerzaz", "Tamtert", "El Ouata", "Ouled Khoudir", "Beni Ikhlef", "Ksabi"
   ],
   "In Salah": [
-    "In Salah", "In Ghar", "Foggaret Ezzoua"
+    "In Salah", "Foggaret Ezzaouia", "Ain Salah Sud"
   ],
   "In Guezzam": [
     "In Guezzam", "Tin Zaouatine"
   ],
   "Touggourt": [
-    "Touggourt", "Nezla", "Tebesbest", "Zaouia El Abidia", "Temacine", "El Alia", "Taibet", "Megarine",
-    "Blidet Amor"
+    "Touggourt", "Tebesbest", "Taibet", "El Alia", "Megarine", "Nezla"
   ],
   "Djanet": [
-    "Djanet", "Bordj El Haoues"
+    "Djanet", "Bordj El Haouas"
   ],
   "El M'Ghair": [
-    "El M'Ghair", "Sidi Khelil", "Djamaa", "M'Rara", "Oum Touyour", "Still"
+    "El M'Ghair", "Still", "Sidi Khelil", "Oum Touyour", "Djamaa", "Sidi Amrane", "Tenedla", "M'rara"
   ],
   "El Meniaa": [
-    "El Meniaa", "Hassi Gara", "Hassi Lahdjar"
+    "El Menia", "Hassi Gara", "Hassi El Garaa"
   ]
 };
 

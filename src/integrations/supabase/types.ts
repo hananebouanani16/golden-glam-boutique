@@ -106,9 +106,11 @@ export type Database = {
           id: string
           items: Json
           order_number: string
+          sent_to_zr_express: boolean | null
           status: string
           total_amount: number
           total_products: number
+          zr_express_response: Json | null
         }
         Insert: {
           created_at?: string | null
@@ -117,9 +119,11 @@ export type Database = {
           id?: string
           items: Json
           order_number: string
+          sent_to_zr_express?: boolean | null
           status?: string
           total_amount: number
           total_products: number
+          zr_express_response?: Json | null
         }
         Update: {
           created_at?: string | null
@@ -128,9 +132,11 @@ export type Database = {
           id?: string
           items?: Json
           order_number?: string
+          sent_to_zr_express?: boolean | null
           status?: string
           total_amount?: number
           total_products?: number
+          zr_express_response?: Json | null
         }
         Relationships: []
       }

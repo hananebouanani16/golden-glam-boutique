@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Truck } from "lucide-react";
 import { deliveryRates } from "@/data/deliveryRates";
 import { getCommunesByWilaya } from "@/data/communes";
+import { getOfficesByWilaya } from "@/data/zrExpressOffices";
 
 interface DeliveryInfoSectionProps {
   wilaya: string;
@@ -132,15 +133,18 @@ const DeliveryInfoSection = ({
           <Label htmlFor="office" className="text-gold-300">
             Bureau ZR Express (Stop Desk)
           </Label>
-          <Input
-            type="text"
-            id="office"
-            value={office}
-            onChange={(e) => setOffice(e.target.value)}
-            className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500"
-            placeholder="Entrez le nom du bureau ZR Express"
-            required
-          />
+          <Select value={office} onValueChange={setOffice}>
+            <SelectTrigger className="bg-gray-800 border-gold-500/30 text-white focus:ring-gold-500 focus:border-gold-500">
+              <SelectValue placeholder="Sélectionner un bureau ZR Express" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border-gold-500/30 text-white z-50 max-h-[300px]">
+              {getOfficesByWilaya(wilaya).map((officeName) => (
+                <SelectItem key={officeName} value={officeName} className="hover:bg-gray-700">
+                  {officeName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       )}
 
