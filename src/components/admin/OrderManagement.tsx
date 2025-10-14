@@ -40,6 +40,7 @@ interface SupabaseOrder {
 }
 
 const OrderManagement = () => {
+  console.log('🔵 OrderManagement component mounted');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [supabaseOrders, setSupabaseOrders] = useState<SupabaseOrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,31 +90,38 @@ const OrderManagement = () => {
 
   // Charger les commandes depuis Supabase
   const fetchOrders = async () => {
+    console.log('🔵 fetchOrders called');
     setLoading(true);
     try {
+      console.log('🔵 Fetching from Supabase...');
       const { data, error } = await supabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
 
+      console.log('🔵 Supabase response:', { data, error });
+      
       if (error) {
-        console.error('Erreur lors du chargement des commandes:', error);
+        console.error('❌ Erreur lors du chargement des commandes:', error);
         toast.error('Erreur lors du chargement des commandes');
       } else {
-        console.log('Commandes chargées depuis Supabase:', data?.length || 0);
+        console.log('✅ Commandes chargées depuis Supabase:', data?.length || 0, data);
         setSupabaseOrders((data as any) || []);
       }
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('❌ Erreur:', error);
       toast.error('Erreur de connexion');
     } finally {
+      console.log('🔵 fetchOrders finished, loading = false');
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    console.log('🔵 useEffect triggered in OrderManagement');
     // D'abord migrer les anciennes commandes, puis charger toutes les commandes
     migrateLocalStorageOrders().then(() => {
+      console.log('🔵 Migration complete, calling fetchOrders');
       fetchOrders();
     });
   }, []);
