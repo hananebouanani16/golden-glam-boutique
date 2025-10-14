@@ -45,6 +45,48 @@ const OrderManagement = () => {
   const [loading, setLoading] = useState(true);
   const [sendingToZR, setSendingToZR] = useState<string | null>(null);
 
+  // Migrer les anciennes commandes du localStorage vers Supabase
+  const migrateLocalStorageOrders = async () => {
+    try {
+      const localOrders = localStorage.getItem('orders');
+      if (localOrders) {
+        const orders = JSON.parse(localOrders);
+        if (orders.length > 0) {
+          console.log('Migration des commandes du localStorage vers Supabase...', orders.length);
+          
+          for (const order of orders) {
+            // Vérifier si la commande existe déjà
+            const { data: existing } = await supabase
+              .from('orders')
+              .select('id')
+              .eq('order_number', order.orderNumber)
+              .maybeSingle();
+
+            if (!existing) {
+              await supabase.from('orders').insert({
+                order_number: order.orderNumber,
+                customer_info: order.customerInfo,
+                items: order.items,
+                total_products: order.totalProducts,
+                delivery_fee: order.deliveryFee,
+                total_amount: order.totalAmount,
+                status: order.status || 'pending',
+                sent_to_zr_express: false,
+                created_at: order.createdAt
+              });
+            }
+          }
+          
+          toast.success(`${orders.length} commande(s) migrée(s) avec succès!`);
+          // Effacer le localStorage après migration
+          localStorage.removeItem('orders');
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la migration:', error);
+    }
+  };
+
   // Charger les commandes depuis Supabase
   const fetchOrders = async () => {
     setLoading(true);
@@ -69,7 +111,10 @@ const OrderManagement = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
+    // D'abord migrer les anciennes commandes, puis charger toutes les commandes
+    migrateLocalStorageOrders().then(() => {
+      fetchOrders();
+    });
   }, []);
 
   const filteredOrders = statusFilter === 'all'
