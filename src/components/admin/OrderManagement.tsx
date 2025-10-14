@@ -100,6 +100,7 @@ const OrderManagement = () => {
         console.error('Erreur lors du chargement des commandes:', error);
         toast.error('Erreur lors du chargement des commandes');
       } else {
+        console.log('Commandes chargées depuis Supabase:', data?.length || 0);
         setSupabaseOrders((data as any) || []);
       }
     } catch (error) {
@@ -120,6 +121,8 @@ const OrderManagement = () => {
   const filteredOrders = statusFilter === 'all'
     ? supabaseOrders
     : supabaseOrders.filter(order => order.status === statusFilter);
+
+  console.log('Orders loaded:', supabaseOrders.length, 'Filtered:', filteredOrders.length);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -236,114 +239,109 @@ const OrderManagement = () => {
         <CardContent>
           {loading ? (
             <div className="text-center py-8 text-gray-400">Chargement des commandes...</div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">
+              {supabaseOrders.length === 0 
+                ? "Aucune commande enregistrée" 
+                : "Aucune commande trouvée pour ce filtre"}
+            </div>
           ) : (
-            <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-gold-500/20">
-                      <TableHead className="text-gold-300">N° Commande</TableHead>
-                      <TableHead className="text-gold-300">Client</TableHead>
-                      <TableHead className="text-gold-300">Contact</TableHead>
-                      <TableHead className="text-gold-300">Wilaya</TableHead>
-                      <TableHead className="text-gold-300">Articles</TableHead>
-                      <TableHead className="text-gold-300">Total</TableHead>
-                      <TableHead className="text-gold-300">Date</TableHead>
-                      <TableHead className="text-gold-300">Statut</TableHead>
-                      <TableHead className="text-gold-300">ZR Express</TableHead>
-                      <TableHead className="text-gold-300">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredOrders.map((order) => (
-                      <TableRow key={order.id} className="border-gold-500/10">
-                        <TableCell className="text-white font-mono">
-                          {order.order_number}
-                        </TableCell>
-                        <TableCell className="text-white">
-                          {order.customer_info.firstName} {order.customer_info.lastName}
-                        </TableCell>
-                        <TableCell className="text-white">
-                          <div className="flex items-center">
-                            <Phone className="h-4 w-4 mr-1 text-gold-400" />
-                            {order.customer_info.phone}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-white">
-                          <div className="flex items-center">
-                            <MapPin className="h-4 w-4 mr-1 text-gold-400" />
-                            {order.customer_info.wilaya}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-white">
-                          {order.items.length} article(s)
-                        </TableCell>
-                        <TableCell className="text-gold-400 font-semibold">
-                          {formatPrice(order.total_amount)}
-                        </TableCell>
-                        <TableCell className="text-white">
-                          {new Date(order.created_at).toLocaleDateString('fr-FR')}
-                        </TableCell>
-                        <TableCell>
-                          {getStatusBadge(order.status)}
-                        </TableCell>
-                        <TableCell>
-                          {order.sent_to_zr_express ? (
-                            <Badge className="bg-blue-500">Envoyée</Badge>
-                          ) : (
-                            <Badge variant="secondary">Non envoyée</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2 flex-wrap">
-                            {order.status === 'pending' && (
-                              <>
-                                <Button
-                                  size="sm"
-                                  className="bg-green-600 hover:bg-green-700 text-white"
-                                  onClick={() => handleStatusChange(order.id, 'confirmed')}
-                                >
-                                  <CheckCircle className="h-4 w-4 mr-1" />
-                                  Valider
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  className="bg-red-600 hover:bg-red-700 text-white"
-                                  onClick={() => handleStatusChange(order.id, 'cancelled')}
-                                >
-                                  <XCircle className="h-4 w-4 mr-1" />
-                                  Annuler
-                                </Button>
-                              </>
-                            )}
-                            {order.status === 'confirmed' && !order.sent_to_zr_express && (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-gold-500/20">
+                    <TableHead className="text-gold-300">N° Commande</TableHead>
+                    <TableHead className="text-gold-300">Client</TableHead>
+                    <TableHead className="text-gold-300">Contact</TableHead>
+                    <TableHead className="text-gold-300">Wilaya</TableHead>
+                    <TableHead className="text-gold-300">Articles</TableHead>
+                    <TableHead className="text-gold-300">Total</TableHead>
+                    <TableHead className="text-gold-300">Date</TableHead>
+                    <TableHead className="text-gold-300">Statut</TableHead>
+                    <TableHead className="text-gold-300">ZR Express</TableHead>
+                    <TableHead className="text-gold-300">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredOrders.map((order) => (
+                    <TableRow key={order.id} className="border-gold-500/10">
+                      <TableCell className="text-white font-mono">
+                        {order.order_number}
+                      </TableCell>
+                      <TableCell className="text-white">
+                        {order.customer_info.firstName} {order.customer_info.lastName}
+                      </TableCell>
+                      <TableCell className="text-white">
+                        <div className="flex items-center">
+                          <Phone className="h-4 w-4 mr-1 text-gold-400" />
+                          {order.customer_info.phone}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-white">
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-1 text-gold-400" />
+                          {order.customer_info.wilaya}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-white">
+                        {order.items.length} article(s)
+                      </TableCell>
+                      <TableCell className="text-gold-400 font-semibold">
+                        {formatPrice(order.total_amount)}
+                      </TableCell>
+                      <TableCell className="text-white">
+                        {new Date(order.created_at).toLocaleDateString('fr-FR')}
+                      </TableCell>
+                      <TableCell>
+                        {getStatusBadge(order.status)}
+                      </TableCell>
+                      <TableCell>
+                        {order.sent_to_zr_express ? (
+                          <Badge className="bg-blue-500">Envoyée</Badge>
+                        ) : (
+                          <Badge variant="secondary">Non envoyée</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2 flex-wrap">
+                          {order.status === 'pending' && (
+                            <>
                               <Button
                                 size="sm"
-                                className="bg-blue-600 hover:bg-blue-700 text-white"
-                                onClick={() => handleSendToZRExpress(order)}
-                                disabled={sendingToZR === order.id}
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                                onClick={() => handleStatusChange(order.id, 'confirmed')}
                               >
-                                <Send className="h-4 w-4 mr-1" />
-                                {sendingToZR === order.id ? 'Envoi...' : 'Envoyer à ZR'}
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Valider
                               </Button>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              
-              {filteredOrders.length === 0 && (
-                <div className="text-center py-8 text-gray-400">
-                  {supabaseOrders.length === 0 
-                    ? "Aucune commande enregistrée" 
-                    : "Aucune commande trouvée pour ce filtre"
-                  }
-                </div>
-              )}
-            </>
+                              <Button
+                                size="sm"
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                                onClick={() => handleStatusChange(order.id, 'cancelled')}
+                              >
+                                <XCircle className="h-4 w-4 mr-1" />
+                                Annuler
+                              </Button>
+                            </>
+                          )}
+                          {order.status === 'confirmed' && !order.sent_to_zr_express && (
+                            <Button
+                              size="sm"
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                              onClick={() => handleSendToZRExpress(order)}
+                              disabled={sendingToZR === order.id}
+                            >
+                              <Send className="h-4 w-4 mr-1" />
+                              {sendingToZR === order.id ? 'Envoi...' : 'Envoyer à ZR'}
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
