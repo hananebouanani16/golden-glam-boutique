@@ -19,6 +19,9 @@ export interface Product {
   originalPrice?: string;
   badge?: string;
   category: string;
+  stock_quantity?: number;
+  low_stock_threshold?: number;
+  is_out_of_stock?: boolean;
 }
 
 interface ProductCardProps {
@@ -93,6 +96,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const handleAddToCart = () => {
     console.log('ProductCard Debug - handleAddToCart called, isProductPurchased:', isProductPurchased);
     
+    // Vérifier si rupture de stock
+    if (product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1)) {
+      toast.error("Produit en rupture de stock !", {
+        description: "Ce produit n'est plus disponible actuellement.",
+        duration: 4000,
+      });
+      return;
+    }
+    
     if (isProductPurchased) {
       console.log('ProductCard Debug - Product already purchased, showing error toast');
       toast.error("Ce produit a déjà été acheté !", {
@@ -123,6 +135,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const handleBuyNow = () => {
     console.log('ProductCard Debug - handleBuyNow called, isProductPurchased:', isProductPurchased);
     
+    // Vérifier si rupture de stock
+    if (product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1)) {
+      toast.error("Produit en rupture de stock !", {
+        description: "Ce produit n'est plus disponible actuellement.",
+        duration: 4000,
+      });
+      return;
+    }
+    
     if (isProductPurchased) {
       console.log('ProductCard Debug - Product already purchased, showing error toast');
       toast.error("Ce produit a déjà été acheté !", {
@@ -146,16 +167,23 @@ const ProductCard = ({ product }: ProductCardProps) => {
             alt={product.title}
             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          {product.badge && !isProductPurchased && (
-            <Badge className="absolute top-2 left-2 bg-gold-500 text-black hover:bg-gold-400">
-              {product.badge}
+          {product.is_out_of_stock ? (
+            <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+              Rupture de stock
             </Badge>
-          )}
-          {isProductPurchased && (
+          ) : product.stock_quantity !== undefined && product.stock_quantity <= (product.low_stock_threshold || 5) ? (
+            <Badge className="absolute top-2 left-2 bg-yellow-500 text-black">
+              Stock limité ({product.stock_quantity})
+            </Badge>
+          ) : isProductPurchased ? (
             <Badge className="absolute top-2 left-2 bg-green-500 text-white">
               Déjà acheté
             </Badge>
-          )}
+          ) : product.badge ? (
+            <Badge className="absolute top-2 left-2 bg-gold-500 text-black hover:bg-gold-400">
+              {product.badge}
+            </Badge>
+          ) : null}
           <Button
             variant="ghost"
             size="icon"
@@ -194,25 +222,25 @@ const ProductCard = ({ product }: ProductCardProps) => {
               onClick={handleAddToCart}
               variant="outline"
               className={`flex-1 ${
-                isProductPurchased 
+                product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) || isProductPurchased
                   ? 'opacity-50 cursor-not-allowed border-gray-500' 
                   : 'gold-border hover:bg-gold-500/10'
               }`}
-              disabled={isProductPurchased}
+              disabled={product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) || isProductPurchased}
             >
               <ShoppingCart className="h-4 w-4 mr-2" />
-              {isProductPurchased ? 'Acheté' : 'Ajouter'}
+              {product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) ? 'Rupture' : isProductPurchased ? 'Acheté' : 'Ajouter'}
             </Button>
             <Button
               onClick={handleBuyNow}
               className={`flex-1 ${
-                isProductPurchased 
+                product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) || isProductPurchased
                   ? 'opacity-50 cursor-not-allowed bg-gray-500' 
                   : 'gold-button'
               }`}
-              disabled={isProductPurchased}
+              disabled={product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) || isProductPurchased}
             >
-              {isProductPurchased ? 'Acheté' : 'Acheter'}
+              {product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) ? 'Rupture' : isProductPurchased ? 'Acheté' : 'Acheter'}
             </Button>
           </div>
         </div>

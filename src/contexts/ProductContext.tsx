@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from '@/types/product';
+import { usePromotions } from '@/hooks/usePromotions';
 
 // Token d'administration pour les fonctions sécurisées
 const ADMIN_TOKEN = "25051985n*N";
@@ -20,6 +21,7 @@ const ProductContext = createContext<ProductContextType | undefined>(undefined);
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { applyPromotions } = usePromotions();
 
   // Force à chaque modification une lecture fraîche depuis Supabase !
   const fetchProducts = async () => {
@@ -50,7 +52,10 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       console.log("[ProductContext] Produits filtrés (sans deleted_at):", filtered);
       console.log("[ProductContext] Nombre de produits:", filtered.length);
       
-      setProducts(filtered);
+      // Appliquer les promotions actives
+      const productsWithPromotions = applyPromotions(filtered);
+      
+      setProducts(productsWithPromotions);
       setLoading(false);
 
       // Log pour tracking

@@ -162,9 +162,9 @@ const StockManagement = () => {
                       <Input
                         id={`stock-${product.id}`}
                         type="number"
-                        min="0"
-                        value={product.stock_quantity || 0}
-                        onChange={(e) => updateStock(product.id, 'stock_quantity', parseInt(e.target.value) || 0)}
+                        min="1"
+                        value={product.stock_quantity || 1}
+                        onChange={(e) => updateStock(product.id, 'stock_quantity', Math.max(1, parseInt(e.target.value) || 1))}
                         className="w-20 bg-gray-700 border-gray-600 text-white"
                       />
                     </div>

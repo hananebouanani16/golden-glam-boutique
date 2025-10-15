@@ -1,19 +1,81 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOrders } from "@/contexts/OrderContext";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { TrendingUp, TrendingDown, Users, MapPin, Package, CheckCircle, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Dashboard = () => {
-  const { getOrderStats } = useOrders();
-  const stats = getOrderStats();
+  const { orders } = useOrders();
+  const [supabaseOrders, setSupabaseOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSupabaseOrders();
+  }, []);
+
+  const fetchSupabaseOrders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setSupabaseOrders(data || []);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Utiliser les commandes Supabase pour les stats
+  const allOrders = supabaseOrders.length > 0 ? supabaseOrders : orders;
+  
+  const stats = {
+    totalOrders: allOrders.length,
+    confirmedOrders: allOrders.filter(o => o.status === 'confirmed').length,
+    cancelledOrders: allOrders.filter(o => o.status === 'cancelled').length,
+    pendingOrders: allOrders.filter(o => o.status === 'pending').length,
+    topWilayas: getTopWilayas(allOrders),
+    topCustomers: getTopCustomers(allOrders),
+  };
+
+  function getTopWilayas(orders: any[]) {
+    const wilayaCounts: { [key: string]: number } = {};
+    orders.forEach(order => {
+      const wilaya = order.customer_info?.wilaya || 'Inconnu';
+      wilayaCounts[wilaya] = (wilayaCounts[wilaya] || 0) + 1;
+    });
+    return Object.entries(wilayaCounts)
+      .map(([wilaya, count]) => ({ wilaya, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+  }
+
+  function getTopCustomers(orders: any[]) {
+    const customerCounts: { [key: string]: { name: string; phone: string; orders: number } } = {};
+    orders.forEach(order => {
+      const phone = order.customer_info?.phone || 'Inconnu';
+      const name = order.customer_info?.name || 'Inconnu';
+      if (!customerCounts[phone]) {
+        customerCounts[phone] = { name, phone, orders: 0 };
+      }
+      customerCounts[phone].orders++;
+    });
+    return Object.values(customerCounts)
+      .sort((a, b) => b.orders - a.orders)
+      .slice(0, 5);
+  }
 
   const statusData = [
     { name: 'Confirmées', value: stats.confirmedOrders, color: '#10b981' },
     { name: 'Annulées', value: stats.cancelledOrders, color: '#ef4444' },
-    { name: 'En attente', value: stats.totalOrders - stats.confirmedOrders - stats.cancelledOrders, color: '#6b7280' }
-  ];
+    { name: 'En attente', value: stats.pendingOrders, color: '#f59e0b' }
+  ].filter(item => item.value > 0); // Ne montrer que les statuts avec des commandes
 
   const chartConfig = {
     confirmed: {
@@ -29,6 +91,14 @@ const Dashboard = () => {
       color: "#6b7280",
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gold-300">Chargement des statistiques...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -92,6 +162,8 @@ const Dashboard = () => {
                     outerRadius={100}
                     paddingAngle={5}
                     dataKey="value"
+                    label={({ name, value }) => `${name}: ${value}`}
+                    labelLine={false}
                   >
                     {statusData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -100,6 +172,7 @@ const Dashboard = () => {
                   <Tooltip 
                     content={<ChartTooltipContent />}
                   />
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </ChartContainer>
