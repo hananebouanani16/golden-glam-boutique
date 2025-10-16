@@ -1,47 +1,61 @@
 
-import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import AdminLogin from "@/components/AdminLogin";
 import Dashboard from "@/components/admin/Dashboard";
 import ProductManagement from "@/components/admin/ProductManagement";
 import OrderManagement from "@/components/admin/OrderManagement";
-import CategoryManagement from "@/components/admin/CategoryManagement";
-import PromoPlanner from "@/components/admin/PromoPlanner";
-import ChatManagement from "@/components/admin/ChatManagement";
-
 import StockManagement from "@/components/admin/StockManagement";
 import PromotionManagement from "@/components/admin/PromotionManagement";
 import DeliveryManagement from "@/components/admin/DeliveryManagement";
+import ChatManagement from "@/components/admin/ChatManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { 
   LayoutDashboard, 
   Package, 
   ShoppingCart, 
-  Tags, 
-  Calendar,
-  MessageCircle,
   Warehouse,
   Percent,
-  Truck 
+  Truck,
+  MessageCircle,
+  LogOut
 } from "lucide-react";
 
 const Admin = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAdmin, loading, signOut } = useAdminAuth();
 
-  if (!isAuthenticated) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-gold-300 text-xl">Chargement...</div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
     return <AdminLogin />;
   }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Administration
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Gérez votre boutique Nesrine Golden Hands
-          </p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Administration
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Gérez votre boutique Nesrine Golden Hands
+            </p>
+          </div>
+          <Button
+            onClick={signOut}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Déconnexion
+          </Button>
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
@@ -92,10 +106,6 @@ const Admin = () => {
             <OrderManagement />
           </TabsContent>
 
-          <TabsContent value="categories">
-            <CategoryManagement />
-          </TabsContent>
-
           <TabsContent value="promotions">
             <PromotionManagement />
           </TabsContent>
@@ -107,7 +117,6 @@ const Admin = () => {
           <TabsContent value="chat">
             <ChatManagement />
           </TabsContent>
-
         </Tabs>
       </div>
     </div>

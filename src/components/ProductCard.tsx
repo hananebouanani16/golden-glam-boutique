@@ -97,7 +97,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
     console.log('ProductCard Debug - handleAddToCart called, isProductPurchased:', isProductPurchased);
     
     // Vérifier si rupture de stock
-    if (product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1)) {
+    if (product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0)) {
       toast.error("Produit en rupture de stock !", {
         description: "Ce produit n'est plus disponible actuellement.",
         duration: 4000,
@@ -136,7 +136,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
     console.log('ProductCard Debug - handleBuyNow called, isProductPurchased:', isProductPurchased);
     
     // Vérifier si rupture de stock
-    if (product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1)) {
+    if (product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0)) {
       toast.error("Produit en rupture de stock !", {
         description: "Ce produit n'est plus disponible actuellement.",
         duration: 4000,
@@ -167,13 +167,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
             alt={product.title}
             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          {product.is_out_of_stock ? (
+          {product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0) ? (
             <Badge className="absolute top-2 left-2 bg-red-500 text-white">
               Rupture de stock
             </Badge>
-          ) : product.stock_quantity !== undefined && product.stock_quantity <= (product.low_stock_threshold || 5) ? (
-            <Badge className="absolute top-2 left-2 bg-yellow-500 text-black">
-              Stock limité ({product.stock_quantity})
+          ) : product.stock_quantity !== undefined && product.stock_quantity > 0 ? (
+            <Badge className="absolute top-2 left-2 bg-blue-500 text-white">
+              Stock: {product.stock_quantity}
             </Badge>
           ) : isProductPurchased ? (
             <Badge className="absolute top-2 left-2 bg-green-500 text-white">
@@ -222,25 +222,25 @@ const ProductCard = ({ product }: ProductCardProps) => {
               onClick={handleAddToCart}
               variant="outline"
               className={`flex-1 ${
-                product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) || isProductPurchased
+                product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0) || isProductPurchased
                   ? 'opacity-50 cursor-not-allowed border-gray-500' 
                   : 'gold-border hover:bg-gold-500/10'
               }`}
-              disabled={product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) || isProductPurchased}
+              disabled={product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0) || isProductPurchased}
             >
               <ShoppingCart className="h-4 w-4 mr-2" />
-              {product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) ? 'Rupture' : isProductPurchased ? 'Acheté' : 'Ajouter'}
+              {product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0) ? 'Rupture' : isProductPurchased ? 'Acheté' : 'Ajouter'}
             </Button>
             <Button
               onClick={handleBuyNow}
               className={`flex-1 ${
-                product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) || isProductPurchased
+                product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0) || isProductPurchased
                   ? 'opacity-50 cursor-not-allowed bg-gray-500' 
                   : 'gold-button'
               }`}
-              disabled={product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) || isProductPurchased}
+              disabled={product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0) || isProductPurchased}
             >
-              {product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity < 1) ? 'Rupture' : isProductPurchased ? 'Acheté' : 'Acheter'}
+              {product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0) ? 'Rupture' : isProductPurchased ? 'Acheté' : 'Acheter'}
             </Button>
           </div>
         </div>
