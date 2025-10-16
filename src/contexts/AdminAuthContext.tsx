@@ -48,7 +48,7 @@ export const AdminAuthProvider = ({ children }: { children: React.ReactNode }) =
     }
   };
 
-  const checkAdminRole = async (userId: string) => {
+  const checkAdminRole = async (userId: string): Promise<boolean> => {
     try {
       const { data, error } = await supabase
         .from('user_roles')
@@ -57,10 +57,13 @@ export const AdminAuthProvider = ({ children }: { children: React.ReactNode }) =
         .eq('role', 'admin')
         .single();
 
-      setIsAdmin(!!data && !error);
+      const hasAdminRole = !!data && !error;
+      setIsAdmin(hasAdminRole);
+      return hasAdminRole;
     } catch (error) {
       console.error('Error checking admin role:', error);
       setIsAdmin(false);
+      return false;
     }
   };
 
@@ -73,8 +76,8 @@ export const AdminAuthProvider = ({ children }: { children: React.ReactNode }) =
     if (error) throw error;
     
     if (data.user) {
-      await checkAdminRole(data.user.id);
-      if (!isAdmin) {
+      const hasAdminRole = await checkAdminRole(data.user.id);
+      if (!hasAdminRole) {
         await supabase.auth.signOut();
         throw new Error('Accès non autorisé');
       }
