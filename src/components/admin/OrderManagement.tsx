@@ -146,6 +146,56 @@ const OrderManagement = () => {
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     if (newStatus === 'confirmed' || newStatus === 'cancelled') {
       try {
+        // Récupérer les détails de la commande
+        const order = supabaseOrders.find(o => o.id === orderId);
+        if (!order) {
+          toast.error('Commande introuvable');
+          return;
+        }
+
+        // Si on valide la commande, décrémenter le stock
+        if (newStatus === 'confirmed') {
+          for (const item of order.items) {
+            // Récupérer le produit actuel
+            const { data: product, error: fetchError } = await supabase
+              .from('products')
+              .select('stock_quantity')
+              .eq('id', item.id)
+              .single();
+
+            if (fetchError) {
+              console.error('Erreur lors de la récupération du produit:', fetchError);
+              toast.error(`Erreur: impossible de vérifier le stock pour ${item.title}`);
+              return;
+            }
+
+            const currentStock = product?.stock_quantity || 0;
+            const newStock = currentStock - item.quantity;
+
+            // Vérifier si le stock est suffisant
+            if (newStock < 0) {
+              toast.error(`Stock insuffisant pour ${item.title}! (Stock: ${currentStock}, Demandé: ${item.quantity})`);
+              return;
+            }
+
+            // Décrémenter le stock
+            const { error: updateError } = await supabase
+              .from('products')
+              .update({ 
+                stock_quantity: newStock,
+                is_out_of_stock: newStock === 0
+              })
+              .eq('id', item.id);
+
+            if (updateError) {
+              console.error('Erreur lors de la mise à jour du stock:', updateError);
+              toast.error(`Erreur lors de la mise à jour du stock pour ${item.title}`);
+              return;
+            }
+          }
+        }
+
+        // Mettre à jour le statut de la commande
         const { error } = await supabase
           .from('orders')
           .update({ status: newStatus })
@@ -155,7 +205,7 @@ const OrderManagement = () => {
           console.error('Erreur lors de la mise à jour du statut:', error);
           toast.error('Erreur lors de la mise à jour');
         } else {
-          toast.success(`Commande ${newStatus === 'confirmed' ? 'validée' : 'annulée'}`);
+          toast.success(`Commande ${newStatus === 'confirmed' ? 'validée' : 'annulée'}. ${newStatus === 'confirmed' ? 'Stock mis à jour.' : ''}`);
           fetchOrders(); // Recharger les commandes
         }
       } catch (error) {
