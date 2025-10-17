@@ -79,43 +79,48 @@ const CheckoutFormContent = ({ onClose, initialProduct }: CheckoutFormContentPro
       return;
     }
 
-    const newOrderNumber = `CMD-${Date.now()}`;
-
-    // Sauvegarder dans Supabase
+    // Créer la commande via l'edge function sécurisée
     try {
-      const { error } = await supabase.from('orders').insert({
-        order_number: newOrderNumber,
-        customer_info: {
-          firstName: personalInfo.firstName,
-          lastName: personalInfo.lastName,
-          phone: personalInfo.phone,
-          wilaya,
-          deliveryType: deliveryType as 'home' | 'office',
-          address: deliveryType === 'home' ? `${commune} - ${address}` : office,
-          commune: deliveryType === 'home' ? commune : undefined,
-          office: deliveryType === 'office' ? office : undefined
-        },
-        items: items.map(item => ({
-          id: item.id,
-          title: item.title,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image
-        })),
-        total_products: totalProducts,
-        delivery_fee: deliveryFee,
-        total_amount: totalAmount,
-        status: 'pending',
-        sent_to_zr_express: false
+      const { data, error } = await supabase.functions.invoke('create-order', {
+        body: {
+          customer_info: {
+            firstName: personalInfo.firstName,
+            lastName: personalInfo.lastName,
+            phone: personalInfo.phone,
+            wilaya,
+            deliveryType: deliveryType as 'home' | 'office',
+            address: deliveryType === 'home' ? `${commune} - ${address}` : office,
+            commune: deliveryType === 'home' ? commune : undefined,
+            office: deliveryType === 'office' ? office : undefined
+          },
+          items: items.map(item => ({
+            id: item.id,
+            title: item.title,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image
+          })),
+          total_products: totalProducts,
+          delivery_fee: deliveryFee,
+          total_amount: totalAmount
+        }
       });
 
       if (error) {
-        console.error('Erreur lors de la sauvegarde de la commande:', error);
-        toast.error('Erreur lors de la sauvegarde de la commande');
+        console.error('Erreur lors de la création de la commande:', error);
+        toast.error(error.message || 'Erreur lors de la création de la commande');
         return;
       }
 
-      // Aussi sauvegarder dans le contexte local pour l'affichage
+      if (!data.success) {
+        console.error('Erreur:', data.error);
+        toast.error(data.error || 'Erreur lors de la création de la commande');
+        return;
+      }
+
+      const newOrderNumber = data.orderNumber;
+
+      // Sauvegarder dans le contexte local pour l'affichage
       const order = {
         customerInfo: {
           firstName: personalInfo.firstName,
