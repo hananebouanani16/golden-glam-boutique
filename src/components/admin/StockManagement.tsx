@@ -5,63 +5,59 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/types/product";
-import { AlertTriangle, Package, TrendingDown } from "lucide-react";
+import { AlertTriangle, Package, TrendingDown, Save } from "lucide-react";
+import { useProducts } from "@/contexts/ProductContext";
 
 const StockManagement = () => {
   const { toast } = useToast();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { products, updateProduct, loading } = useProducts();
+  const [localChanges, setLocalChanges] = useState<Record<string, Partial<Product>>>({});
+  const [hasChanges, setHasChanges] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  const updateLocalStock = (productId: string, field: string, value: number | boolean) => {
+    setLocalChanges(prev => ({
+      ...prev,
+      [productId]: {
+        ...prev[productId],
+        [field]: value
+      }
+    }));
+    setHasChanges(true);
+  };
 
-  const fetchProducts = async () => {
+  const saveAllChanges = async () => {
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('title', { ascending: true });
+      const updates = Object.entries(localChanges).map(async ([productId, changes]) => {
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+        
+        await updateProduct({
+          ...product,
+          ...changes
+        });
+      });
 
-      if (error) throw error;
-      setProducts(data || []);
+      await Promise.all(updates);
+
+      toast({
+        title: "Succès",
+        description: "Tous les changements ont été sauvegardés et la boutique a été mise à jour.",
+      });
+      
+      setLocalChanges({});
+      setHasChanges(false);
     } catch (error: any) {
       toast({
         title: "Erreur",
-        description: `Impossible de charger les produits: ${error.message}`,
+        description: `Impossible de sauvegarder: ${error.message}`,
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
-  const updateStock = async (productId: string, field: string, value: number | boolean) => {
-    try {
-      const { error } = await supabase
-        .from('products')
-        .update({ [field]: value })
-        .eq('id', productId);
-
-      if (error) throw error;
-
-      setProducts(prev => prev.map(p => 
-        p.id === productId ? { ...p, [field]: value } : p
-      ));
-
-      toast({
-        title: "Stock mis à jour",
-        description: "Les informations de stock ont été mises à jour avec succès.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: `Impossible de mettre à jour le stock: ${error.message}`,
-        variant: "destructive",
-      });
-    }
+  const getDisplayValue = (product: Product, field: string) => {
+    return localChanges[product.id]?.[field] ?? product[field];
   };
 
   const getStockStatus = (product: Product) => {
@@ -69,6 +65,16 @@ const StockManagement = () => {
     if (product.stock_quantity <= product.low_stock_threshold) return { status: "Stock faible", color: "warning" };
     return { status: "En stock", color: "default" };
   };
+
+  const productsWithChanges = products.map(p => ({
+    ...p,
+    ...localChanges[p.id]
+  }));
+
+  const lowStockProducts = productsWithChanges.filter(p => 
+    (p.stock_quantity || 0) <= (p.low_stock_threshold || 5) && !p.is_out_of_stock
+  );
+  const outOfStockProducts = productsWithChanges.filter(p => p.is_out_of_stock);
 
   if (loading) {
     return (
@@ -78,18 +84,25 @@ const StockManagement = () => {
     );
   }
 
-  const lowStockProducts = products.filter(p => 
-    (p.stock_quantity || 0) <= (p.low_stock_threshold || 5) && !p.is_out_of_stock
-  );
-  const outOfStockProducts = products.filter(p => p.is_out_of_stock);
-
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold gold-text">Gestion des Stocks</h2>
-        <p className="text-gray-400 mt-1">
-          Gérez les quantités et les seuils d'alerte pour vos produits
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold gold-text">Gestion des Stocks</h2>
+          <p className="text-gray-400 mt-1">
+            Modifiez les quantités puis cliquez sur "Sauvegarder" pour mettre à jour la boutique
+          </p>
+        </div>
+        {hasChanges && (
+          <Button 
+            onClick={saveAllChanges}
+            className="gold-button"
+            size="lg"
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Sauvegarder tout
+          </Button>
+        )}
       </div>
 
       {/* Statistiques rapides */}
@@ -132,10 +145,17 @@ const StockManagement = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {products.map((product) => {
+            {productsWithChanges.map((product) => {
               const stockStatus = getStockStatus(product);
+              const hasProductChanges = !!localChanges[product.id];
+              
               return (
-                <div key={product.id} className="flex items-center justify-between p-4 border border-gray-600 rounded-lg">
+                <div 
+                  key={product.id} 
+                  className={`flex items-center justify-between p-4 border rounded-lg transition-all ${
+                    hasProductChanges ? 'border-gold-500 bg-gold-500/5' : 'border-gray-600'
+                  }`}
+                >
                   <div className="flex items-center space-x-4">
                     {product.image && (
                       <img 
@@ -163,18 +183,18 @@ const StockManagement = () => {
                         id={`stock-${product.id}`}
                         type="number"
                         min="0"
-                        value={product.stock_quantity || 0}
-                        onChange={(e) => updateStock(product.id, 'stock_quantity', Math.max(0, parseInt(e.target.value) || 0))}
+                        value={getDisplayValue(product, 'stock_quantity') || 0}
+                        onChange={(e) => updateLocalStock(product.id, 'stock_quantity', Math.max(0, parseInt(e.target.value) || 0))}
                         className="w-20 bg-gray-700 border-gray-600 text-white"
                       />
                     </div>
 
                     <Button
-                      variant={product.is_out_of_stock ? "default" : "destructive"}
+                      variant={getDisplayValue(product, 'is_out_of_stock') ? "default" : "destructive"}
                       size="sm"
-                      onClick={() => updateStock(product.id, 'is_out_of_stock', !product.is_out_of_stock)}
+                      onClick={() => updateLocalStock(product.id, 'is_out_of_stock', !getDisplayValue(product, 'is_out_of_stock'))}
                     >
-                      {product.is_out_of_stock ? "Remettre en stock" : "Marquer rupture"}
+                      {getDisplayValue(product, 'is_out_of_stock') ? "Remettre en stock" : "Marquer rupture"}
                     </Button>
                   </div>
                 </div>

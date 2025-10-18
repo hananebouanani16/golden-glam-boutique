@@ -68,17 +68,8 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   };
 
   useEffect(() => {
-    console.log("[ProductContext] useEffect - Début du chargement des produits");
-    // Rafraîchit toujours à l'init (montage)
+    console.log("[ProductContext] Chargement initial des produits");
     fetchProducts();
-    
-    // Rafraîchissement automatique toutes les 30 secondes pour garder le stock à jour
-    const interval = setInterval(() => {
-      console.log("[ProductContext] Auto-refresh du stock");
-      fetchProducts();
-    }, 30000); // 30 secondes
-    
-    return () => clearInterval(interval);
   }, []);
 
   const addProduct = async (productData: Omit<Product, "id">) => {

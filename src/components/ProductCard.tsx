@@ -33,16 +33,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const [showCheckout, setShowCheckout] = useState(false);
   const [isProductPurchased, setIsProductPurchased] = useState(false);
   
-  // Utilisation sécurisée de useOrders avec try/catch
   let orders: any[] = [];
   let ordersError = false;
   
   try {
     const ordersContext = useOrders();
     orders = ordersContext.orders;
-    console.log('ProductCard: Successfully got orders:', orders.length);
   } catch (error) {
-    console.warn('ProductCard: Could not access orders context:', error);
     ordersError = true;
   }
   
@@ -57,46 +54,21 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const priceInDA = Number(product.price);
   const originalPriceInDA = product.originalPrice ? Number(product.originalPrice) : null;
 
-  // Effet pour mettre à jour le statut d'achat quand les commandes changent
   useEffect(() => {
-    console.log('ProductCard useEffect - Orders changed:', orders.length);
-    console.log('ProductCard useEffect - Current product ID:', product.id);
-    
     if (ordersError) {
       setIsProductPurchased(false);
       return;
     }
 
     const purchased = orders.some(order => {
-      console.log('ProductCard useEffect - Checking order:', order.id, 'status:', order.status);
-      console.log('ProductCard useEffect - Order items:', order.items);
-      
-      // Vérifier seulement les commandes confirmées
-      if (order.status !== 'confirmed') {
-        console.log('ProductCard useEffect - Order not confirmed, skipping');
-        return false;
-      }
-      
-      const found = order.items.some(item => {
-        console.log('ProductCard useEffect - Comparing item ID:', item.id, 'with product ID:', product.id);
-        return item.id === product.id;
-      });
-      
-      if (found) {
-        console.log('ProductCard useEffect - Product found in confirmed order!');
-      }
-      
-      return found;
+      if (order.status !== 'confirmed') return false;
+      return order.items.some(item => item.id === product.id);
     });
     
-    console.log('ProductCard useEffect - Final purchased result:', purchased, 'for product:', product.title);
     setIsProductPurchased(purchased);
-  }, [orders, product.id, product.title, ordersError]);
+  }, [orders, product.id, ordersError]);
   
   const handleAddToCart = () => {
-    console.log('ProductCard Debug - handleAddToCart called, isProductPurchased:', isProductPurchased);
-    
-    // Vérifier si rupture de stock
     if (product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0)) {
       toast.error("Produit en rupture de stock !", {
         description: "Ce produit n'est plus disponible actuellement.",
@@ -106,7 +78,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
     }
     
     if (isProductPurchased) {
-      console.log('ProductCard Debug - Product already purchased, showing error toast');
       toast.error("Ce produit a déjà été acheté !", {
         description: "Vous ne pouvez pas l'ajouter au panier.",
         duration: 4000,
@@ -114,7 +85,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
       return;
     }
 
-    console.log('ProductCard Debug - Adding product to cart:', product.title);
     addToCart(product);
     toast.success("Produit ajouté au panier !", {
       description: product.title,
@@ -133,9 +103,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   const handleBuyNow = () => {
-    console.log('ProductCard Debug - handleBuyNow called, isProductPurchased:', isProductPurchased);
-    
-    // Vérifier si rupture de stock
     if (product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0)) {
       toast.error("Produit en rupture de stock !", {
         description: "Ce produit n'est plus disponible actuellement.",
@@ -145,7 +112,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
     }
     
     if (isProductPurchased) {
-      console.log('ProductCard Debug - Product already purchased, showing error toast');
       toast.error("Ce produit a déjà été acheté !", {
         description: "Vous ne pouvez pas l'acheter à nouveau.",
         duration: 4000,
@@ -153,7 +119,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
       return;
     }
 
-    console.log('ProductCard Debug - Adding product to cart for immediate purchase:', product.title);
     addToCart(product);
     setShowCheckout(true);
   };
