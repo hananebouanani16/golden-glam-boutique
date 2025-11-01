@@ -141,12 +141,24 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     }
   };
 
-  // Restaure : utilise une requête UPDATE directe (non critique)
-  // Note: Cette fonctionnalité nécessiterait une fonction sécurisée séparée
+  // Restaure : utilise la fonction sécurisée
   const restoreProduct = async (productId: string) => {
-    console.warn("[ProductContext] restoreProduct: Cette fonctionnalité nécessite une implémentation sécurisée");
-    // Pour l'instant, cette fonction est désactivée pour des raisons de sécurité
-    throw new Error("Restore product functionality is disabled for security reasons");
+    try {
+      const { data, error } = await supabase.rpc('admin_restore_product', {
+        p_id: productId,
+        p_admin_token: ADMIN_TOKEN
+      });
+      
+      if (error) {
+        console.error("[ProductContext] restoreProduct Supabase error:", error);
+        throw error;
+      }
+      
+      await fetchProducts(); // On force le refetch
+    } catch (error) {
+      console.error("[ProductContext] restoreProduct error:", error);
+      throw error;
+    }
   };
 
   // Pour interface : on garde la méthode pour forcer rafraîchissement manuel

@@ -260,6 +260,10 @@ export type Database = {
         Args: { p_admin_token: string; p_id: string }
         Returns: boolean
       }
+      admin_restore_product: {
+        Args: { p_admin_token: string; p_id: string }
+        Returns: boolean
+      }
       admin_update_product: {
         Args: {
           p_admin_token: string
