@@ -6,35 +6,13 @@ import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import { useApp } from "@/contexts/AppContext";
 import { useProducts } from "@/contexts/ProductContext";
-import { useEffect } from "react";
 
 const Index = () => {
   const { t } = useApp();
   const { products, loading } = useProducts();
 
-  // Log pour débogage
-  useEffect(() => {
-    console.log("[Index] useEffect - loading:", loading);
-    console.log("[Index] useEffect - products:", products);
-    console.log("[Index] useEffect - products.length:", products.length);
-    
-    if (!loading && products.length > 0) {
-      console.log("--- [Index] Vérification des catégories des produits sur la page d'accueil ---");
-      products.forEach(p => {
-        console.log(`Produit: "${p.title}", Catégorie: "${p.category}"`);
-      });
-      console.log("--- Fin de la vérification ---");
-    } else if (!loading && products.length === 0) {
-      console.warn("[Index] ATTENTION: Aucun produit trouvé!");
-    }
-  }, [products, loading]);
-
-  // On garde aussi les sections par catégories comme avant, en s'assurant de la propreté des données
   const bagsData = products.filter((p) => p.category?.trim() === "sacs");
   const jewelryData = products.filter((p) => p.category?.trim() === "bijoux");
-
-  console.log("[Index] bagsData:", bagsData.length, "produits");
-  console.log("[Index] jewelryData:", jewelryData.length, "produits");
 
   if (loading) {
     return (

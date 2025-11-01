@@ -23,10 +23,8 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     try {
       const savedOrders = localStorage.getItem('orders');
-      console.log('OrderContext - Loading orders from localStorage:', savedOrders);
       if (savedOrders) {
         const parsedOrders = JSON.parse(savedOrders);
-        // Convert date strings (or objects) back to Date objects
         const ordersWithDates = parsedOrders.map((order: any) => ({
           ...order,
           createdAt:
@@ -36,10 +34,7 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
                 ? new Date(order.createdAt.value.iso)
                 : new Date(),
         }));
-        console.log('OrderContext - Parsed orders with dates:', ordersWithDates);
         setOrders(ordersWithDates);
-      } else {
-        console.log('OrderContext - No saved orders found in localStorage');
       }
     } catch (error) {
       console.error('OrderContext - Error loading orders from localStorage:', error);
@@ -49,12 +44,11 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
   // Save orders to localStorage, always serialize Date as ISO string
   useEffect(() => {
     try {
-      console.log('OrderContext - Saving orders to localStorage:', orders.length, 'orders');
       const serializableOrders = orders.map(order => ({
         ...order,
         createdAt: order.createdAt instanceof Date
           ? order.createdAt.toISOString()
-          : order.createdAt, // fallback
+          : order.createdAt,
       }));
       localStorage.setItem('orders', JSON.stringify(serializableOrders));
     } catch (error) {
@@ -67,24 +61,14 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
       ...orderData,
       id: Date.now().toString(),
       orderNumber: `CMD-${Date.now()}`,
-      status: 'pending', // <--- CORRECTIF: le statut par défaut est maintenant 'pending'
+      status: 'pending',
       createdAt: new Date()
     };
     
-    console.log('OrderContext - Adding new order with pending status:', newOrder);
-    console.log('OrderContext - Order items:', newOrder.items);
-    console.log('OrderContext - Customer info:', newOrder.customerInfo);
-    
-    setOrders(prev => {
-      const newOrders = [newOrder, ...prev];
-      console.log('OrderContext - Updated orders list length:', newOrders.length);
-      console.log('OrderContext - All orders:', newOrders);
-      return newOrders;
-    });
+    setOrders(prev => [newOrder, ...prev]);
   };
 
   const updateOrderStatus = (orderId: string, status: 'confirmed' | 'cancelled') => {
-    console.log('OrderContext - Updating order status:', orderId, status);
     setOrders(prev => 
       prev.map(order => 
         order.id === orderId ? { ...order, status } : order

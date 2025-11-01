@@ -23,52 +23,35 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   const [loading, setLoading] = useState<boolean>(true);
   const { applyPromotions } = usePromotions();
 
-  // Force à chaque modification une lecture fraîche depuis Supabase !
   const fetchProducts = async () => {
-    console.log("[ProductContext] Début de fetchProducts");
     setLoading(true);
     
     try {
-      console.log("[ProductContext] Tentative de connexion à Supabase...");
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .order('title', { ascending: true });
       
-      console.log("[ProductContext] Réponse Supabase - data:", data);
-      console.log("[ProductContext] Réponse Supabase - error:", error);
-      
       if (error) {
-        console.error("[ProductContext] Error fetching products from Supabase:", error);
+        console.error("[ProductContext] Error fetching products:", error);
         setProducts([]);
         setLoading(false);
         return;
       }
       
-      // Exclure soft-deleted (deleted_at non null)
-      const filtered = (data as Product[])
-        .filter((p) => !p.deleted_at);
-      
-      console.log("[ProductContext] Produits filtrés (sans deleted_at):", filtered);
-      console.log("[ProductContext] Nombre de produits:", filtered.length);
-      
-      // Appliquer les promotions actives
+      const filtered = (data as Product[]).filter((p) => !p.deleted_at);
       const productsWithPromotions = applyPromotions(filtered);
       
       setProducts(productsWithPromotions);
       setLoading(false);
-
-      // Log pour tracking
-      console.log("[ProductContext] Produits rafraîchis: ", filtered);
     } catch (err) {
-      console.error("[ProductContext] Exception lors de fetchProducts:", err);
+      console.error("[ProductContext] Error:", err);
       setProducts([]);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    console.log("[ProductContext] Chargement initial des produits");
     fetchProducts();
   }, []);
 
@@ -84,12 +67,8 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         p_stock_quantity: productData.stock_quantity || 0
       });
       
-      if (error) {
-        console.error("[ProductContext] addProduct Supabase error:", error);
-        throw error;
-      }
-      
-      await fetchProducts();  // On force le refetch
+      if (error) throw error;
+      await fetchProducts();
     } catch (error) {
       console.error("[ProductContext] addProduct error:", error);
       throw error;
@@ -109,19 +88,14 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         p_stock_quantity: updatedProduct.stock_quantity || 0
       });
       
-      if (error) {
-        console.error("[ProductContext] updateProduct Supabase error:", error);
-        throw error;
-      }
-      
-      await fetchProducts(); // On force le refetch ici aussi
+      if (error) throw error;
+      await fetchProducts();
     } catch (error) {
       console.error("[ProductContext] updateProduct error:", error);
       throw error;
     }
   };
 
-  // Soft delete : utilise la fonction sécurisée
   const deleteProduct = async (productId: string) => {
     try {
       const { data, error } = await supabase.rpc('admin_delete_product', {
@@ -129,19 +103,14 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         p_admin_token: ADMIN_TOKEN
       });
       
-      if (error) {
-        console.error("[ProductContext] deleteProduct Supabase error:", error);
-        throw error;
-      }
-      
-      await fetchProducts(); // On force le refetch
+      if (error) throw error;
+      await fetchProducts();
     } catch (error) {
       console.error("[ProductContext] deleteProduct error:", error);
       throw error;
     }
   };
 
-  // Restaure : utilise la fonction sécurisée
   const restoreProduct = async (productId: string) => {
     try {
       const { data, error } = await supabase.rpc('admin_restore_product', {
@@ -149,12 +118,8 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         p_admin_token: ADMIN_TOKEN
       });
       
-      if (error) {
-        console.error("[ProductContext] restoreProduct Supabase error:", error);
-        throw error;
-      }
-      
-      await fetchProducts(); // On force le refetch
+      if (error) throw error;
+      await fetchProducts();
     } catch (error) {
       console.error("[ProductContext] restoreProduct error:", error);
       throw error;
