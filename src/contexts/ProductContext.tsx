@@ -20,8 +20,9 @@ const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [rawProducts, setRawProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const { applyPromotions } = usePromotions();
+  const { applyPromotions, loading: promotionsLoading } = usePromotions();
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -34,18 +35,19 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       
       if (error) {
         console.error("[ProductContext] Error fetching products:", error);
+        setRawProducts([]);
         setProducts([]);
         setLoading(false);
         return;
       }
       
       const filtered = (data as Product[]).filter((p) => !p.deleted_at);
-      const productsWithPromotions = applyPromotions(filtered);
-      
-      setProducts(productsWithPromotions);
+      setRawProducts(filtered);
+      setProducts(filtered);
       setLoading(false);
     } catch (err) {
       console.error("[ProductContext] Error:", err);
+      setRawProducts([]);
       setProducts([]);
       setLoading(false);
     }
@@ -54,6 +56,15 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // Appliquer les promotions une fois qu'elles sont chargées
+  useEffect(() => {
+    if (!promotionsLoading && rawProducts.length > 0) {
+      const productsWithPromotions = applyPromotions(rawProducts);
+      setProducts(productsWithPromotions);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [promotionsLoading, rawProducts]);
 
   const addProduct = async (productData: Omit<Product, "id">) => {
     try {
