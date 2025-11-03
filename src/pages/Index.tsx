@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
 import Footer from "@/components/Footer";
-import ChatWidget from "@/components/ChatWidget";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { useApp } from "@/contexts/AppContext";
 import { useProducts } from "@/contexts/ProductContext";
 
@@ -45,7 +45,7 @@ const Index = () => {
         products={jewelryData}
       />
       <Footer />
-      <ChatWidget />
+      <WhatsAppButton />
     </div>
   );
 };

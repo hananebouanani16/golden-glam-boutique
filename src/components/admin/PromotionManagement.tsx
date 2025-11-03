@@ -40,14 +40,16 @@ const PromotionManagement = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching promotions:', error);
+        setPromotions([]);
+        setLoading(false);
+        return;
+      }
       setPromotions(data || []);
     } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: `Impossible de charger les promotions: ${error.message}`,
-        variant: "destructive",
-      });
+      console.error('Error in fetchPromotions:', error);
+      setPromotions([]);
     } finally {
       setLoading(false);
     }
