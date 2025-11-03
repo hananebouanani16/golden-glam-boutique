@@ -24,9 +24,6 @@ const ProductGrid = ({ id, title, subtitle, products }: ProductGridProps) => {
   const { t } = useApp();
   const [filters, setFilters] = useState({ category: "all", priceRange: "all" });
 
-  console.log(`[ProductGrid-${id}] Reçu ${products.length} produits`);
-  console.log(`[ProductGrid-${id}] Produits:`, products);
-
   const categories = [...new Set(products.map(p => p.category))];
 
   const filteredProducts = products.filter(product => {
@@ -59,8 +56,6 @@ const ProductGrid = ({ id, title, subtitle, products }: ProductGridProps) => {
 
     return true;
   });
-
-  console.log(`[ProductGrid-${id}] Après filtrage: ${filteredProducts.length} produits`);
 
   const handleFilterChange = (category: string, priceRange: string) => {
     setFilters({ category, priceRange });

@@ -22,50 +22,31 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchProducts = async () => {
-    console.log("[ProductContext] Starting fetchProducts...");
     setLoading(true);
-    
-    const timeoutId = setTimeout(() => {
-      console.error("[ProductContext] Timeout - forcing loading to false");
-      setLoading(false);
-      setProducts([]);
-    }, 10000); // 10 secondes max
     
     try {
       const { data, error } = await supabase
         .from('products')
         .select('*')
+        .is('deleted_at', null)
         .order('title', { ascending: true });
       
-      clearTimeout(timeoutId);
-      
       if (error) {
-        console.error("[ProductContext] Error fetching products:", error);
+        console.error("[ProductContext] Error:", error);
         setProducts([]);
-        setLoading(false);
-        return;
+      } else {
+        setProducts(data as Product[] || []);
       }
-      
-      console.log("[ProductContext] Products fetched:", data?.length || 0);
-      const filtered = (data as Product[]).filter((p) => !p.deleted_at);
-      console.log("[ProductContext] After filtering:", filtered.length);
-      setProducts(filtered);
-      setLoading(false);
     } catch (err) {
-      clearTimeout(timeoutId);
       console.error("[ProductContext] Error:", err);
       setProducts([]);
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    console.log("[ProductContext] Component mounted, fetching products");
     fetchProducts();
-    
-    return () => {
-      console.log("[ProductContext] Component unmounting");
-    };
   }, []);
 
   const addProduct = async (productData: Omit<Product, "id">) => {
