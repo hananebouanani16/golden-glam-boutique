@@ -16,8 +16,9 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gold-300 text-xl">Chargement des produits...</div>
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <div className="text-gold-300 text-xl mb-4">Chargement des produits...</div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold-300"></div>
       </div>
     );
   }

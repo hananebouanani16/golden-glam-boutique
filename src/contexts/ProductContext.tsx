@@ -24,6 +24,12 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   const fetchProducts = async () => {
     setLoading(true);
     
+    // Timeout de sécurité - forcer l'arrêt du loading après 5 secondes
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+      setProducts([]);
+    }, 5000);
+    
     try {
       const { data, error } = await supabase
         .from('products')
@@ -31,16 +37,19 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         .is('deleted_at', null)
         .order('title', { ascending: true });
       
+      clearTimeout(timeoutId);
+      
       if (error) {
         console.error("[ProductContext] Error:", error);
         setProducts([]);
       } else {
         setProducts(data as Product[] || []);
       }
+      setLoading(false);
     } catch (err) {
+      clearTimeout(timeoutId);
       console.error("[ProductContext] Error:", err);
       setProducts([]);
-    } finally {
       setLoading(false);
     }
   };
