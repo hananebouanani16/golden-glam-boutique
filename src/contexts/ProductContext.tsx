@@ -18,33 +18,62 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => {
+    // Charger immédiatement depuis le cache localStorage
+    try {
+      const cached = localStorage.getItem('products_cache');
+      if (cached) {
+        console.log('[ProductContext] ✅ Produits chargés depuis le cache');
+        return JSON.parse(cached);
+      }
+    } catch (err) {
+      console.error('[ProductContext] Erreur lecture cache:', err);
+    }
+    return [];
+  });
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchProducts = async () => {
-    console.log("[ProductContext] Début chargement produits...");
+    console.log("[ProductContext] 🔄 Début chargement produits depuis Supabase...");
     setLoading(true);
     
+    // Timeout de sécurité: 8 secondes max
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 8000)
+    );
+    
+    const fetchPromise = supabase
+      .from('products')
+      .select('*')
+      .is('deleted_at', null)
+      .order('title', { ascending: true });
+    
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .is('deleted_at', null)
-        .order('title', { ascending: true });
+      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
       
       if (error) {
-        console.error("[ProductContext] Erreur Supabase:", error);
-        // NE PAS vider les produits en cas d'erreur - garder ceux qui existent
-      } else if (data) {
-        console.log("[ProductContext] ✅ Produits chargés avec succès:", data.length);
+        console.error("[ProductContext] ❌ Erreur Supabase:", error);
+      } else if (data && data.length > 0) {
+        console.log("[ProductContext] ✅ Produits chargés:", data.length);
         setProducts(data as Product[]);
+        // Sauvegarder dans le cache localStorage
+        try {
+          localStorage.setItem('products_cache', JSON.stringify(data));
+          console.log("[ProductContext] 💾 Cache mis à jour");
+        } catch (err) {
+          console.error("[ProductContext] Erreur sauvegarde cache:", err);
+        }
       }
-    } catch (err) {
-      console.error("[ProductContext] Erreur réseau:", err);
-      // NE PAS vider les produits en cas d'erreur - garder ceux qui existent
+    } catch (err: any) {
+      if (err.message === 'Timeout') {
+        console.error("[ProductContext] ⏱️ Timeout - la requête a pris trop de temps");
+      } else {
+        console.error("[ProductContext] ❌ Erreur réseau:", err);
+      }
+      // Garder les produits du cache si disponibles
     } finally {
       setLoading(false);
-      console.log("[ProductContext] Chargement terminé");
+      console.log("[ProductContext] ✅ Chargement terminé");
     }
   };
 

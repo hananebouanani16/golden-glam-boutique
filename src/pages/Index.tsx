@@ -14,15 +14,20 @@ const Index = () => {
   const bagsData = products.filter((p) => p.category?.trim() === "sacs");
   const jewelryData = products.filter((p) => p.category?.trim() === "bijoux");
 
+  // Afficher le loader seulement si loading ET aucun produit
   if (loading && products.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         <div className="text-primary text-xl mb-4 font-semibold">Chargement de votre boutique...</div>
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        <div className="text-muted-foreground text-sm mt-4">Connexion à la base de données...</div>
+        <div className="text-muted-foreground text-sm mt-4 max-w-md text-center">
+          Si le chargement prend trop de temps, vérifiez votre connexion Internet
+        </div>
       </div>
     );
   }
+  
+  // Si on a des produits (du cache), afficher la page même si loading est true
 
   return (
     <div className="min-h-screen">
