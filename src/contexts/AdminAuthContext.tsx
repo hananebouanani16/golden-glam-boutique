@@ -35,33 +35,62 @@ export const AdminAuthProvider = ({ children }: { children: React.ReactNode }) =
   }, []);
 
   const checkUser = async () => {
+    console.log('[AdminAuth] 🔄 Vérification session admin...');
+    setLoading(true);
+    
+    // Timeout de 8 secondes
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 8000)
+    );
+    
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const sessionPromise = supabase.auth.getSession();
+      const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]) as any;
+      
       setUser(session?.user ?? null);
       if (session?.user) {
         await checkAdminRole(session.user.id);
       }
-    } catch (error) {
-      console.error('Error checking user:', error);
+      console.log('[AdminAuth] ✅ Session vérifiée');
+    } catch (error: any) {
+      if (error.message === 'Timeout') {
+        console.error('[AdminAuth] ⏱️ Timeout - vérification session trop longue');
+      } else {
+        console.error('[AdminAuth] ❌ Erreur vérification session:', error);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const checkAdminRole = async (userId: string): Promise<boolean> => {
+    console.log('[AdminAuth] 🔄 Vérification rôle admin...');
+    
+    // Timeout de 5 secondes
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 5000)
+    );
+    
     try {
-      const { data, error } = await supabase
+      const rolePromise = supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId)
         .eq('role', 'admin')
-        .single();
+        .maybeSingle(); // Utiliser maybeSingle au lieu de single
+      
+      const { data, error } = await Promise.race([rolePromise, timeoutPromise]) as any;
 
       const hasAdminRole = !!data && !error;
       setIsAdmin(hasAdminRole);
+      console.log('[AdminAuth] ✅ Rôle vérifié:', hasAdminRole);
       return hasAdminRole;
-    } catch (error) {
-      console.error('Error checking admin role:', error);
+    } catch (error: any) {
+      if (error.message === 'Timeout') {
+        console.error('[AdminAuth] ⏱️ Timeout - vérification rôle trop longue');
+      } else {
+        console.error('[AdminAuth] ❌ Erreur vérification rôle:', error);
+      }
       setIsAdmin(false);
       return false;
     }

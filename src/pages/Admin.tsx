@@ -26,8 +26,10 @@ const Admin = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-gold-300 text-xl">Chargement...</div>
+      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center">
+        <div className="text-gold-300 text-xl mb-4 font-semibold">Chargement de l'administration...</div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold-300"></div>
+        <div className="text-gray-400 text-sm mt-4">Vérification des accès...</div>
       </div>
     );
   }
