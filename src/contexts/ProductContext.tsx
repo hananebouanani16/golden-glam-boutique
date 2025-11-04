@@ -22,13 +22,8 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchProducts = async () => {
+    console.log("[ProductContext] Début chargement produits...");
     setLoading(true);
-    
-    // Timeout de sécurité - arrêter le loading après 10 secondes
-    const timeoutId = setTimeout(() => {
-      console.error("[ProductContext] Timeout - arrêt forcé du chargement");
-      setLoading(false);
-    }, 10000);
     
     try {
       const { data, error } = await supabase
@@ -37,21 +32,19 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         .is('deleted_at', null)
         .order('title', { ascending: true });
       
-      clearTimeout(timeoutId);
-      
       if (error) {
-        console.error("[ProductContext] Error:", error);
-        setProducts([]);
-      } else {
-        console.log("[ProductContext] Produits chargés:", data?.length || 0);
-        setProducts(data as Product[] || []);
+        console.error("[ProductContext] Erreur Supabase:", error);
+        // NE PAS vider les produits en cas d'erreur - garder ceux qui existent
+      } else if (data) {
+        console.log("[ProductContext] ✅ Produits chargés avec succès:", data.length);
+        setProducts(data as Product[]);
       }
     } catch (err) {
-      clearTimeout(timeoutId);
-      console.error("[ProductContext] Error:", err);
-      setProducts([]);
+      console.error("[ProductContext] Erreur réseau:", err);
+      // NE PAS vider les produits en cas d'erreur - garder ceux qui existent
     } finally {
       setLoading(false);
+      console.log("[ProductContext] Chargement terminé");
     }
   };
 

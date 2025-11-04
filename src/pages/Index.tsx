@@ -14,12 +14,12 @@ const Index = () => {
   const bagsData = products.filter((p) => p.category?.trim() === "sacs");
   const jewelryData = products.filter((p) => p.category?.trim() === "bijoux");
 
-  if (loading) {
+  if (loading && products.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
-        <div className="text-primary text-xl mb-4 font-semibold">Chargement des produits...</div>
+        <div className="text-primary text-xl mb-4 font-semibold">Chargement de votre boutique...</div>
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        <div className="text-muted-foreground text-sm mt-4">Si le chargement prend trop de temps, actualisez la page</div>
+        <div className="text-muted-foreground text-sm mt-4">Connexion à la base de données...</div>
       </div>
     );
   }
