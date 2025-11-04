@@ -97,19 +97,34 @@ export const AdminAuthProvider = ({ children }: { children: React.ReactNode }) =
   };
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) throw error;
+    console.log('[AdminAuth] 🔐 Tentative de connexion...');
     
-    if (data.user) {
-      const hasAdminRole = await checkAdminRole(data.user.id);
-      if (!hasAdminRole) {
-        await supabase.auth.signOut();
-        throw new Error('Accès non autorisé');
+    // Timeout de 10 secondes pour la connexion
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('La connexion prend trop de temps. Vérifiez votre connexion Internet.')), 10000)
+    );
+    
+    try {
+      const signInPromise = supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      const { data, error } = await Promise.race([signInPromise, timeoutPromise]) as any;
+
+      if (error) throw error;
+      
+      if (data.user) {
+        const hasAdminRole = await checkAdminRole(data.user.id);
+        if (!hasAdminRole) {
+          await supabase.auth.signOut();
+          throw new Error('Accès non autorisé - Vous devez être administrateur');
+        }
+        console.log('[AdminAuth] ✅ Connexion admin réussie');
       }
+    } catch (error: any) {
+      console.error('[AdminAuth] ❌ Erreur connexion:', error.message);
+      throw error;
     }
   };
 
