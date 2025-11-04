@@ -16,9 +16,10 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <div className="text-gold-300 text-xl mb-4">Chargement des produits...</div>
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold-300"></div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <div className="text-primary text-xl mb-4 font-semibold">Chargement des produits...</div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <div className="text-muted-foreground text-sm mt-4">Si le chargement prend trop de temps, actualisez la page</div>
       </div>
     );
   }
