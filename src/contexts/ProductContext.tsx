@@ -2,9 +2,6 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from '@/types/product';
 
-// Token d'administration pour les fonctions sécurisées
-const ADMIN_TOKEN = "25051985n*N";
-
 interface ProductContextType {
   products: Product[];
   addProduct: (product: Omit<Product, 'id'>) => Promise<void>;
@@ -87,7 +84,6 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         p_title: productData.title,
         p_price: productData.price,
         p_category: productData.category,
-        p_admin_token: ADMIN_TOKEN,
         p_original_price: productData.originalPrice || null,
         p_image: productData.image || null,
         p_stock_quantity: productData.stock_quantity || 0
@@ -108,7 +104,6 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         p_title: updatedProduct.title,
         p_price: updatedProduct.price,
         p_category: updatedProduct.category,
-        p_admin_token: ADMIN_TOKEN,
         p_original_price: updatedProduct.originalPrice || null,
         p_image: updatedProduct.image ?? null,
         p_stock_quantity: updatedProduct.stock_quantity || 0
@@ -125,8 +120,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   const deleteProduct = async (productId: string) => {
     try {
       const { data, error } = await supabase.rpc('admin_delete_product', {
-        p_id: productId,
-        p_admin_token: ADMIN_TOKEN
+        p_id: productId
       });
       
       if (error) throw error;
@@ -140,8 +134,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
   const restoreProduct = async (productId: string) => {
     try {
       const { data, error } = await supabase.rpc('admin_restore_product', {
-        p_id: productId,
-        p_admin_token: ADMIN_TOKEN
+        p_id: productId
       });
       
       if (error) throw error;
