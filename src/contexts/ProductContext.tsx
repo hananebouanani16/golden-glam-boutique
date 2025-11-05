@@ -15,13 +15,19 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
-  // Vider le cache au démarrage pour forcer le rechargement depuis Supabase
-  useEffect(() => {
-    console.log('[ProductContext] 🔄 Vidage du cache pour forcer rechargement');
-    localStorage.removeItem('products_cache');
-  }, []);
-
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => {
+    // Charger immédiatement depuis le cache localStorage pour affichage instantané
+    try {
+      const cached = localStorage.getItem('products_cache');
+      if (cached) {
+        console.log('[ProductContext] ✅ Produits chargés depuis le cache');
+        return JSON.parse(cached);
+      }
+    } catch (err) {
+      console.error('[ProductContext] Erreur lecture cache:', err);
+    }
+    return [];
+  });
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchProducts = async () => {
