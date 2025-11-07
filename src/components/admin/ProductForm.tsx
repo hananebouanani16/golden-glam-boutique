@@ -68,7 +68,23 @@ export default function ProductForm({
     const currentImageCount = imagePreviews.length;
     const remainingSlots = maxImages - currentImageCount;
 
-    if (files.length > remainingSlots) {
+    if (remainingSlots === 0) {
+      toast.error("Vous avez atteint la limite de 5 images");
+      return;
+    }
+
+    // Filtrer uniquement les images valides
+    const validFiles = Array.from(files).filter(file => {
+      if (!file.type.startsWith('image/')) {
+        toast.error(`Le fichier ${file.name} n'est pas une image`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length === 0) return;
+
+    if (validFiles.length > remainingSlots) {
       toast.error(`Vous pouvez ajouter maximum ${remainingSlots} image(s) supplémentaire(s)`, {
         description: `Limite: ${maxImages} images au total`
       });
@@ -78,19 +94,14 @@ export default function ProductForm({
     const newImages: string[] = [];
     let processed = 0;
 
-    Array.from(files).forEach((file) => {
-      if (!file.type.startsWith('image/')) {
-        toast.error(`Le fichier ${file.name} n'est pas une image`);
-        return;
-      }
-
+    validFiles.forEach((file) => {
       const reader = new FileReader();
       reader.onload = (ev) => {
         const result = ev.target?.result as string;
         newImages.push(result);
         processed++;
 
-        if (processed === files.length) {
+        if (processed === validFiles.length) {
           const updatedImages = [...imagePreviews, ...newImages];
           setImagePreviews(updatedImages);
           setFormData({ ...formData, images: updatedImages });
