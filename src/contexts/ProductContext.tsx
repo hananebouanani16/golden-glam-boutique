@@ -80,14 +80,21 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   const addProduct = async (productData: Omit<Product, "id">) => {
     try {
-      const { data, error } = await supabase.rpc('admin_create_product', {
-        p_title: productData.title,
-        p_price: productData.price,
-        p_category: productData.category,
-        p_original_price: productData.originalPrice || null,
-        p_image: productData.image || null,
-        p_stock_quantity: productData.stock_quantity || 0
-      });
+      // Insérer directement dans la table avec les nouvelles colonnes
+      const { data, error } = await supabase
+        .from('products')
+        .insert({
+          title: productData.title,
+          price: productData.price,
+          category: productData.category,
+          original_price: productData.originalPrice || null,
+          image: productData.image || null,
+          images: productData.images || [],
+          stock_quantity: productData.stock_quantity || 0,
+          low_stock_threshold: productData.low_stock_threshold || 5
+        })
+        .select()
+        .single();
       
       if (error) throw error;
       await fetchProducts();
@@ -99,15 +106,23 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   const updateProduct = async (updatedProduct: Product) => {
     try {
-      const { data, error } = await supabase.rpc('admin_update_product', {
-        p_id: updatedProduct.id,
-        p_title: updatedProduct.title,
-        p_price: updatedProduct.price,
-        p_category: updatedProduct.category,
-        p_original_price: updatedProduct.originalPrice || null,
-        p_image: updatedProduct.image ?? null,
-        p_stock_quantity: updatedProduct.stock_quantity || 0
-      });
+      // Mettre à jour directement dans la table avec les nouvelles colonnes
+      const { data, error } = await supabase
+        .from('products')
+        .update({
+          title: updatedProduct.title,
+          price: updatedProduct.price,
+          category: updatedProduct.category,
+          original_price: updatedProduct.originalPrice || null,
+          image: updatedProduct.image ?? null,
+          images: updatedProduct.images || [],
+          stock_quantity: updatedProduct.stock_quantity || 0,
+          low_stock_threshold: updatedProduct.low_stock_threshold || 5
+        })
+        .eq('id', updatedProduct.id)
+        .is('deleted_at', null)
+        .select()
+        .single();
       
       if (error) throw error;
       await fetchProducts();
@@ -119,9 +134,12 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   const deleteProduct = async (productId: string) => {
     try {
-      const { data, error } = await supabase.rpc('admin_delete_product', {
-        p_id: productId
-      });
+      // Soft delete directement
+      const { data, error } = await supabase
+        .from('products')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', productId)
+        .is('deleted_at', null);
       
       if (error) throw error;
       await fetchProducts();
@@ -133,9 +151,12 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   const restoreProduct = async (productId: string) => {
     try {
-      const { data, error } = await supabase.rpc('admin_restore_product', {
-        p_id: productId
-      });
+      // Restaurer le produit directement
+      const { data, error } = await supabase
+        .from('products')
+        .update({ deleted_at: null })
+        .eq('id', productId)
+        .not('deleted_at', 'is', null);
       
       if (error) throw error;
       await fetchProducts();

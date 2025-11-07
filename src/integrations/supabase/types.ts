@@ -146,6 +146,7 @@ export type Database = {
           deleted_at: string | null
           id: string
           image: string | null
+          images: string[] | null
           is_out_of_stock: boolean | null
           low_stock_threshold: number | null
           original_price: string | null
@@ -158,6 +159,7 @@ export type Database = {
           deleted_at?: string | null
           id?: string
           image?: string | null
+          images?: string[] | null
           is_out_of_stock?: boolean | null
           low_stock_threshold?: number | null
           original_price?: string | null
@@ -170,6 +172,7 @@ export type Database = {
           deleted_at?: string | null
           id?: string
           image?: string | null
+          images?: string[] | null
           is_out_of_stock?: boolean | null
           low_stock_threshold?: number | null
           original_price?: string | null

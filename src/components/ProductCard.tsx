@@ -8,12 +8,14 @@ import { formatPrice } from "@/utils/priceUtils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CheckoutFormContent from "./CheckoutFormContent";
 import RatingComponent from "./RatingComponent";
+import ProductImageCarousel from "./ProductImageCarousel";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export interface Product {
   id: string;
   image: string;
+  images?: string[]; // Galerie d'images
   title: string;
   price: string;
   originalPrice?: string;
@@ -123,15 +125,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
     setShowCheckout(true);
   };
 
+  // Utiliser la galerie d'images si disponible, sinon l'image unique
+  const displayImages = product.images && product.images.length > 0 
+    ? product.images 
+    : [product.image];
+
   return (
     <>
       <div className="group relative bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white/20 transition-all duration-300 border border-gold-500/20 hover:border-gold-500/40 hover:shadow-lg hover:shadow-gold-500/20">
         <div className="relative overflow-hidden">
-          <img
-            src={product.image}
-            alt={product.title}
-            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          <ProductImageCarousel images={displayImages} title={product.title} />
           {product.is_out_of_stock || (product.stock_quantity !== undefined && product.stock_quantity === 0) ? (
             <Badge className="absolute top-2 left-2 bg-red-500 text-white">
               Rupture de stock

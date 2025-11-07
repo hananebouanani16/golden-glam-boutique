@@ -1,11 +1,11 @@
-
 import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import { Product } from "@/types/product";
+import { toast } from "sonner";
 
 interface ProductFormProps {
   formData: Omit<Product, "id">;
@@ -35,6 +35,16 @@ export default function ProductForm({
   onSubmit,
   onCancel
 }: ProductFormProps) {
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Charger les images existantes si on édite un produit
+    if (editingProduct?.images && editingProduct.images.length > 0) {
+      setImagePreviews(editingProduct.images);
+    }
+  }, [editingProduct]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -48,6 +58,60 @@ export default function ProductForm({
       reader.readAsDataURL(file);
     }
   };
+
+  const handleGalleryFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const maxImages = 5;
+    const currentImageCount = imagePreviews.length;
+    const remainingSlots = maxImages - currentImageCount;
+
+    if (files.length > remainingSlots) {
+      toast.error(`Vous pouvez ajouter maximum ${remainingSlots} image(s) supplémentaire(s)`, {
+        description: `Limite: ${maxImages} images au total`
+      });
+      return;
+    }
+
+    const newImages: string[] = [];
+    let processed = 0;
+
+    Array.from(files).forEach((file) => {
+      if (!file.type.startsWith('image/')) {
+        toast.error(`Le fichier ${file.name} n'est pas une image`);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const result = ev.target?.result as string;
+        newImages.push(result);
+        processed++;
+
+        if (processed === files.length) {
+          const updatedImages = [...imagePreviews, ...newImages];
+          setImagePreviews(updatedImages);
+          setFormData({ ...formData, images: updatedImages });
+          toast.success(`${newImages.length} image(s) ajoutée(s) à la galerie`);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset l'input
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = '';
+    }
+  };
+
+  const removeImageFromGallery = (index: number) => {
+    const updatedImages = imagePreviews.filter((_, i) => i !== index);
+    setImagePreviews(updatedImages);
+    setFormData({ ...formData, images: updatedImages });
+    toast.success("Image supprimée de la galerie");
+  };
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
@@ -66,7 +130,6 @@ export default function ProductForm({
           id="price"
           value={formData.price}
           onChange={(e) => {
-            // On accepte seulement des chiffres
             const val = e.target.value.replace(/[^\d]/g,"");
             setFormData({...formData, price: val});
           }}
@@ -134,8 +197,9 @@ export default function ProductForm({
         </div>
       </div>
 
+      {/* Image principale */}
       <div>
-        <Label htmlFor="image">Image du Produit</Label>
+        <Label htmlFor="image">Image Principale du Produit</Label>
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <Input
@@ -168,6 +232,63 @@ export default function ProductForm({
           )}
         </div>
       </div>
+
+      {/* Galerie d'images supplémentaires */}
+      <div>
+        <Label htmlFor="gallery">Galerie d'Images (max 5 images)</Label>
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <Input
+              ref={galleryInputRef}
+              id="gallery"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleGalleryFilesChange}
+              className="bg-gray-800 border-gold-500/20 text-white file:bg-gold-500 file:text-black file:border-0 file:rounded-md file:px-3 file:py-1 file:mr-3"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => galleryInputRef.current?.click()}
+              className="border-gold-500/20 text-gold-300 hover:bg-gold-500/10"
+            >
+              <Upload className="w-4 h-4" />
+            </Button>
+          </div>
+          
+          {/* Aperçu des images de la galerie */}
+          {imagePreviews.length > 0 && (
+            <div className="mt-3">
+              <p className="text-sm text-gold-300 mb-2">
+                {imagePreviews.length} image(s) dans la galerie
+              </p>
+              <div className="grid grid-cols-5 gap-2">
+                {imagePreviews.map((img, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={img}
+                      alt={`Galerie ${index + 1}`}
+                      className="w-full h-20 object-cover rounded-lg border border-gold-500/20"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => removeImageFromGallery(index)}
+                      className="absolute -top-2 -right-2 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="flex space-x-2 pt-4">
         <Button type="submit" className="gold-button flex-1">
           {editingProduct ? "Modifier" : "Ajouter"}
