@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Upload, X } from "lucide-react";
 import { Product } from "@/types/product";
 import { toast } from "sonner";
@@ -113,7 +114,8 @@ export default function ProductForm({
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <ScrollArea className="h-[600px] pr-4">
+      <form onSubmit={onSubmit} className="space-y-4">
       <div>
         <Label htmlFor="title">Titre</Label>
         <Input
@@ -237,26 +239,26 @@ export default function ProductForm({
       <div>
         <Label htmlFor="gallery">Galerie d'Images (max 5 images)</Label>
         <div className="space-y-2">
-          <div className="flex items-center space-x-2">
-            <Input
-              ref={galleryInputRef}
-              id="gallery"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleGalleryFilesChange}
-              className="bg-gray-800 border-gold-500/20 text-white file:bg-gold-500 file:text-black file:border-0 file:rounded-md file:px-3 file:py-1 file:mr-3"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              onClick={() => galleryInputRef.current?.click()}
-              className="border-gold-500/20 text-gold-300 hover:bg-gold-500/10"
-            >
-              <Upload className="w-4 h-4" />
-            </Button>
-          </div>
+          <Input
+            ref={galleryInputRef}
+            id="gallery"
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleGalleryFilesChange}
+            className="hidden"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => galleryInputRef.current?.click()}
+            className="w-full border-gold-500/20 text-gold-300 hover:bg-gold-500/10"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            {imagePreviews.length === 5 
+              ? "Galerie complète (5/5)" 
+              : `Ajouter des images (${imagePreviews.length}/5)`}
+          </Button>
           
           {/* Aperçu des images de la galerie */}
           {imagePreviews.length > 0 && (
@@ -298,5 +300,6 @@ export default function ProductForm({
         </Button>
       </div>
     </form>
+    </ScrollArea>
   );
 }
