@@ -61,6 +61,9 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   const addProduct = async (productData: Omit<Product, "id">) => {
     try {
+      console.log("[ProductContext] ➕ Ajout produit");
+      console.log("[ProductContext] Images dans la galerie:", productData.images?.length || 0);
+      
       // Insérer directement dans la table avec les nouvelles colonnes
       const { data, error } = await supabase
         .from('products')
@@ -77,7 +80,12 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error("[ProductContext] ❌ Erreur ajout:", error);
+        throw error;
+      }
+      
+      console.log("[ProductContext] ✅ Produit ajouté");
       await fetchProducts();
     } catch (error) {
       console.error("[ProductContext] addProduct error:", error);
@@ -87,6 +95,9 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   const updateProduct = async (updatedProduct: Product) => {
     try {
+      console.log("[ProductContext] 📝 Mise à jour produit:", updatedProduct.id);
+      console.log("[ProductContext] Images dans la galerie:", updatedProduct.images?.length || 0);
+      
       // Mettre à jour directement dans la table avec les nouvelles colonnes
       const { data, error } = await supabase
         .from('products')
@@ -105,7 +116,12 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error("[ProductContext] ❌ Erreur mise à jour:", error);
+        throw error;
+      }
+      
+      console.log("[ProductContext] ✅ Produit mis à jour");
       await fetchProducts();
     } catch (error) {
       console.error("[ProductContext] updateProduct error:", error);
@@ -115,6 +131,12 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
 
   const deleteProduct = async (productId: string) => {
     try {
+      console.log("[ProductContext] 🗑️ Tentative suppression produit:", productId);
+      
+      // Vérifier l'authentification
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log("[ProductContext] Session auth:", session ? "✅ Authentifié" : "❌ Non authentifié");
+      
       // Soft delete directement
       const { data, error } = await supabase
         .from('products')
@@ -122,7 +144,12 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
         .eq('id', productId)
         .is('deleted_at', null);
       
-      if (error) throw error;
+      if (error) {
+        console.error("[ProductContext] ❌ Erreur suppression:", error);
+        throw error;
+      }
+      
+      console.log("[ProductContext] ✅ Produit supprimé, rechargement...");
       await fetchProducts();
     } catch (error) {
       console.error("[ProductContext] deleteProduct error:", error);

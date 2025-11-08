@@ -127,9 +127,24 @@ export default function ProductForm({
     toast.success("Image supprimée de la galerie");
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('[ProductForm] Soumission - Image principale:', imagePreview ? 'présente' : 'absente');
+    console.log('[ProductForm] Soumission - Galerie:', imagePreviews.length, 'images');
+    
+    // Mise à jour du formData avec l'image principale et la galerie
+    const updatedFormData = { 
+      ...formData, 
+      image: imagePreview,
+      images: imagePreviews
+    };
+    setFormData(updatedFormData);
+    onSubmit(e);
+  };
+
   return (
     <ScrollArea className="h-[600px] pr-4">
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <Label htmlFor="title">Titre</Label>
         <Input
