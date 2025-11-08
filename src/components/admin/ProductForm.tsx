@@ -42,7 +42,10 @@ export default function ProductForm({
   useEffect(() => {
     // Charger les images existantes si on édite un produit
     if (editingProduct?.images && editingProduct.images.length > 0) {
+      console.log('[ProductForm] Images existantes chargées:', editingProduct.images.length);
       setImagePreviews(editingProduct.images);
+    } else {
+      setImagePreviews([]);
     }
   }, [editingProduct]);
 

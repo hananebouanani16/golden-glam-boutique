@@ -22,6 +22,7 @@ const ProductManagement = () => {
     originalPrice: "",
     category: "",
     image: "",
+    images: [],
     stock_quantity: 0,
     low_stock_threshold: 5,
     is_out_of_stock: false
@@ -82,6 +83,7 @@ const ProductManagement = () => {
       originalPrice: product.originalPrice || "",
       category: product.category,
       image: product.image,
+      images: product.images || [],
       stock_quantity: product.stock_quantity || 0,
       low_stock_threshold: product.low_stock_threshold || 5,
       is_out_of_stock: product.is_out_of_stock || false
@@ -131,6 +133,7 @@ const ProductManagement = () => {
       originalPrice: "",
       category: "",
       image: "",
+      images: [],
       stock_quantity: 0,
       low_stock_threshold: 5,
       is_out_of_stock: false

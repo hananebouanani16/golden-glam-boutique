@@ -70,7 +70,12 @@ export default function ProductTable({ products, onEdit, onDelete, onRestore, lo
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => onDelete(product.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('[ProductTable] Suppression produit:', product.id);
+                        onDelete(product.id);
+                      }}
                       className="text-red-400 hover:text-red-300"
                     >
                       <Trash2 className="w-4 h-4" />

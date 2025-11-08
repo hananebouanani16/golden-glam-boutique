@@ -15,19 +15,7 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
-  const [products, setProducts] = useState<Product[]>(() => {
-    // Charger immédiatement depuis le cache localStorage pour affichage instantané
-    try {
-      const cached = localStorage.getItem('products_cache');
-      if (cached) {
-        console.log('[ProductContext] ✅ Produits chargés depuis le cache');
-        return JSON.parse(cached);
-      }
-    } catch (err) {
-      console.error('[ProductContext] Erreur lecture cache:', err);
-    }
-    return [];
-  });
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchProducts = async () => {
@@ -50,16 +38,9 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       
       if (error) {
         console.error("[ProductContext] ❌ Erreur Supabase:", error);
-      } else if (data && data.length > 0) {
+      } else if (data) {
         console.log("[ProductContext] ✅ Produits chargés:", data.length);
         setProducts(data as Product[]);
-        // Sauvegarder dans le cache localStorage
-        try {
-          localStorage.setItem('products_cache', JSON.stringify(data));
-          console.log("[ProductContext] 💾 Cache mis à jour");
-        } catch (err) {
-          console.error("[ProductContext] Erreur sauvegarde cache:", err);
-        }
       }
     } catch (err: any) {
       if (err.message === 'Timeout') {

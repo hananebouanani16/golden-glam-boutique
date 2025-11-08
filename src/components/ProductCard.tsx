@@ -129,6 +129,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const displayImages = product.images && product.images.length > 0 
     ? product.images 
     : [product.image];
+  
+  console.log('[ProductCard] Produit:', product.title, 'Images:', displayImages.length, 'Source:', product.images?.length ? 'galerie' : 'image unique');
 
   return (
     <>
