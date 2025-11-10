@@ -133,16 +133,23 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
     try {
       console.log("[ProductContext] 🗑️ Tentative suppression produit:", productId);
       
-      // Vérifier l'authentification
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log("[ProductContext] Session auth:", session ? "✅ Authentifié" : "❌ Non authentifié");
+      // Forcer un refresh de la session pour être sûr d'avoir le token à jour
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (!session) {
-        throw new Error("Vous devez être connecté pour supprimer un produit");
+      if (sessionError) {
+        console.error("[ProductContext] ❌ Erreur récupération session:", sessionError);
+        throw new Error("Erreur d'authentification. Veuillez vous reconnecter.");
       }
       
-      // Soft delete directement avec l'auth de l'utilisateur
-      const { data, error } = await supabase
+      if (!session) {
+        console.error("[ProductContext] ❌ Pas de session active");
+        throw new Error("Vous devez être connecté en tant qu'admin pour supprimer un produit. Veuillez vous reconnecter.");
+      }
+      
+      console.log("[ProductContext] ✅ Session valide:", session.user.email);
+      
+      // Soft delete avec la session active
+      const { error } = await supabase
         .from('products')
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', productId)
@@ -150,13 +157,19 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       
       if (error) {
         console.error("[ProductContext] ❌ Erreur suppression:", error);
-        console.error("[ProductContext] Détails erreur:", JSON.stringify(error, null, 2));
-        throw error;
+        console.error("[ProductContext] Code erreur:", error.code);
+        console.error("[ProductContext] Message:", error.message);
+        
+        if (error.code === 'PGRST301' || error.message.includes('policy')) {
+          throw new Error("Permission refusée. Assurez-vous d'être connecté en tant qu'administrateur.");
+        }
+        
+        throw new Error(error.message || "Erreur lors de la suppression du produit");
       }
       
-      console.log("[ProductContext] ✅ Produit supprimé, rechargement...");
+      console.log("[ProductContext] ✅ Produit supprimé avec succès");
       await fetchProducts();
-    } catch (error) {
+    } catch (error: any) {
       console.error("[ProductContext] deleteProduct error:", error);
       throw error;
     }

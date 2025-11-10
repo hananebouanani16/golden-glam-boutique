@@ -93,17 +93,19 @@ const ProductManagement = () => {
   };
 
   const handleDelete = async (id: string) => {
+    console.log("[ProductManagement] 🗑️ Début suppression produit:", id);
     try {
       await deleteProduct(id);
+      console.log("[ProductManagement] ✅ Suppression réussie");
       toast({
         title: "Produit supprimé",
         description: "Le produit a été supprimé avec succès. (Restaurable)"
       });
     } catch (error: any) {
-      console.error("Delete product error:", error);
+      console.error("[ProductManagement] ❌ Erreur suppression:", error);
       toast({
         title: "Échec de la suppression",
-        description: `Une erreur est survenue: ${error.message}`,
+        description: error.message || "Une erreur est survenue lors de la suppression",
         variant: "destructive",
       });
     }
