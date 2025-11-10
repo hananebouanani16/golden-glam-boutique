@@ -137,7 +137,11 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       const { data: { session } } = await supabase.auth.getSession();
       console.log("[ProductContext] Session auth:", session ? "✅ Authentifié" : "❌ Non authentifié");
       
-      // Soft delete directement
+      if (!session) {
+        throw new Error("Vous devez être connecté pour supprimer un produit");
+      }
+      
+      // Soft delete directement avec l'auth de l'utilisateur
       const { data, error } = await supabase
         .from('products')
         .update({ deleted_at: new Date().toISOString() })
@@ -146,6 +150,7 @@ export const ProductProvider = ({ children }: { children: React.ReactNode }) => 
       
       if (error) {
         console.error("[ProductContext] ❌ Erreur suppression:", error);
+        console.error("[ProductContext] Détails erreur:", JSON.stringify(error, null, 2));
         throw error;
       }
       

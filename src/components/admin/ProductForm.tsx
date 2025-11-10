@@ -132,14 +132,20 @@ export default function ProductForm({
     console.log('[ProductForm] Soumission - Image principale:', imagePreview ? 'présente' : 'absente');
     console.log('[ProductForm] Soumission - Galerie:', imagePreviews.length, 'images');
     
-    // Mise à jour du formData avec l'image principale et la galerie
+    // Mise à jour synchrone avant soumission
     const updatedFormData = { 
       ...formData, 
       image: imagePreview,
       images: imagePreviews
     };
+    
+    // Mettre à jour l'état ET soumettre avec les nouvelles données
     setFormData(updatedFormData);
-    onSubmit(e);
+    
+    // Utiliser setTimeout pour s'assurer que l'état est à jour avant la soumission
+    setTimeout(() => {
+      onSubmit(e);
+    }, 0);
   };
 
   return (
